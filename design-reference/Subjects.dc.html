@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>html,body{margin:0;padding:0;background:#FFFFFF;font-family:'Nunito',-apple-system,BlinkMacSystemFont,sans-serif;color:#3C3C3C}a{color:#1CB0F6;text-decoration:none}a:hover{color:#1899D6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:#FFFFFF">
+<dc-import name="SiteHeader" active="subjects" hint-size="100%,72px"></dc-import>
+<section data-screen-label="Subjects Hero" style="position:relative;overflow:hidden;padding:72px clamp(20px,5vw,32px) 48px">
+  <div style="position:absolute;right:-140px;top:-120px;width:560px;height:560px;background:radial-gradient(circle, rgba(88,204,2,0.14), rgba(88,204,2,0) 65%);filter:blur(24px);pointer-events:none"></div>
+  <div style="max-width:1280px;margin:0 auto;text-align:center;position:relative">
+    <span style="display:inline-block;background:rgba(221,244,255,0.9);color:#1899D6;border:1px solid #A6DDF4;border-radius:999px;padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:0.12em">ALL SUBJECTS</span>
+    <h1 style="font-size:clamp(26px,3.44vw,44px);font-weight:800;letter-spacing:-0.02em;margin:18px auto 0;max-width:640px;text-wrap:balance">Every subject, grouped by curriculum</h1>
+    <p style="font-size:15px;color:#777777;line-height:1.65;margin:16px auto 0;max-width:560px">Find your child's exact curriculum and subject — every tutor is matched to the syllabus they're actually being examined on.</p>
+  </div>
+</section>
+<section data-screen-label="Subject Directory" style="padding:24px clamp(20px,5vw,32px) 72px">
+  <div style="max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px">
+    <sc-for list="{{ groups }}" as="g" hint-placeholder-count="10">
+      <div style="background:#fff;border:2px solid #E5E5E5;border-radius:22px;padding:26px;box-shadow:0 2px 0 #E5E5E5">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="width:38px;height:38px;border-radius:12px;background:#DDF4FF;display:inline-flex;align-items:center;justify-content:center;color:#1CB0F6;font-size:14px;font-weight:800">{{ g.glyph }}</span>
+            <h2 style="font-size:19px;font-weight:800;margin:0">{{ g.name }}</h2>
+          </div>
+          <a href="{{ g.href }}" style="font-size:11.5px;font-weight:700;letter-spacing:0.08em;color:#1CB0F6" style-hover="color:#1899D6">VIEW CURRICULUM ↗</a>
+        </div>
+        <p style="font-size:12.5px;color:#777777;margin:0 0 16px;line-height:1.55">{{ g.desc }}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{ g.subjects }}" as="s" hint-placeholder-count="6">
+            <a href="{{ s.href }}" style="background:#FFFFFF;border:2px solid #E5E5E5;border-radius:999px;padding:7px 14px;font-size:12px;font-weight:600;color:#3C3C3C" style-hover="border-color:#89E219;background:#F7F7F7;color:#1899D6">{{ s.name }}</a>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+<dc-import name="CtaBand" eyebrow="GET MATCHED" headline="Can't find the exact subject?" sub="Tell us what your child needs — we cover more than what's listed here." cta-label="Submit an inquiry" hint-size="100%,460px"></dc-import>
+<dc-import name="SiteFooter" hint-size="100%,520px"></dc-import>
+</div>
+<dc-import name="ChatWidget" hint-size="0px,0px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const sub = (names, curriculumHref) => names.map(n => ({ name: n, href: curriculumHref || "Inquiry.dc.html" }));
+    const groups = [
+      { glyph: "IG", name: "IGCSE", href: "IGCSE.dc.html", desc: "Cambridge & Edexcel-aligned tutoring, grades 9–11.", subjects: sub(["Mathematics","Additional Mathematics","Physics","Chemistry","Biology","English Language","English Literature","Economics","Business Studies","Accounting","Computer Science"], "IGCSE.dc.html") },
+      { glyph: "GC", name: "GCSE", href: "GCSE.dc.html", desc: "UK national exam prep — AQA, Edexcel, and OCR.", subjects: sub(["Mathematics","English Language","English Literature","Biology","Chemistry","Physics","Combined Science","Geography","History","Business Studies","Economics","Computer Science","French"], "GCSE.dc.html") },
+      { glyph: "AL", name: "A Levels", href: "A Levels.dc.html", desc: "Deep subject specialism for university entry.", subjects: sub(["Mathematics","Further Mathematics","Physics","Chemistry","Biology","Economics","Business Studies","Accounting","Computer Science","English Literature","Psychology","Sociology","Geography","History","Law"], "A Levels.dc.html") },
+      { glyph: "IB", name: "IB Diploma", href: "IB.dc.html", desc: "Support across all six subject groups, plus EE and TOK.", subjects: sub(["Math AA","Math AI","Physics","Chemistry","Biology","Economics","Business Management","English A: Language & Literature","Psychology","Computer Science","TOK / EE support"], "IB.dc.html") },
+      { glyph: "SB", name: "SABIS", href: "SABIS.dc.html", desc: "Tutoring aligned to the SABIS system and AMS assessments.", subjects: sub(["Mathematics","English","Science","Social Studies","French"], "SABIS.dc.html") },
+      { glyph: "HK", name: "HKDSE", href: "HKDSE.dc.html", desc: "Hong Kong Diploma of Secondary Education support.", subjects: sub(["Mathematics (Compulsory)","Mathematics Extended (M1/M2)","English Language","Biology","Chemistry","Physics","Economics","BAFS","ICT"], "HKDSE.dc.html") },
+      { glyph: "US", name: "American Curriculum", href: "American Curriculum.dc.html", desc: "US-style coursework and AP exam preparation.", subjects: sub(["AP Calculus AB/BC","AP Biology","AP Chemistry","AP Physics 1/2/C","AP English Language","AP English Literature","AP US History","AP World History","AP Economics (Micro/Macro)","AP Computer Science A","Algebra I/II","Geometry"], "American Curriculum.dc.html") },
+      { glyph: "CA", name: "Canadian Curriculum", href: "Canadian Curriculum.dc.html", desc: "Ontario-style courses toward the OSSD.", subjects: sub(["Mathematics","English","Biology","Chemistry","Physics","Canadian & World History","Civics & Careers","French","Business Studies","Computer Science"], "Canadian Curriculum.dc.html") },
+      { glyph: "IE", name: "IELTS Preparation", href: "Inquiry.dc.html", desc: "Band-score focused prep, Academic and General Training.", subjects: sub(["Listening","Reading","Writing","Speaking"]) },
+      { glyph: "SA", name: "SAT Preparation", href: "Inquiry.dc.html", desc: "Score-focused prep for the digital SAT.", subjects: sub(["Math","Reading & Writing"]) },
+    ];
+    return { groups };
+  }
+}
+</script>
+</body>
+</html>

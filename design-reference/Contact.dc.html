@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>html,body{margin:0;padding:0;background:#FFFFFF;font-family:'Nunito',-apple-system,BlinkMacSystemFont,sans-serif;color:#3C3C3C}a{color:#3C3C3C;text-decoration:none}a:hover{color:#131F24}*{box-sizing:border-box}input:focus,textarea:focus{outline:2px solid #89E219;outline-offset:0}@keyframes msa-spin{to{transform:rotate(360deg)}}</style>
+</helmet>
+<sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+<dc-import name="Contact Mobile" hint-size="100%,3400px"></dc-import>
+</sc-if>
+<sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+<div style="min-height:100vh;background:#FFFFFF">
+<dc-import name="SiteHeader" active="contact" hint-size="100%,72px"></dc-import>
+
+<section data-screen-label="Contact Hero" style="padding:72px clamp(20px,5vw,32px) 8px">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="max-width:640px">
+      <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;color:#777777">CONTACT</div>
+      <h1 style="font-size:clamp(29px,3.75vw,48px);line-height:52px;font-weight:800;letter-spacing:-0.02em;margin:16px 0 0">Get in touch</h1>
+      <p style="font-size:16px;line-height:26px;color:#777777;margin:16px 0 0;text-wrap:pretty">Tell us what your child needs and we'll match them with a tutor. Or ask us anything first — same team either way.</p>
+      <p style="font-size:13px;line-height:22px;font-weight:700;color:#3C3C3C;margin:20px 0 0">Every inquiry is read by a person, not routed to a queue. We reply within 24 hours.</p>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="Form + Details" style="padding:48px clamp(20px,5vw,32px) 72px">
+  <div style="max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:clamp(36px,5vw,80px);align-items:start">
+
+    <div data-screen-label="Inquiry form">
+      <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:48px 0">
+          <span style="width:56px;height:56px;border-radius:999px;background:#D7FFB8;color:#58A700;display:inline-flex;align-items:center;justify-content:center;font-size:clamp(20px,1.88vw,24px);font-weight:800">✓</span>
+          <h2 style="font-size:clamp(20px,2.03vw,26px);font-weight:800;letter-spacing:-0.01em;margin:20px 0 0">Thanks — your inquiry is in.</h2>
+          <p style="font-size:14px;line-height:1.7;color:#777777;margin:12px 0 0;max-width:440px">A person on our team will read it and reply within 24 hours. You're being taken to the confirmation page…</p>
+        </div>
+      </sc-if>
+      <sc-if value="{{ notSubmitted }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:22px">
+        <sc-if value="{{ failed }}" hint-placeholder-val="{{ false }}">
+          <div style="border:2px solid #DC2626;border-radius:14px;padding:14px 18px;font-size:13px;line-height:1.6;color:#DC2626;font-weight:600">Something went wrong sending your inquiry — your answers are still here. Try again, or email us at <a href="mailto:info@mystudyally.com" style="color:#DC2626;text-decoration:underline">info@mystudyally.com</a>.</div>
+        </sc-if>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <label style="font-size:14px;font-weight:800;color:#3C3C3C">What can we help with?</label>
+          <div style="display:flex;gap:10px">
+            <sc-for list="{{ intents }}" as="i" hint-placeholder-count="3">
+              <button type="button" onClick="{{ i.pick }}" style="flex:1;background:{{ i.bg }};color:{{ i.color }};border:2px solid {{ i.border }};border-radius:14px;padding:13px 10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;line-height:1.35;text-align:center" style-hover="border-color:#AFAFAF">{{ i.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{ isTutoring }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label style="font-size:12px;font-weight:700;color:#3C3C3C">Curriculum <span style="color:#DC2626">*</span></label>
+            <div style="position:relative">
+              <button type="button" onClick="{{ toggleDd }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border:1px solid {{ ddBorder }};border-radius:12px;font-family:inherit;font-size:13px;font-weight:600;background:#fff;color:{{ ddColor }};cursor:pointer;text-align:left">{{ ddLabel }}<span style="color:#AFAFAF;font-size:11px">{{ ddCaret }}</span></button>
+              <sc-if value="{{ ddOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:40;background:#fff;border:1px solid #E5E5E5;border-radius:14px;padding:6px;max-height:280px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.12)">
+                  <sc-for list="{{ ddOptions }}" as="c" hint-placeholder-count="10">
+                    <button type="button" onClick="{{ c.pick }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;background:{{ c.bg }};color:#3C3C3C;border:none;border-radius:10px;padding:9px 12px;font-family:inherit;font-size:13px;font-weight:600;text-align:left;cursor:pointer" style-hover="background:#F7F7F7">{{ c.label }}<span style="font-size:12px;font-weight:800;color:#58A700">{{ c.check }}</span></button>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+            <sc-if value="{{ errCurriculum }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:#DC2626;font-weight:600">{{ errCurriculum }}</span></sc-if>
+          </div>
+
+          <sc-if value="{{ hasSubjects }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <label style="font-size:12px;font-weight:700;color:#3C3C3C">Subjects needed <span style="color:#AFAFAF;font-weight:500">(pick any)</span></label>
+              <div style="position:relative">
+                <input value="{{ vSubjFilter }}" onChange="{{ setSubjFilter }}" onFocus="{{ openSubj }}" onBlur="{{ closeSubjSoon }}" placeholder="Type to search subjects…" style="width:100%;padding:12px 14px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:13px;background:#fff">
+                <sc-if value="{{ subjOpenShow }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:40;background:#fff;border:1px solid #E5E5E5;border-radius:14px;padding:6px;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.12)">
+                    <sc-for list="{{ subjOptions }}" as="o" hint-placeholder-count="5">
+                      <button type="button" onMouseDown="{{ o.pick }}" style="width:100%;background:transparent;color:#3C3C3C;border:none;border-radius:10px;padding:9px 12px;font-family:inherit;font-size:13px;font-weight:600;text-align:left;cursor:pointer" style-hover="background:#F7F7F7">{{ o.label }}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+              <sc-if value="{{ hasSelected }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                  <sc-for list="{{ selectedChips }}" as="sel" hint-placeholder-count="2">
+                    <span style="display:inline-flex;align-items:center;gap:8px;background:#F7F7F7;color:#3C3C3C;border:1px solid #E5E5E5;border-radius:999px;padding:6px 8px 6px 14px;font-size:12px;font-weight:700;white-space:nowrap">{{ sel.label }}<button type="button" onClick="{{ sel.remove }}" style="background:#E5E5E5;color:#777777;border:none;border-radius:999px;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;line-height:1;cursor:pointer;padding:0">×</button></span>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label style="font-size:12px;font-weight:700;color:#3C3C3C">Your name <span style="color:#DC2626">*</span></label>
+            <input value="{{ vName }}" onChange="{{ setName }}" onBlur="{{ blurName }}" placeholder="Full name" style="padding:12px 14px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:13px;background:#fff">
+            <sc-if value="{{ errName }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:#DC2626;font-weight:600">{{ errName }}</span></sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label style="font-size:12px;font-weight:700;color:#3C3C3C">Email or phone <span style="color:#DC2626">*</span></label>
+            <input value="{{ vContact }}" onChange="{{ setContact }}" onBlur="{{ blurContact }}" placeholder="you@example.com or phone" style="padding:12px 14px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:13px;background:#fff">
+            <sc-if value="{{ errContact }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:#DC2626;font-weight:600">{{ errContact }}</span></sc-if>
+          </div>
+        </div>
+
+        <sc-if value="{{ isTutoring }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:12px;font-weight:700;color:#3C3C3C">I am a</label>
+              <div style="display:flex;gap:4px;background:#F7F7F7;border-radius:12px;padding:4px">
+                <sc-for list="{{ roles }}" as="r" hint-placeholder-count="3">
+                  <button type="button" onClick="{{ r.pick }}" style="flex:1;background:{{ r.bg }};color:{{ r.color }};border:none;border-radius:9px;padding:9px 0;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;box-shadow:{{ r.shadow }}">{{ r.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:12px;font-weight:700;color:#3C3C3C">Student's name <span style="color:#AFAFAF;font-weight:500">(optional)</span></label>
+              <input value="{{ vStudent }}" onChange="{{ setStudent }}" placeholder="Your child's name" style="padding:12px 14px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:13px;background:#fff">
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label style="font-size:12px;font-weight:700;color:#3C3C3C">Preferred schedule <span style="color:#AFAFAF;font-weight:500">(optional)</span></label>
+            <input value="{{ vSchedule }}" onChange="{{ setSchedule }}" placeholder="e.g. Weekday evenings after 6pm" style="padding:12px 14px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:13px;background:#fff">
+          </div>
+        </sc-if>
+
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <label style="font-size:12px;font-weight:700;color:#3C3C3C">Message <span style="color:#AFAFAF;font-weight:500">(optional)</span></label>
+          <textarea value="{{ vMessage }}" onChange="{{ setMessage }}" rows="3" placeholder="{{ msgPlaceholder }}" style="padding:12px 14px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:13px;background:#fff;resize:vertical"></textarea>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button type="button" onClick="{{ toggleConsent }}" style="display:flex;align-items:flex-start;gap:10px;background:none;border:none;padding:0;cursor:pointer;text-align:left;font-family:inherit">
+            <span style="flex-shrink:0;width:20px;height:20px;border-radius:6px;border:2px solid {{ consentBorder }};background:{{ consentBg }};color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800">{{ consentMark }}</span>
+            <span style="font-size:12.5px;color:#777777;line-height:1.55">I agree to MyStudyAlly contacting me about this inquiry, as described in the <a href="/privacy/" style="text-decoration:underline">privacy policy</a>. <span style="color:#DC2626">*</span></span>
+          </button>
+          <sc-if value="{{ errConsent }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:#DC2626;font-weight:600">{{ errConsent }}</span></sc-if>
+        </div>
+
+        <input type="text" name="website" tabIndex="-1" autoComplete="off" style="display:none">
+        <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start">
+          <button type="button" onClick="{{ submit }}" disabled="{{ submitting }}" style="background:{{ btnBg }};color:#fff;border:none;border-radius:16px;padding:14px 26px;font-family:inherit;font-size:14px;font-weight:800;cursor:{{ btnCursor }};box-shadow:{{ btnShadow }};display:inline-flex;align-items:center;gap:10px" style-hover="background:#49AD00">
+            <sc-if value="{{ submitting }}" hint-placeholder-val="{{ false }}"><span style="width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:999px;display:inline-block;animation:msa-spin 0.7s linear infinite"></span></sc-if>
+            {{ btnLabel }}
+          </button>
+          <span style="font-size:11px;color:#AFAFAF">Protected by Cloudflare Turnstile · Our team reviews every inquiry personally</span>
+        </div>
+      </div>
+      </sc-if>
+    </div>
+
+    <div data-screen-label="Contact details" style="padding-top:6px">
+      <div style="display:grid;grid-template-columns:minmax(84px,96px) minmax(0,1fr);gap:6px 20px;padding:16px 0;border-top:1px solid #E5E5E5">
+        <span style="font-size:12px;font-weight:700;letter-spacing:0.08em;color:#AFAFAF;padding-top:2px">EMAIL</span>
+        <a href="mailto:info@mystudyally.com" style="font-size:14px;font-weight:700;text-decoration:underline;text-decoration-color:#E5E5E5;text-underline-offset:3px" style-hover="text-decoration-color:#3C3C3C">info@mystudyally.com</a>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(84px,96px) minmax(0,1fr);gap:6px 20px;padding:16px 0;border-top:1px solid #E5E5E5">
+        <span style="font-size:12px;font-weight:700;letter-spacing:0.08em;color:#AFAFAF;padding-top:2px">WHATSAPP</span>
+        <sc-if value="{{ hasWhatsapp }}" hint-placeholder-val="{{ false }}">
+          <a href="{{ waHref }}" style="font-size:14px;font-weight:700;text-decoration:underline;text-decoration-color:#E5E5E5;text-underline-offset:3px" style-hover="text-decoration-color:#3C3C3C">{{ waNumber }}</a>
+        </sc-if>
+        <sc-if value="{{ noWhatsapp }}" hint-placeholder-val="{{ true }}">
+          <span style="font-size:14px;font-weight:700;color:#AFAFAF;font-family:monospace">+__ ____ ______</span>
+        </sc-if>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(84px,96px) minmax(0,1fr);gap:6px 20px;padding:16px 0;border-top:1px solid #E5E5E5">
+        <span style="font-size:12px;font-weight:700;letter-spacing:0.08em;color:#AFAFAF;padding-top:2px">RESPONSE</span>
+        <span style="font-size:14px;line-height:1.6">Within 24 hours, every day</span>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(84px,96px) minmax(0,1fr);gap:6px 20px;padding:16px 0;border-top:1px solid #E5E5E5">
+        <span style="font-size:12px;font-weight:700;letter-spacing:0.08em;color:#AFAFAF;padding-top:2px">HOURS</span>
+        <span style="font-size:14px;line-height:1.6">09:00–18:00 GST · 09:00–18:00 GMT</span>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(84px,96px) minmax(0,1fr);gap:6px 20px;padding:16px 0;border-top:1px solid #E5E5E5;border-bottom:1px solid #E5E5E5">
+        <span style="font-size:12px;font-weight:700;letter-spacing:0.08em;color:#AFAFAF;padding-top:2px">OFFICES</span>
+        <span style="font-size:14px;line-height:1.6">7 Leamington Gardens, Ilford IG3 9TX, United Kingdom</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="Deflection FAQ" style="padding:24px clamp(20px,5vw,32px) 80px">
+  <div style="max-width:720px;margin:0 auto 0 max(32px, calc((100% - 1280px) / 2))">
+    <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;color:#777777">BEFORE YOU WRITE IN</div>
+    <h2 style="font-size:clamp(20px,2.19vw,28px);font-weight:800;letter-spacing:-0.01em;margin:14px 0 8px">Quick answers</h2>
+    <div style="display:flex;flex-direction:column">
+      <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="4">
+        <div style="border-bottom:1px solid #E5E5E5">
+          <button type="button" onClick="{{ f.toggle }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;background:none;border:none;padding:18px 0;font-family:inherit;font-size:15px;font-weight:700;color:#3C3C3C;cursor:pointer;text-align:left">{{ f.q }}<span style="color:#AFAFAF;font-size:18px;font-weight:400">{{ f.mark }}</span></button>
+          <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}">
+            <p style="font-size:13.5px;line-height:1.7;color:#777777;margin:0;padding:0 clamp(20px,5vw,32px) 20px 0">{{ f.aPre }}<a href="{{ f.aHref }}" style="text-decoration:underline">{{ f.aLink }}</a>{{ f.aPost }}</p>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+    <a href="FAQ.dc.html" style="display:inline-block;margin-top:24px;font-size:13px;font-weight:700;border-bottom:2px solid #58CC02;padding-bottom:2px">Read the full FAQ →</a>
+  </div>
+</section>
+
+<sc-if value="{{ closingShown }}" hint-placeholder-val="{{ true }}">
+<section data-screen-label="Closing note" style="background:#131F24;padding:44px clamp(20px,5vw,32px)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:48px">
+    <p style="font-size:15px;line-height:1.7;color:#B6C2C8;margin:0;max-width:640px">Prefer to just write an email? <a href="mailto:info@mystudyally.com" style="color:#fff;text-decoration:underline" style-hover="color:#fff">info@mystudyally.com</a> — read by a person, answered within 24 hours.</p>
+  </div>
+</section>
+</sc-if>
+<dc-import name="SiteFooter" hint-size="100%,520px"></dc-import>
+</div>
+<dc-import name="ChatWidget" hint-size="0px,0px"></dc-import>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;whatsappNumber&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;+447868197793&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Blocked decisions&quot; },
+  &quot;companyNumber&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;+447868197793&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Blocked decisions&quot; },
+  &quot;simulateFailure&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Form states&quot; },
+  &quot;showClosingNote&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Layout&quot; }
+}">
+class Component extends DCLogic {
+  state = {
+    intent: "tutor", curriculum: "", subjects: [], subjFilter: "", subjOpen: false, ddOpen: false,
+    name: "", contact: "", role: "Parent", student: "", schedule: "", message: "",
+    consent: false, errors: {}, submitting: false, submitted: false, failed: false, openFaq: -1,
+    vw: typeof window !== "undefined" ? window.innerWidth : 1280,
+  };
+  componentDidMount() {
+    this._onResize = () => this.setState({ vw: window.innerWidth });
+    window.addEventListener("resize", this._onResize);
+    this._onResize();
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this._onResize); }
+  renderVals() {
+    const SUBJECTS = {
+      "IGCSE": ["Mathematics","Additional Mathematics","Physics","Chemistry","Biology","English Language","English Literature","Economics","Business Studies","Accounting","Computer Science"],
+      "GCSE": ["Mathematics","English Language","English Literature","Biology","Chemistry","Physics","Combined Science","Geography","History","Business Studies","Economics","Computer Science","French"],
+      "A Levels": ["Mathematics","Further Mathematics","Physics","Chemistry","Biology","Economics","Business Studies","Accounting","Computer Science","English Literature","Psychology","Sociology","Geography","History","Law"],
+      "IB": ["Math AA","Math AI","Physics","Chemistry","Biology","Economics","Business Management","English A: Language & Literature","Psychology","Computer Science","TOK / EE support"],
+      "SABIS": ["Mathematics","English","Science","Social Studies","French"],
+      "HKDSE": ["Mathematics (Compulsory)","Mathematics Extended (M1/M2)","English Language","Biology","Chemistry","Physics","Economics","BAFS","ICT"],
+      "American Curriculum": ["AP Calculus AB/BC","AP Biology","AP Chemistry","AP Physics 1/2/C","AP English Language","AP English Literature","AP US History","AP World History","AP Economics (Micro/Macro)","AP Computer Science A","Algebra I/II","Geometry"],
+      "Canadian Curriculum": ["Mathematics","English","Biology","Chemistry","Physics","Canadian & World History","Civics & Careers","French","Business Studies","Computer Science"],
+      "IELTS Preparation": ["Listening","Reading","Writing","Speaking"],
+      "SAT Preparation": ["Math","Evidence-Based Reading & Writing"],
+      "Not sure yet": [],
+    };
+    const s = this.state;
+    const set = (key) => (e) => this.setState({ [key]: e.target.value });
+    const isTutoring = s.intent === "tutor";
+    const validateField = (field) => {
+      const errors = { ...this.state.errors };
+      if (field === "name") {
+        if (s.name.trim().length < 2 || s.name.trim().length > 100) errors.name = "Please enter your name (2–100 characters)"; else delete errors.name;
+      }
+      if (field === "contact") {
+        const c = (s.contact || "").trim();
+        const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c) || /^\+?[\d\s\-()]{7,}$/.test(c);
+        if (!ok) errors.contact = "Please enter a valid email address or phone number"; else delete errors.contact;
+      }
+      this.setState({ errors });
+    };
+    const intents = [
+      { key: "tutor", label: "Finding a tutor" },
+      { key: "pricing", label: "Pricing or how it works" },
+      { key: "other", label: "Something else" },
+    ].map(o => ({
+      label: o.label,
+      bg: s.intent === o.key ? "#131F24" : "#FFFFFF",
+      color: s.intent === o.key ? "#FFFFFF" : "#777777",
+      border: s.intent === o.key ? "#131F24" : "#E5E5E5",
+      pick: () => this.setState({ intent: o.key, errors: {} }),
+    }));
+    const opts = SUBJECTS[s.curriculum] || [];
+    const subjOptions = opts
+      .filter(l => !s.subjects.includes(l) && l.toLowerCase().includes((s.subjFilter || "").toLowerCase()))
+      .map(label => ({ label, pick: () => this.setState(st => ({ subjects: [...st.subjects, label], subjFilter: "", subjOpen: false })) }));
+    const roles = ["Parent","Student","Other"].map(r => ({
+      label: r,
+      bg: s.role === r ? "#FFFFFF" : "transparent",
+      color: s.role === r ? "#3C3C3C" : "#777777",
+      shadow: s.role === r ? "0 2px 8px rgba(60,60,60,0.12)" : "none",
+      pick: () => this.setState({ role: r }),
+    }));
+    const submit = () => {
+      if (s.submitting) return;
+      const errors = {};
+      if (s.name.trim().length < 2 || s.name.trim().length > 100) errors.name = "Please enter your name (2–100 characters)";
+      const c = (s.contact || "").trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c) && !/^\+?[\d\s\-()]{7,}$/.test(c)) errors.contact = "Please enter a valid email address or phone number";
+      if (isTutoring && !s.curriculum) errors.curriculum = "Please choose a curriculum so we can match the right tutor";
+      if (!s.consent) errors.consent = "Please confirm we may contact you";
+      if (Object.keys(errors).length) { this.setState({ errors }); return; }
+      this.setState({ errors: {}, submitting: true, failed: false });
+      setTimeout(() => {
+        if (this.props.simulateFailure) this.setState({ submitting: false, failed: true });
+        else this.setState({ submitting: false, submitted: true });
+      }, 1100);
+    };
+    const faqData = [
+      { q: "How much does tutoring cost?", aPre: "You buy a prepaid package of hours, and hours are deducted as sessions happen. Full rates are on the ", aLink: "pricing page", aHref: "Pricing v2.dc.html", aPost: "." },
+      { q: "How does matching work?", aPre: "You tell us the curriculum and subjects; our team hand-picks a tutor who specialises in that exact exam board. See how it works on the ", aLink: "IGCSE page", aHref: "IGCSE.dc.html", aPost: "." },
+      { q: "Do you offer a free trial?", aPre: "Yes — a 30-minute trial session, no card required", aLink: "", aHref: "", aPost: "." },
+      { q: "Which curricula do you cover?", aPre: "IGCSE, GCSE, A Levels, IB, SABIS, HKDSE, and the American and Canadian curricula — plus IELTS and SAT preparation", aLink: "", aHref: "", aPost: "." },
+    ];
+    const faqs = faqData.map((f, i) => ({
+      ...f,
+      open: s.openFaq === i,
+      mark: s.openFaq === i ? "−" : "+",
+      toggle: () => this.setState(st => ({ openFaq: st.openFaq === i ? -1 : i })),
+    }));
+    const wa = (this.props.whatsappNumber || "+447868197793").trim();
+    return {
+      submitted: s.submitted, notSubmitted: !s.submitted, failed: s.failed,
+      intents, isTutoring,
+      ddOpen: !!s.ddOpen, toggleDd: () => this.setState(st => ({ ddOpen: !st.ddOpen })),
+      ddLabel: s.curriculum || "Select a curriculum…",
+      ddColor: s.curriculum ? "#3C3C3C" : "#AFAFAF",
+      ddBorder: s.errors.curriculum ? "#DC2626" : (s.ddOpen ? "#89E219" : "#E5E5E5"),
+      ddCaret: s.ddOpen ? "▲" : "▼",
+      ddOptions: Object.keys(SUBJECTS).map(label => ({
+        label,
+        bg: s.curriculum === label ? "#F7F7F7" : "transparent",
+        check: s.curriculum === label ? "✓" : "",
+        pick: () => { const errors = { ...this.state.errors }; delete errors.curriculum; this.setState({ curriculum: label, subjects: [], ddOpen: false, errors }); },
+      })),
+      errCurriculum: s.errors.curriculum || false,
+      hasSubjects: isTutoring && opts.length > 0,
+      vSubjFilter: s.subjFilter || "",
+      setSubjFilter: (e) => this.setState({ subjFilter: e.target.value, subjOpen: true }),
+      openSubj: () => this.setState({ subjOpen: true }),
+      closeSubjSoon: () => setTimeout(() => this.setState({ subjOpen: false }), 150),
+      subjOpenShow: !!s.subjOpen && subjOptions.length > 0,
+      subjOptions,
+      hasSelected: s.subjects.length > 0,
+      selectedChips: s.subjects.map(label => ({ label, remove: () => this.setState(st => ({ subjects: st.subjects.filter(x => x !== label) })) })),
+      vName: s.name, setName: set("name"), blurName: () => validateField("name"), errName: s.errors.name || false,
+      vContact: s.contact, setContact: set("contact"), blurContact: () => validateField("contact"), errContact: s.errors.contact || false,
+      roles,
+      vStudent: s.student, setStudent: set("student"),
+      vSchedule: s.schedule, setSchedule: set("schedule"),
+      vMessage: s.message, setMessage: set("message"),
+      msgPlaceholder: isTutoring ? "Anything else — goals, a tutor you'd like, or 'not sure of curriculum yet'" : "What would you like to know?",
+      toggleConsent: () => { const errors = { ...this.state.errors }; delete errors.consent; this.setState(st => ({ consent: !st.consent, errors })); },
+      consentBorder: s.errors.consent ? "#DC2626" : (s.consent ? "#58CC02" : "#E5E5E5"),
+      consentBg: s.consent ? "#58CC02" : "#FFFFFF",
+      consentMark: s.consent ? "✓" : "",
+      errConsent: s.errors.consent || false,
+      submit, submitting: s.submitting,
+      btnLabel: s.submitting ? "Submitting…" : "Submit an inquiry",
+      btnBg: s.submitting ? "#89C561" : "#58CC02",
+      btnCursor: s.submitting ? "default" : "pointer",
+      btnShadow: s.submitting ? "none" : "0 4px 0 #58A700",
+      hasWhatsapp: !!wa, noWhatsapp: !wa,
+      waNumber: (function (n) {
+        const d = n.replace(/[^\d]/g, "");
+        return d.length === 12 && d.slice(0, 2) === "44" ? "+44 " + d.slice(2, 6) + " " + d.slice(6) : n;
+      })(wa),
+      waHref: "https://wa.me/" + wa.replace(/[^\d]/g, ""),
+      faqs,
+      isMobile: this.state.vw < 768,
+      isDesktop: this.state.vw >= 768,
+      closingShown: !!(this.props.showClosingNote ?? true),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>html,body{margin:0;font-family:'Nunito',-apple-system,BlinkMacSystemFont,sans-serif;color:#3C3C3C;background:#FFFFFF}a{color:#3C3C3C;text-decoration:none}a:hover{color:#131F24}*{box-sizing:border-box}input::placeholder,textarea::placeholder{color:#AFAFAF;opacity:1}input:focus,select:focus,textarea:focus{outline:2px solid #89E219;outline-offset:0}@keyframes msaspin{to{transform:rotate(360deg)}}</style>
+</helmet>
+<div style="max-width:{{ wrapMax }};background:{{ wrapBg }};border:{{ wrapBorder }};border-radius:{{ wrapRadius }};padding:{{ wrapPad }};box-shadow:{{ wrapShadow }}">
+  <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:8px 0 12px;max-width:520px">
+      <span style="width:52px;height:52px;border-radius:999px;background:#D7FFB8;color:#58A700;display:inline-flex;align-items:center;justify-content:center;font-size:clamp(20px,1.88vw,24px)">✓</span>
+      <h3 style="font-size:clamp(20px,2.03vw,26px);line-height:30px;font-weight:800;letter-spacing:-0.01em;margin:20px 0 0">Thanks — we've got your inquiry.</h3>
+      <p style="font-size:15px;line-height:26px;color:#777777;margin:12px 0 0;text-wrap:pretty">A real person from our team is reviewing it now and will reply {{ replyLine }}. If you'd rather talk sooner, reach us directly.</p>
+      <p style="font-size:12px;color:#AFAFAF;margin:10px 0 0">On the live site this step redirects to /thank-you/, where the conversion pixel fires.</p>
+      <div style="display:flex;gap:12px;margin-top:22px">
+        <a href="Contact.dc.html" style="background:#58CC02;color:#fff;border-radius:14px;padding:12px 20px;font-size:13px;font-weight:800;box-shadow:0 4px 0 #58A700" style-hover="background:#49AD00;color:#fff">Contact the team</a>
+        <a href="#" style="background:#FFFFFF;color:#3C3C3C;border:1px solid #E5E5E5;border-radius:14px;padding:12px 20px;font-size:13px;font-weight:800" style-hover="background:#F7F7F7;color:#131F24">WhatsApp us</a>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ notSubmitted }}" hint-placeholder-val="{{ true }}">
+    <sc-if value="{{ quick }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <label style="font-size:12px;font-weight:700;color:#3C3C3C">Curriculum <span style="color:#AFAFAF;font-weight:600">(set for this page)</span></label>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid #E5E5E5;border-radius:12px;font-size:13px;font-weight:700;background:#F7F7F7;color:#777777">
+          {{ ddLabel }}
+          <span style="display:inline-flex;align-items:center;gap:6px;background:#D7FFB8;color:#58A700;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:800">✓ Selected</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <label style="font-size:12px;font-weight:700;color:#3C3C3C">Your name <span style="color:#B4462B">*</span></label>
+        <input value="{{ vName }}" onChange="{{ setName }}" onBlur="{{ blurName }}" placeholder="Full name" style="padding:12px 14px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:13px;background:#fff">
+        <sc-if value="{{ errName }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:#B4462B;font-weight:700">{{ errName }}</span></sc-if>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <label style="font-size:12px;font-weight:700;color:#3C3C3C">Email or phone <span style="color:#B4462B">*</span></label>
+        <input value="{{ vContact }}" onChange="{{ setContact }}" onBlur="{{ blurContact }}" placeholder="you@example.com or +44 7700 900000" style="padding:12px 14px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:13px;background:#fff">
+        <sc-if value="{{ errContact }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:#B4462B;font-weight:700">{{ errContact }}</span></sc-if>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="font-size:12px;font-weight:700;color:#3C3C3C">Subjects needed <span style="color:#AFAFAF;font-weight:600">(pick any)</span></label>
+        <div style="position:relative">
+          <input value="{{ vSubjFilter }}" onChange="{{ setSubjFilter }}" onFocus="{{ openSubj }}" onBlur="{{ closeSubjSoon }}" placeholder="Type to search subjects…" style="width:100%;padding:12px 14px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:13px;background:#fff">
+          <sc-if value="{{ subjOpenShow }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:40;background:#fff;border:1px solid #E5E5E5;border-radius:14px;padding:6px;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.12)">
+              <sc-for list="{{ subjOptions }}" as="o" hint-placeholder-count="5">
+                <button type="button" onMouseDown="{{ o.pick }}" style="width:100%;background:transparent;color:#3C3C3C;border:none;border-radius:10px;padding:9px 12px;font-family:inherit;font-size:13px;font-weight:600;text-align:left;cursor:pointer" style-hover="background:#F7F7F7;color:#131F24">{{ o.label }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <sc-if value="{{ hasSelected }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <sc-for list="{{ selectedChips }}" as="sel" hint-placeholder-count="2">
+              <span style="display:inline-flex;align-items:center;gap:8px;background:#F1F7EA;color:#3C3C3C;border:1px solid #DDE9CF;border-radius:999px;padding:6px 8px 6px 14px;font-size:12px;font-weight:700;white-space:nowrap">{{ sel.label }}<button type="button" onClick="{{ sel.remove }}" style="background:#E3EFD5;color:#58A700;border:none;border-radius:999px;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;line-height:1;cursor:pointer;padding:0">×</button></span>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+      <button type="button" onClick="{{ toggleConsent }}" style="display:flex;align-items:flex-start;gap:10px;background:none;border:none;padding:0;cursor:pointer;text-align:left;font-family:inherit">
+        <span style="flex-shrink:0;width:20px;height:20px;border-radius:6px;border:2px solid {{ consentBorder }};background:{{ consentBg }};color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800">{{ consentMark }}</span>
+        <span style="font-size:12px;color:#777777;line-height:1.5">I agree to be contacted by MyStudyAlly about this inquiry.</span>
+      </button>
+      <sc-if value="{{ errConsent }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:#B4462B;font-weight:700">{{ errConsent }}</span></sc-if>
+      <input type="text" name="website" tabIndex="-1" autoComplete="off" style="display:none">
+      <button type="button" onClick="{{ submitQuick }}" style="background:#58CC02;color:#fff;border:none;border-radius:999px;padding:15px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #58A700" style-hover="background:#49AD00;box-shadow:0 4px 0 #49AD00">Submit an inquiry</button>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;color:#AFAFAF">Protected by Cloudflare Turnstile</span>
+        <span style="font-size:11px;color:#AFAFAF">Our team reviews every inquiry personally</span>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ notQuick }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:26px;max-width:600px">
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="font-size:13px;font-weight:800;color:#3C3C3C">Curriculum <span style="color:#B4462B">*</span></label>
+        <sc-if value="{{ locked }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border:1px solid #E5E5E5;border-radius:12px;font-size:14px;font-weight:700;background:#F7F7F7;color:#777777">
+            {{ ddLabel }}
+            <span style="display:inline-flex;align-items:center;gap:6px;background:#D7FFB8;color:#58A700;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:800">✓ Selected</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ notLocked }}" hint-placeholder-val="{{ true }}">
+        <div style="position:relative">
+          <button type="button" onClick="{{ toggleCurriculumDd }}" onBlur="{{ blurCurriculum }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 15px;border:1px solid {{ ddBorder }};border-radius:12px;font-family:inherit;font-size:14px;font-weight:600;background:#fff;color:{{ ddColor }};cursor:pointer;text-align:left">
+            {{ ddLabel }}
+            <span style="color:#AFAFAF;font-size:10px">{{ ddCaret }}</span>
+          </button>
+          <sc-if value="{{ ddOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:40;background:#fff;border:1px solid #E5E5E5;border-radius:14px;padding:6px;max-height:300px;overflow-y:auto;box-shadow:0 12px 28px rgba(19,31,36,0.14)">
+              <sc-for list="{{ ddOptions }}" as="c" hint-placeholder-count="11">
+                <button type="button" onMouseDown="{{ c.pick }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;background:{{ c.bg }};color:#3C3C3C;border:none;border-radius:10px;padding:10px 12px;font-family:inherit;font-size:13.5px;font-weight:600;text-align:left;cursor:pointer" style-hover="background:#F7F7F7;color:#131F24">{{ c.label }}<span style="font-size:12px;font-weight:800;color:#58A700">{{ c.check }}</span></button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        </sc-if>
+        <sc-if value="{{ errCurriculum }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#B4462B;font-weight:700">{{ errCurriculum }}</span></sc-if>
+        <span style="font-size:12px;color:#AFAFAF">This is how we route your inquiry. Pick "Not sure yet" if you'd like us to advise.</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="font-size:13px;font-weight:800;color:#3C3C3C">Subjects needed <span style="color:#AFAFAF;font-weight:600">(pick any)</span></label>
+        <sc-if value="{{ hasSubjects }}" hint-placeholder-val="{{ true }}">
+          <div style="position:relative">
+            <input value="{{ vSubjFilter }}" onChange="{{ setSubjFilter }}" onFocus="{{ openSubj }}" onBlur="{{ closeSubjSoon }}" placeholder="{{ subjPlaceholder }}" style="width:100%;padding:13px 15px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:14px;background:#fff">
+            <sc-if value="{{ subjOpenShow }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:30;background:#fff;border:1px solid #E5E5E5;border-radius:14px;padding:6px;max-height:240px;overflow-y:auto;box-shadow:0 12px 28px rgba(19,31,36,0.14)">
+                <sc-for list="{{ subjOptions }}" as="o" hint-placeholder-count="6">
+                  <button type="button" onMouseDown="{{ o.pick }}" style="width:100%;background:transparent;color:#3C3C3C;border:none;border-radius:10px;padding:10px 12px;font-family:inherit;font-size:13.5px;font-weight:600;text-align:left;cursor:pointer" style-hover="background:#F7F7F7;color:#131F24">{{ o.label }}</button>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <sc-if value="{{ hasSelected }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:2px">
+              <sc-for list="{{ selectedChips }}" as="sel" hint-placeholder-count="2">
+                <span style="display:inline-flex;align-items:center;gap:8px;background:#F1F7EA;color:#3C3C3C;border:1px solid #DDE9CF;border-radius:999px;padding:6px 8px 6px 14px;font-size:12.5px;font-weight:700;white-space:nowrap">{{ sel.label }}<button type="button" onClick="{{ sel.remove }}" style="background:#E3EFD5;color:#58A700;border:none;border-radius:999px;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;line-height:1;cursor:pointer;padding:0">×</button></span>
+              </sc-for>
+            </div>
+          </sc-if>
+        </sc-if>
+        <sc-if value="{{ noSubjects }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:13px 15px;border:1px dashed #E5E5E5;border-radius:12px;font-size:13.5px;color:#AFAFAF;background:#FBFBFA">{{ noSubjectsLine }}</div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="font-size:13px;font-weight:800;color:#3C3C3C">Your name <span style="color:#B4462B">*</span></label>
+        <input value="{{ vName }}" onChange="{{ setName }}" onBlur="{{ blurName }}" placeholder="Full name" style="padding:13px 15px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:14px;background:#fff">
+        <sc-if value="{{ errName }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#B4462B;font-weight:700">{{ errName }}</span></sc-if>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="font-size:13px;font-weight:800;color:#3C3C3C">Email or phone <span style="color:#B4462B">*</span></label>
+        <input value="{{ vContact }}" onChange="{{ setContact }}" onBlur="{{ blurContact }}" placeholder="you@example.com or +44 7700 900000" style="padding:13px 15px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:14px;background:#fff">
+        <sc-if value="{{ errContact }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#B4462B;font-weight:700">{{ errContact }}</span></sc-if>
+        <span style="font-size:12px;color:#AFAFAF">Whichever you'd rather be reached on — a phone number is fine on its own.</span>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <span style="font-size:11px;font-weight:700;letter-spacing:0.14em;color:#AFAFAF">I AM A</span>
+        <div style="display:flex;gap:4px;background:#F7F7F7;border-radius:10px;padding:3px">
+          <sc-for list="{{ roles }}" as="r" hint-placeholder-count="3">
+            <button type="button" onClick="{{ r.pick }}" style="background:{{ r.bg }};color:{{ r.color }};border:none;border-radius:8px;padding:7px 16px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;box-shadow:{{ r.shadow }}">{{ r.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <sc-if value="{{ isParent }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label style="font-size:13px;font-weight:800;color:#3C3C3C">Student's name <span style="color:#AFAFAF;font-weight:600">(optional)</span></label>
+          <input value="{{ vStudent }}" onChange="{{ setStudent }}" placeholder="Your child's name" style="padding:13px 15px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:14px;background:#fff">
+        </div>
+      </sc-if>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="font-size:13px;font-weight:800;color:#3C3C3C">Preferred schedule <span style="color:#AFAFAF;font-weight:600">(optional)</span></label>
+        <input value="{{ vSchedule }}" onChange="{{ setSchedule }}" placeholder="e.g. Weekday evenings after 6pm, Dubai time" style="padding:13px 15px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:14px;background:#fff">
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="font-size:13px;font-weight:800;color:#3C3C3C">Message <span style="color:#AFAFAF;font-weight:600">(optional)</span></label>
+        <textarea value="{{ vMessage }}" onChange="{{ setMessage }}" rows="4" placeholder="Anything else — goals, a tutor you'd like, exam dates" style="padding:13px 15px;border:1px solid #E5E5E5;border-radius:12px;font-family:inherit;font-size:14px;background:#fff;resize:vertical"></textarea>
+      </div>
+
+      <div style="border-top:1px solid #E5E5E5;padding-top:22px;display:flex;flex-direction:column;gap:8px">
+        <button type="button" onClick="{{ toggleConsent }}" style="display:flex;align-items:flex-start;gap:12px;background:none;border:none;padding:0;cursor:pointer;text-align:left;font-family:inherit">
+          <span style="flex-shrink:0;width:22px;height:22px;border-radius:6px;border:2px solid {{ consentBorder }};background:{{ consentBg }};color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:800">{{ consentMark }}</span>
+          <span style="font-size:13px;color:#777777;line-height:1.6">I agree that MyStudyAlly may contact me about this inquiry and store the details I've given, as described in the <a href="#" style="text-decoration:underline;text-underline-offset:3px;font-weight:700">privacy policy</a>. <span style="color:#B4462B;font-weight:700">*</span></span>
+        </button>
+        <sc-if value="{{ errConsent }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#B4462B;font-weight:700;padding-left:34px">{{ errConsent }}</span></sc-if>
+      </div>
+
+      <sc-if value="{{ banner }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FDF1EC;border:1px solid #EFD3C8;border-radius:14px;padding:16px 18px">
+          <p style="font-size:13.5px;font-weight:800;color:#8A3A22;margin:0">{{ bannerTitle }}</p>
+          <p style="font-size:13px;line-height:1.65;color:#8A5843;margin:6px 0 0">{{ bannerBody }}</p>
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <button type="button" onClick="{{ retry }}" style="background:#fff;border:1px solid #E0C4B8;border-radius:10px;padding:8px 14px;font-family:inherit;font-size:12.5px;font-weight:800;color:#8A3A22;cursor:pointer" style-hover="background:#FBEAE2;color:#8A3A22">{{ bannerAction }}</button>
+            <a href="{{ bannerAltHref }}" style="border:1px solid transparent;border-radius:10px;padding:8px 6px;font-size:12.5px;font-weight:800;color:#8A5843;text-decoration:underline;text-underline-offset:3px" style-hover="color:#8A3A22">{{ bannerAlt }}</a>
+          </div>
+        </div>
+      </sc-if>
+
+      <input type="text" name="website" tabIndex="-1" autoComplete="off" style="display:none">
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <button type="button" onClick="{{ submit }}" disabled="{{ busy }}" style="background:{{ btnBg }};color:#fff;border:none;border-radius:16px;padding:16px 24px;font-family:inherit;font-size:15px;font-weight:800;cursor:{{ btnCursor }};box-shadow:0 4px 0 {{ btnShadow }};display:flex;align-items:center;justify-content:center;gap:10px" style-hover="background:#49AD00;box-shadow:0 4px 0 #49AD00;color:#fff">
+          <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}">
+            <span style="width:15px;height:15px;border-radius:999px;border:2px solid rgba(255,255,255,0.45);border-top-color:#fff;animation:msaspin 0.7s linear infinite"></span>
+          </sc-if>
+          Submit an inquiry
+        </button>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:16px">
+          <span style="font-size:11.5px;color:#AFAFAF">Protected by Cloudflare Turnstile</span>
+          <span style="font-size:11.5px;color:#AFAFAF">Our team reviews every inquiry personally</span>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: &quot;680px&quot;, &quot;height&quot;: &quot;1100px&quot; },
+  &quot;curriculum&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;&quot;,&quot;IGCSE&quot;,&quot;GCSE&quot;,&quot;A Levels&quot;,&quot;IB&quot;,&quot;SABIS&quot;,&quot;HKDSE&quot;,&quot;American Curriculum&quot;,&quot;Canadian Curriculum&quot;,&quot;IELTS Preparation&quot;,&quot;SAT Preparation&quot;,&quot;Not sure yet&quot;], &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot; },
+  &quot;locked&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot; },
+  &quot;quick&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot; },
+  &quot;bare&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Layout&quot; },
+  &quot;responseTime&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;within 2 hours during office hours (04:00–18:00 GMT), and by the next morning otherwise&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Copy&quot; },
+  &quot;outcome&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;success&quot;,&quot;rate_limited&quot;,&quot;spam_detected&quot;,&quot;network_error&quot;], &quot;default&quot;: &quot;success&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;States&quot; },
+  &quot;subject&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot; },
+  &quot;message&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot; }
+}">
+class Component extends DCLogic {
+  state = {
+    name: "", role: "Parent", student: "",
+    curriculum: (this.props && this.props.curriculum) || "",
+    subjects: ((this.props && this.props.subject) ? [this.props.subject] : []),
+    schedule: "", message: (this.props && this.props.message) || "",
+    contact: "", subjFilter: "", subjOpen: false, ddOpen: false, consent: false,
+    touched: {}, errors: {}, phase: "idle", submitted: false, lockedSubject: null,
+    hidden: {},
+  };
+
+  componentDidMount() {
+    this._onPreselect = (e) => {
+      const d = e.detail || {};
+      this.setState({
+        curriculum: d.curriculum || this.state.curriculum,
+        subjects: d.subject ? [d.subject] : this.state.subjects,
+        lockedSubject: d.subject || null,
+      });
+    };
+    window.addEventListener("msa-preselect", this._onPreselect);
+
+    // Hidden fields: UTM capture (sessionStorage), referrer, Turnstile token placeholder.
+    const q = new URLSearchParams(window.location.search);
+    const keys = ["utm_source", "utm_medium", "utm_campaign", "utm_content"];
+    const hidden = { referrer_url: document.referrer || "", turnstile_token: "", website: "" };
+    keys.forEach(k => {
+      const fromUrl = q.get(k);
+      try {
+        if (fromUrl) sessionStorage.setItem("msa_" + k, fromUrl);
+        hidden[k] = fromUrl || sessionStorage.getItem("msa_" + k) || "";
+      } catch (err) { hidden[k] = fromUrl || ""; }
+    });
+    this.setState({ hidden });
+  }
+  componentWillUnmount() {
+    window.removeEventListener("msa-preselect", this._onPreselect);
+    clearTimeout(this._t);
+  }
+
+  SUBJECTS = {
+    "IGCSE": ["Mathematics","Additional Mathematics","Physics","Chemistry","Biology","English Language","English Literature","Economics","Business Studies","Accounting","Computer Science"],
+    "GCSE": ["Mathematics","English Language","English Literature","Biology","Chemistry","Physics","Combined Science","Geography","History","Business Studies","Economics","Computer Science","French"],
+    "A Levels": ["Mathematics","Further Mathematics","Physics","Chemistry","Biology","Economics","Business Studies","Accounting","Computer Science","English Literature","Psychology","Sociology","Geography","History","Law"],
+    "IB": ["Math AA","Math AI","Physics","Chemistry","Biology","Economics","Business Management","English A: Language & Literature","Psychology","Computer Science","TOK / EE support"],
+    "SABIS": ["Mathematics","English","Science","Social Studies","French"],
+    "HKDSE": ["Mathematics (Compulsory)","Mathematics Extended (M1/M2)","English Language","Biology","Chemistry","Physics","Economics","BAFS","ICT"],
+    "American Curriculum": ["AP Calculus AB/BC","AP Biology","AP Chemistry","AP Physics 1/2/C","AP English Language","AP English Literature","AP US History","AP World History","AP Economics (Micro/Macro)","AP Computer Science A","Algebra I/II","Geometry"],
+    "Canadian Curriculum": ["Mathematics","English","Biology","Chemistry","Physics","Canadian & World History","Civics & Careers","French","Business Studies","Computer Science"],
+    "IELTS Preparation": ["Listening","Reading","Writing","Speaking"],
+    "SAT Preparation": ["Math","Evidence-Based Reading & Writing"],
+    "Not sure yet": [],
+  };
+
+  validate(field, s) {
+    if (field === "curriculum") return s.curriculum ? "" : "Choose a curriculum — or “Not sure yet” and we'll advise.";
+    if (field === "name") {
+      const n = s.name.trim();
+      return (n.length >= 2 && n.length <= 100) ? "" : "Please enter your name (2–100 characters).";
+    }
+    if (field === "contact") {
+      const c = (s.contact || "").trim();
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c);
+      const isPhone = /^\+?[\d\s\-()]{7,}$/.test(c);
+      return (isEmail || isPhone) ? "" : "Enter a valid email address or phone number.";
+    }
+    if (field === "consent") return s.consent ? "" : "Please agree before submitting.";
+    return "";
+  }
+
+  touch(field) {
+    return () => this.setState(st => {
+      const msg = this.validate(field, st);
+      return { touched: { ...st.touched, [field]: true }, errors: { ...st.errors, [field]: msg } };
+    });
+  }
+
+  live(field, patch) {
+    this.setState(st => {
+      const next = { ...st, ...patch };
+      const errors = { ...st.errors };
+      if (st.touched[field]) errors[field] = this.validate(field, next);
+      return { ...patch, errors };
+    });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const quick = !!this.props.quick;
+    const bare = this.props.bare ?? false;
+    const replyLine = this.props.responseTime ?? "within 2 hours during office hours (04:00–18:00 GMT), and by the next morning otherwise";
+    const outcome = this.props.outcome ?? "success";
+
+    const set = (key) => (e) => this.live(key, { [key]: e.target.value });
+    const roles = ["Parent", "Student", "Other"].map(r => ({
+      label: r,
+      bg: s.role === r ? "#FFFFFF" : "transparent",
+      color: s.role === r ? "#3C3C3C" : "#777777",
+      shadow: s.role === r ? "0 1px 3px rgba(19,31,36,0.14)" : "none",
+      pick: () => this.setState({ role: r }),
+    }));
+
+    const opts = this.SUBJECTS[s.curriculum] || [];
+    const subjFilter = s.subjFilter || "";
+    const subjOptions = opts
+      .filter(l => !s.subjects.includes(l) && l.toLowerCase().includes(subjFilter.toLowerCase()))
+      .map(label => ({ label, pick: () => this.setState(st => ({ subjects: [...st.subjects, label], subjFilter: "", subjOpen: false })) }));
+
+    const fields = quick ? ["name", "contact", "consent"] : ["curriculum", "name", "contact", "consent"];
+    const runSubmit = () => {
+      const errors = {};
+      const touched = { ...s.touched };
+      fields.forEach(f => { const m = this.validate(f, s); if (m) errors[f] = m; touched[f] = true; });
+      if (Object.keys(errors).length) { this.setState({ errors, touched, phase: "idle" }); return; }
+      this.setState({ errors: {}, touched, phase: "submitting" });
+      clearTimeout(this._t);
+      this._t = setTimeout(() => {
+        if (outcome === "success") this.setState({ submitted: true, phase: "idle" });
+        else this.setState({ phase: outcome });
+      }, 1400);
+    };
+
+    const banners = {
+      rate_limited: { title: "Too many submissions from this connection", body: "We've already received a few inquiries from here. Wait a few minutes and try again — or message us on WhatsApp and we'll pick it up straight away.", action: "Try again", alt: "Message us on WhatsApp", altHref: "#" },
+      spam_detected: { title: "We couldn't verify that you're human", body: "The security check didn't complete. Retry the challenge — your answers are still here.", action: "Retry the check", alt: "Email info@mystudyally.com", altHref: "mailto:info@mystudyally.com" },
+      network_error: { title: "That didn't reach us", body: "Your connection dropped before we received the inquiry. Nothing you typed has been lost — try again.", action: "Resend inquiry", alt: "Email info@mystudyally.com", altHref: "mailto:info@mystudyally.com" },
+    };
+    const b = banners[s.phase] || null;
+    const busy = s.phase === "submitting";
+
+    return {
+      submitted: s.submitted, notSubmitted: !s.submitted,
+      quick, notQuick: !quick,
+      replyLine,
+      wrapMax: quick ? "640px" : (bare ? "none" : "640px"),
+      wrapBg: bare ? "transparent" : "#FFFFFF",
+      wrapBorder: bare ? "none" : "1px solid #E5E5E5",
+      wrapRadius: bare ? "0px" : "20px",
+      wrapPad: bare ? "0px" : (quick ? "28px" : "32px"),
+      wrapShadow: "none",
+
+      vName: s.name, setName: set("name"), blurName: this.touch("name"), errName: s.errors.name || false,
+      vContact: s.contact || "", setContact: set("contact"), blurContact: this.touch("contact"), errContact: s.errors.contact || false,
+      vStudent: s.student, setStudent: set("student"),
+      vSchedule: s.schedule, setSchedule: set("schedule"),
+      vMessage: s.message, setMessage: set("message"),
+      roles, isParent: s.role === "Parent",
+
+      locked: !!this.props.locked, notLocked: !this.props.locked,
+      ddOpen: !!s.ddOpen,
+      ddLabel: s.curriculum || "Select a curriculum",
+      ddColor: s.curriculum ? "#3C3C3C" : "#AFAFAF",
+      ddBorder: s.ddOpen ? "#89E219" : (s.errors.curriculum ? "#D8A99B" : "#E5E5E5"),
+      ddCaret: s.ddOpen ? "▲" : "▼",
+      toggleCurriculumDd: () => this.setState(st => ({ ddOpen: !st.ddOpen })),
+      blurCurriculum: () => setTimeout(() => this.setState({ ddOpen: false }), 140),
+      errCurriculum: s.errors.curriculum || false,
+      ddOptions: Object.keys(this.SUBJECTS).map(label => {
+        const on = s.curriculum === label;
+        return {
+          label,
+          bg: on ? "#F1F7EA" : "transparent",
+          check: on ? "✓" : "",
+          pick: () => this.setState(st => ({
+            curriculum: label, subjects: [], ddOpen: false, subjFilter: "",
+            errors: { ...st.errors, curriculum: "" }, touched: { ...st.touched, curriculum: true },
+          })),
+        };
+      }),
+
+      hasSubjects: opts.length > 0,
+      noSubjects: opts.length === 0,
+      noSubjectsLine: s.curriculum === "Not sure yet" ? "No problem — tell us the subjects in the message field below." : "Choose a curriculum first and we'll show its subjects.",
+      subjPlaceholder: "Type to search " + (s.curriculum || "") + " subjects…",
+      vSubjFilter: subjFilter,
+      setSubjFilter: (e) => this.setState({ subjFilter: e.target.value, subjOpen: true }),
+      openSubj: () => this.setState({ subjOpen: true }),
+      closeSubjSoon: () => setTimeout(() => this.setState({ subjOpen: false }), 150),
+      subjOpenShow: !!s.subjOpen && subjOptions.length > 0,
+      subjOptions,
+      hasSelected: s.subjects.length > 0,
+      selectedChips: s.subjects.map(label => ({ label, remove: () => this.setState(st => ({ subjects: st.subjects.filter(x => x !== label) })) })),
+
+      toggleConsent: () => this.setState(st => ({
+        consent: !st.consent,
+        errors: { ...st.errors, consent: !st.consent ? "" : st.errors.consent },
+      })),
+      consentBorder: s.consent ? "#58CC02" : (s.errors.consent ? "#D8A99B" : "#E5E5E5"),
+      consentBg: s.consent ? "#58CC02" : "#FFFFFF",
+      consentMark: s.consent ? "✓" : "",
+      errConsent: s.errors.consent || false,
+
+      busy,
+      btnBg: busy ? "#8FD65C" : "#58CC02",
+      btnShadow: busy ? "#7BC24A" : "#58A700",
+      btnCursor: busy ? "wait" : "pointer",
+      submit: busy ? () => {} : runSubmit,
+      submitQuick: busy ? () => {} : runSubmit,
+
+      banner: !!b,
+      bannerTitle: b ? b.title : "",
+      bannerBody: b ? b.body : "",
+      bannerAction: b ? b.action : "",
+      bannerAlt: b ? b.alt : "",
+      bannerAltHref: b ? b.altHref : "#",
+      retry: () => this.setState({ phase: "idle" }),
+    };
+  }
+}
+</script>
+</body>
+</html>
