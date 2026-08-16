@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+
+export const metadata: Metadata = {
+  title: "Page not found",
+  description: "The page you were looking for doesn't exist or has moved.",
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
   return (

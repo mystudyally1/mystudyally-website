@@ -166,16 +166,16 @@ export default function Home() {
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {FEATURED_TUTORS.map((t) => (
               <div
-                key={t.slug}
+                key={t.photoId}
                 className="flex flex-col overflow-hidden rounded-2xl border-2 border-border bg-white shadow-[0_2px_0_#E5E5E5] transition hover:-translate-y-1 hover:shadow-[0_4px_0_#E5E5E5]"
               >
                 <div className="relative h-50 bg-surface-alt">
-                  <Image src={t.photo} alt={t.name} fill className="object-cover" />
+                  <Image src={`/images/tutors/${t.photoId}.webp`} alt={t.name} fill className="object-cover" />
                 </div>
                 <div className="flex flex-1 flex-col gap-2 p-5">
                   <h3 className="text-lg font-bold text-ink">{t.name}</h3>
                   <div className="text-xs font-semibold text-muted">
-                    {t.qualification} · {t.years}
+                    {t.qual} · {t.years}
                   </div>
                   <div className="text-xs font-bold leading-relaxed text-link">{t.expertise}</div>
                   <p className="flex-1 text-xs leading-relaxed text-muted">{t.bio}</p>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { Card } from "@/components/ui/Card";
@@ -31,7 +32,7 @@ const FAQS = [
     answer: (
       <>
         You buy a prepaid package of hours, and hours are deducted as sessions happen. Full rates
-        are on the <a href="/pricing/">pricing page</a>.
+        are on the <Link href="/pricing/">pricing page</Link>.
       </>
     ),
   },
@@ -100,9 +101,9 @@ export default function ContactPage() {
           <div className="text-eyebrow text-muted">BEFORE YOU WRITE IN</div>
           <h2 className="mt-3.5 text-d-lg text-ink">Quick answers</h2>
           <Accordion items={FAQS} className="mt-4" />
-          <a href="/faq/" className="mt-6 inline-block border-b-2 border-primary pb-0.5 text-sm font-bold text-ink">
+          <Link href="/faq/" className="mt-6 inline-block border-b-2 border-primary pb-0.5 text-sm font-bold text-ink">
             Read the full FAQ →
-          </a>
+          </Link>
         </Container>
       </Section>
     </>

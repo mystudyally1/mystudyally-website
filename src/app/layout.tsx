@@ -4,6 +4,7 @@ import "./globals.css";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { AttributionCapture } from "@/components/forms/AttributionCapture";
+import { ChatWidgetLazy } from "@/components/chat/ChatWidgetLazy";
 import { CONTACT_EMAIL, CONTACT_WHATSAPP_DISPLAY, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/constants";
 
 const nunito = Nunito({
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteHeader />
         <div className="flex-1">{children}</div>
         <SiteFooter />
+        <ChatWidgetLazy />
       </body>
     </html>
   );

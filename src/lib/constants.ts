@@ -8,6 +8,18 @@ export const SITE_URL = "https://mystudyally.com";
 // never hardcode a response time elsewhere.
 export const SLA_RESPONSE_TIME = "within 24 hours";
 
+// SABIS stays out of the index until its subject list is verified against the
+// real tutor pool (implementation plan, Part 3 item 4). Remove the slug here
+// once that's confirmed.
+export const NOINDEX_CURRICULA: string[] = ["sabis"];
+
+// TODO(legal): replace with the registered company name + number once the
+// entity is formed. The plan lists this as a launch blocker — /privacy/ and
+// /terms/ render these verbatim, and UK GDPR expects the data controller to be
+// identifiable before the form collects anything.
+export const LEGAL_ENTITY_NAME = "MyStudyAlly";
+export const LEGAL_POLICY_LAST_UPDATED = "15 August 2026";
+
 export const CONTACT_EMAIL = "info@mystudyally.com";
 export const CONTACT_WHATSAPP_DISPLAY = "+44 7868 197793";
 export const CONTACT_WHATSAPP_LINK = "https://wa.me/447868197793";

@@ -6,6 +6,7 @@ import { CONTACT_WHATSAPP_LINK, SLA_RESPONSE_TIME } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Thank you",
+  description: "Your inquiry has been received — a person on our team will reply shortly.",
   robots: { index: false, follow: true },
 };
 
