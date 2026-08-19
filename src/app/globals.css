@@ -7,6 +7,9 @@
      the metadata-injected <meta name="color-scheme"> is parsed. */
   :root {
     color-scheme: light;
+    /* html is transparent by default; declaring it means nothing in the page
+       relies on the browser's own canvas colour, which auto-dark repaints. */
+    background-color: #ffffff;
   }
 
   /* Mirrors the design files' page-level base styles:

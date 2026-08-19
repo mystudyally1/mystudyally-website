@@ -53,7 +53,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
         <AttributionCapture />
         <SiteHeader />
-        <div className="flex-1">{children}</div>
+        {/* Explicit background, not inherited from body. Browser auto-dark and
+            dark-mode extensions repaint surfaces they consider undeclared while
+            leaving explicit ones alone, which tinted this wrapper but not the
+            footer (which sets bg-white) — a visible seam at the footer edge. */}
+        <div className="flex-1 bg-surface">{children}</div>
         <SiteFooter />
         <ChatWidgetLazy />
       </body>
