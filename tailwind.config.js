@@ -11,6 +11,19 @@ module.exports = {
       maxWidth: {
         container: "1280px",
       },
+      // Exact pixel steps the design uses that aren't in Tailwind's default
+      // scale. Without these the utilities silently emit no CSS.
+      spacing: {
+        4.5: "1.125rem", // 18px — gaps/padding
+        6.5: "1.625rem", // 26px — mobile drawer logo
+        9.5: "2.375rem", // 38px — footer social icons
+        13: "3.25rem", // 52px — mobile CTA min-height
+        50: "12.5rem", // 200px — homepage tutor photo
+        55: "13.75rem", // 220px — tutors/curriculum tutor photo
+      },
+      opacity: {
+        97: "0.97",
+      },
       fontFamily: {
         sans: [
           "var(--font-nunito)",

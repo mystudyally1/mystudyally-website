@@ -34,6 +34,11 @@ Runs lint, typecheck, build, then two content gates:
   pricing figures, response-time conflicts, missing/duplicate page titles and
   descriptions, and malformed JSON-LD.
 - `npm run audit:links` — fails on broken internal links in the built output.
+- `npm run audit:css` — fails on Tailwind utility classes used in source that
+  produced no CSS rule. These are silent: a wrong scale step like `h-55`
+  emits nothing and the element collapses to zero height with no error.
+  If a class shows up here, add the value to `tailwind.config.js` rather
+  than rounding to a nearby step.
 
 Both also run in CI before deploying.
 

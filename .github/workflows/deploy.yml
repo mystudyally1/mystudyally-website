@@ -32,9 +32,11 @@ jobs:
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
           NEXT_PUBLIC_GA4_ID: ${{ vars.NEXT_PUBLIC_GA4_ID }}
 
-      # Fail the deploy if placeholder copy, stale pricing, or broken links slipped in.
+      # Fail the deploy if placeholder copy, stale pricing, broken links, or
+      # silently-dead Tailwind classes slipped in.
       - run: npm run audit:content
       - run: npm run audit:links
+      - run: npm run audit:css
 
       - name: Deploy to Hostinger
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
