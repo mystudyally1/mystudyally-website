@@ -188,3 +188,7 @@ export function getCurriculumBySlug(slug: string): Curriculum | undefined {
 
 export const EXAM_BOARD_CURRICULA = CURRICULA.filter((c) => c.group === "exam-board");
 export const TEST_PREP_CURRICULA = CURRICULA.filter((c) => c.group === "test-prep");
+
+export function getCurriculumByName(name: string): Curriculum | undefined {
+  return CURRICULA.find((c) => c.name === name || c.shortName === name);
+}

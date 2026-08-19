@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Container } from "@/components/ui/Container";
-import { Section } from "@/components/ui/Section";
-import { Button } from "@/components/ui/Button";
 import { FaqList } from "@/components/ui/FaqList";
-import { CtaBand } from "@/components/marketing/CtaBand";
+import { GetStartedPanel } from "@/components/marketing/GetStartedPanel";
+import { PlanFinder } from "@/components/marketing/PlanFinder";
 import { cn } from "@/lib/cn";
 import {
   CLASS_DURATION_MINUTES,
@@ -15,14 +13,15 @@ import {
   PLAN_GROUPS,
   PRICING_FAQS,
   PRICING_TRUST,
+  ROLLOVER_NOTE,
   VALIDITY_LINES,
 } from "@/data/pricing";
-import { SITE_URL, SLA_RESPONSE_TIME } from "@/lib/constants";
+import { SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Six prepaid plans from 4 to 32 classes, starting at $45. No registration or platform fees — the plan price is all you pay. Every plan starts with a free trial.",
+    "Affordable 1-to-1 tutoring with flexible scheduling, specialist tutors and personalised academic support. Six plans from 4 to 32 classes, starting from just $45.",
   alternates: { canonical: `${SITE_URL}/pricing/` },
 };
 
@@ -44,195 +43,232 @@ export default function PricingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
-      <Section className="pb-6 pt-14">
-        <Container className="max-w-3xl">
-          <div className="text-eyebrow text-muted">PRICING</div>
-          <h1 className="mt-4 text-d-4xl text-ink">Prepaid classes. No hidden fees.</h1>
-          <p className="mt-4 text-lg leading-relaxed text-muted">
-            Buy a plan of classes and use them as sessions happen. Every class is{" "}
-            {CLASS_DURATION_MINUTES} minutes, one-to-one, and recorded — on every plan.
+      {/* Hero */}
+      <section className="relative overflow-hidden px-[clamp(20px,5vw,32px)] pb-[36px] pt-[72px]">
+        <div
+          className="pointer-events-none absolute -right-[160px] -top-[120px] h-[560px] w-[560px] blur-[24px]"
+          style={{
+            background: "radial-gradient(circle, rgba(88,204,2,0.14), rgba(88,204,2,0) 65%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-[860px] text-center">
+          <span className="inline-block rounded-pill border border-link-light-3 bg-link-light/90 px-[14px] py-[6px] text-11 font-bold tracking-[0.12em] text-link-hover">
+            PRICING
+          </span>
+          <h1 className="mt-[18px] text-d46 font-extrabold tracking-[-0.02em] [text-wrap:balance]">
+            Choose the Support That Fits Your Goals
+          </h1>
+          <p className="mx-auto mt-[16px] max-w-[620px] text-15_5 leading-[1.7] text-muted">
+            Affordable 1-to-1 tutoring with flexible scheduling, specialist tutors and personalised
+            academic support. Starting from just $45.
           </p>
-          <div className="mt-6 flex flex-wrap gap-2.5">
+          <div className="mt-[22px] flex flex-wrap justify-center gap-[22px]">
             {PRICING_TRUST.map((t) => (
-              <span
-                key={t}
-                className="inline-flex items-center gap-2 rounded-pill bg-primary-light px-4 py-2 text-xs font-bold text-primary-shadow"
-              >
-                <span className="font-extrabold">✓</span>
+              <span key={t} className="inline-flex items-center gap-[7px] text-13 font-bold text-muted">
+                <span className="font-extrabold text-primary">✓</span>
                 {t}
               </span>
             ))}
           </div>
-        </Container>
-      </Section>
+        </div>
+      </section>
 
-      {/* Plans, grouped */}
-      {PLAN_GROUPS.map((group, gi) => (
-        <Section key={group.label} className="py-8">
-          <Container>
-            <div className="mb-6 max-w-2xl">
-              <div className="text-eyebrow text-muted-3">{group.label}</div>
-              <p className="mt-2 text-md text-muted">{group.desc}</p>
+      {/* Free trial banner */}
+      <section className="px-[clamp(20px,5vw,32px)] pb-[8px] pt-[16px]">
+        <div className="mx-auto flex max-w-[1080px] flex-wrap items-center justify-between gap-[28px] rounded-[16px] border border-dashed border-[#CFCFCF] bg-surface-alt px-[28px] py-[22px]">
+          <div className="flex items-center gap-[18px]">
+            <span className="inline-flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[14px] bg-link-light text-18 font-extrabold text-link">
+              ☆
+            </span>
+            <div>
+              <div className="text-17 font-extrabold">
+                Not sure yet? Start with a free trial session.
+              </div>
+              <p className="mt-[4px] text-13 leading-[1.6] text-muted">
+                30 minutes, no payment required, no card. Submit an inquiry and we&#39;ll match you
+                with a tutor before you commit.
+              </p>
             </div>
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-              {PLANS.filter((p) => p.group === gi).map((plan) => {
-                const highlighted = plan.name === HIGHLIGHT_PLAN;
-                return (
+          </div>
+          <Link
+            href="/contact/"
+            className="shrink-0 whitespace-nowrap rounded-[14px] border-2 border-primary bg-white px-[22px] py-[11px] text-13 font-extrabold tracking-[0.03em] text-primary-shadow hover:bg-[#F3FBEA] hover:text-primary-shadow"
+          >
+            Submit an inquiry
+          </Link>
+        </div>
+      </section>
+
+      {/* Plans heading */}
+      <section className="px-[clamp(20px,5vw,32px)] pb-0 pt-[44px]">
+        <div className="mx-auto max-w-[1080px] text-center">
+          <h2 className="text-d30 font-extrabold">Six plans, one simple ladder</h2>
+          <p className="mt-[12px] text-13_5 font-bold text-muted">
+            Every class is{" "}
+            <span className="font-extrabold text-[#1A1A1A]">{CLASS_DURATION_MINUTES} minutes</span>{" "}
+            — same length on every plan.
+          </p>
+        </div>
+      </section>
+
+      {/* Plan grid */}
+      <section className="px-[clamp(20px,5vw,32px)] pb-[48px] pt-[28px]">
+        <div className="mx-auto max-w-[1360px]">
+          <div className="mb-[14px] grid gap-[16px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))]">
+            {PLAN_GROUPS.map((g) => (
+              <div
+                key={g.label}
+                className="rounded-[12px] border border-[#ECECEC] bg-surface-alt px-[16px] py-[10px] text-center"
+              >
+                <div className="text-12 font-extrabold tracking-[0.14em] text-primary-shadow">
+                  {g.label}
+                </div>
+                <div className="mt-[2px] text-11_5 text-[#999999]">{g.desc}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid items-stretch gap-[16px] pt-[14px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))]">
+            {PLANS.map((plan) => {
+              const hi = plan.name === HIGHLIGHT_PLAN;
+              return (
+                <div
+                  key={plan.name}
+                  className={cn(
+                    "relative flex flex-col rounded-[16px] border",
+                    hi
+                      ? "-translate-y-[12px] border-link-hover bg-link px-[16px] py-[26px] shadow-[0_14px_32px_rgba(28,176,246,0.35)]"
+                      : "border-border bg-white px-[16px] py-[20px] shadow-[0_2px_8px_rgba(60,60,60,0.06)]",
+                  )}
+                >
+                  {hi && (
+                    <span className="absolute -top-[13px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-pill bg-[#FFC800] px-[12px] py-[4px] text-10 font-extrabold tracking-[0.08em] text-[#7A5B00] shadow-[0_4px_12px_rgba(255,200,0,0.4)]">
+                      RECOMMENDED
+                    </span>
+                  )}
                   <div
-                    key={plan.name}
                     className={cn(
-                      "relative flex flex-col rounded-xl border-2 p-7",
-                      highlighted
-                        ? "border-link-hover bg-link text-white shadow-[0_14px_32px_rgba(28,176,246,0.35)]"
-                        : "border-border bg-white shadow-card",
+                      "text-11 font-extrabold tracking-[0.12em]",
+                      hi ? "text-link-light" : "text-muted-3",
                     )}
                   >
-                    {highlighted && (
-                      <span className="absolute -top-3 right-6 rounded-pill bg-white px-3 py-1 text-[10px] font-extrabold tracking-wide text-link-hover">
-                        RECOMMENDED
-                      </span>
+                    {plan.tier}
+                  </div>
+                  <div
+                    className={cn(
+                      "mt-[10px] text-d30 font-black leading-none tracking-[-0.02em]",
+                      hi ? "text-white" : "text-body",
                     )}
-                    <div
-                      className={cn(
-                        "text-eyebrow",
-                        highlighted ? "text-link-light" : "text-muted-3",
-                      )}
-                    >
-                      {plan.tier}
-                    </div>
-                    <div
-                      className={cn(
-                        "mt-2 text-d-lg",
-                        highlighted ? "text-white" : "text-ink",
-                      )}
-                    >
-                      {plan.price}{" "}
-                      <span
-                        className={cn(
-                          "text-sm font-semibold",
-                          highlighted ? "text-white/75" : "text-muted",
-                        )}
-                      >
-                        USD
-                      </span>
-                    </div>
-                    <div
-                      className={cn(
-                        "mt-1 text-md font-bold",
-                        highlighted ? "text-white" : "text-primary-shadow",
-                      )}
-                    >
-                      {plan.classes} classes
-                    </div>
-                    <div
-                      className={cn(
-                        "mt-1 text-sm font-semibold",
-                        highlighted ? "text-white/75" : "text-muted-3",
-                      )}
-                    >
-                      {plan.per} · {plan.validity}
-                    </div>
-                    <div
-                      className={cn(
-                        "mt-1 text-sm",
-                        highlighted ? "text-white/75" : "text-muted-3",
-                      )}
-                    >
-                      {plan.cadence}
-                    </div>
-
-                    <div
-                      className={cn(
-                        "my-5 border-t",
-                        highlighted ? "border-white/30" : "border-border",
-                      )}
-                    />
-
-                    {plan.intro && (
-                      <div
-                        className={cn(
-                          "mb-2.5 text-xs font-semibold",
-                          highlighted ? "text-link-light" : "text-muted-3",
-                        )}
-                      >
-                        {plan.intro}
-                      </div>
+                  >
+                    {plan.price}
+                  </div>
+                  <div
+                    className={cn(
+                      "mt-[7px] text-13_5 font-extrabold",
+                      hi ? "text-white" : "text-primary-shadow",
                     )}
-                    <ul className="flex flex-1 flex-col gap-2">
-                      {plan.feats.map((f) => (
-                        <li
-                          key={f}
+                  >
+                    {plan.classes} classes
+                  </div>
+                  <div
+                    className={cn(
+                      "mt-[5px] text-11 font-semibold",
+                      hi ? "text-white/75" : "text-muted-3",
+                    )}
+                  >
+                    {plan.per}
+                  </div>
+                  <div
+                    className={cn(
+                      "mt-[2px] text-10_5 font-semibold",
+                      hi ? "text-white/75" : "text-muted-3",
+                    )}
+                  >
+                    {plan.validity}
+                    <br />
+                    {plan.cadence}
+                  </div>
+                  <div
+                    className={cn("my-[12px] mb-[10px] h-px", hi ? "bg-white/30" : "bg-[#F0F0F0]")}
+                  />
+                  {plan.intro && (
+                    <div
+                      className={cn(
+                        "mb-[7px] text-10_5 font-extrabold",
+                        hi ? "text-link-light" : "text-[#999999]",
+                      )}
+                    >
+                      {plan.intro}
+                    </div>
+                  )}
+                  <div className="flex flex-1 flex-col gap-[6px]">
+                    {plan.feats.map((f) => (
+                      <div key={f} className="flex items-baseline gap-[7px]">
+                        <span
                           className={cn(
-                            "flex items-start gap-2.5 text-sm",
-                            highlighted ? "text-white/95" : "text-muted",
+                            "shrink-0 text-10 font-extrabold",
+                            hi ? "text-[#FFC800]" : "text-primary",
                           )}
                         >
-                          <span
-                            className={cn(
-                              "font-extrabold",
-                              highlighted ? "text-[#FFC800]" : "text-primary",
-                            )}
-                          >
-                            ✓
-                          </span>
+                          ✓
+                        </span>
+                        <span
+                          className={cn(
+                            "text-11_5 leading-[1.45]",
+                            hi ? "text-[#F2FBFF]" : "text-[#666666]",
+                          )}
+                        >
                           {f}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <Button
-                      as={Link}
-                      href="/contact/"
-                      variant={highlighted ? "white" : "primary"}
-                      className="mt-6"
-                    >
-                      Submit an inquiry
-                    </Button>
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                );
-              })}
-            </div>
-          </Container>
-        </Section>
-      ))}
-
-      {/* Validity */}
-      <Section className="py-8">
-        <Container className="max-w-3xl">
-          <div className="rounded-xl border border-border bg-surface-alt p-6">
-            <h2 className="text-d-sm text-ink">Plan validity</h2>
-            <ul className="mt-3 flex flex-col gap-1.5">
-              {VALIDITY_LINES.map((l) => (
-                <li key={l} className="text-sm text-muted">
-                  {l}
-                </li>
-              ))}
-            </ul>
+                  <Link
+                    href="/contact/"
+                    className={cn(
+                      "mt-[14px] rounded-[12px] px-[6px] py-[10px] text-center text-11 font-extrabold tracking-[0.02em] hover:opacity-90",
+                      hi
+                        ? "bg-white text-link-hover shadow-[0_4px_0_rgba(0,0,0,0.18)] hover:text-link-hover"
+                        : "bg-primary text-white shadow-[0_4px_0_#58A700] hover:text-white",
+                    )}
+                  >
+                    Submit an inquiry
+                  </Link>
+                </div>
+              );
+            })}
           </div>
-        </Container>
-      </Section>
+        </div>
+      </section>
 
       {/* Comparison table */}
-      <Section className="my-6 bg-surface-alt">
-        <Container>
-          <h2 className="mb-8 text-d-md text-ink">What each plan includes</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] border-collapse text-left">
+      <section className="px-[clamp(20px,5vw,32px)] pb-[56px] pt-[24px]">
+        <div className="mx-auto max-w-[1180px]">
+          <h2 className="mb-[24px] text-center text-d26 font-extrabold">Compare every plan</h2>
+          <div className="overflow-x-auto rounded-[16px] border border-border shadow-[0_2px_6px_rgba(60,60,60,0.05)]">
+            <table className="w-full min-w-[760px] border-collapse text-13">
               <thead>
                 <tr>
-                  <th className="sticky left-0 bg-surface-alt p-3 text-eyebrow text-muted-3">
-                    Included
+                  <th className="border-b border-border bg-surface-alt px-[18px] py-[14px] text-left text-12 font-extrabold tracking-[0.06em] text-muted">
+                    BENEFIT
                   </th>
                   {PLANS.map((p) => (
                     <th
                       key={p.name}
                       className={cn(
-                        "rounded-t-md p-3 text-center",
-                        p.name === HIGHLIGHT_PLAN ? "bg-[#EAF7FE] text-link-hover" : "bg-white text-ink",
+                        "border-b border-border px-[8px] py-[14px] text-center",
+                        p.name === HIGHLIGHT_PLAN ? "bg-[#EAF7FE]" : "bg-white",
                       )}
                     >
-                      <div className="text-sm font-bold">{p.name}</div>
-                      <div className="text-xs font-semibold text-muted">
+                      <div
+                        className={cn(
+                          "text-12 font-extrabold",
+                          p.name === HIGHLIGHT_PLAN ? "text-link-hover" : "text-body",
+                        )}
+                      >
+                        {p.name}
+                      </div>
+                      <div className="text-10_5 font-semibold text-muted-3">
                         {p.classes} cls · {p.price}
                       </div>
                     </th>
@@ -241,19 +277,17 @@ export default function PricingPage() {
               </thead>
               <tbody>
                 {PLAN_BENEFITS.map(([name, min]) => (
-                  <tr key={name} className="border-t border-border">
-                    <td className="sticky left-0 bg-surface-alt p-3 text-sm font-semibold text-ink">
-                      {name}
-                    </td>
+                  <tr key={name} className="border-b border-[#F0F0F0]">
+                    <td className="px-[18px] py-[11px] font-bold text-[#555555]">{name}</td>
                     {PLANS.map((p) => {
                       const included = p.classes >= min;
                       return (
                         <td
                           key={p.name}
                           className={cn(
-                            "p-3 text-center text-md font-bold",
-                            p.name === HIGHLIGHT_PLAN ? "bg-[#F4FBFF]" : "bg-white",
-                            included ? "text-primary" : "text-[#DEDEDE]",
+                            "px-[8px] py-[11px] text-center font-extrabold",
+                            p.name === HIGHLIGHT_PLAN ? "bg-[#F4FBFF]" : "",
+                            included ? "text-primary text-14" : "text-[#DEDEDE] text-13",
                           )}
                         >
                           {included ? "✓" : "–"}
@@ -265,38 +299,80 @@ export default function PricingPage() {
               </tbody>
             </table>
           </div>
-        </Container>
-      </Section>
+        </div>
+      </section>
 
-      {/* How enrolment works */}
-      <Section>
-        <Container>
-          <h2 className="mb-9 text-d-md text-ink">How enrolment works</h2>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {ENROLMENT_STEPS.map((s) => (
-              <div key={s.n} className="flex flex-col gap-3 border-t-2 border-border pt-5">
-                <span className="text-eyebrow text-muted-3">STEP {s.n}</span>
-                <h3 className="text-lg font-bold text-ink">{s.t}</h3>
-                <p className="text-sm leading-relaxed text-muted">{s.d}</p>
+      {/* Validity & rollover */}
+      <section className="px-[clamp(20px,5vw,32px)] pb-[56px] pt-0">
+        <div className="mx-auto max-w-[820px] rounded-[16px] border border-border bg-white px-[36px] py-[30px] shadow-[0_2px_6px_rgba(60,60,60,0.05)]">
+          <h2 className="mb-[14px] text-20 font-extrabold">Validity &amp; rollover</h2>
+          <div className="flex flex-col gap-[7px]">
+            {VALIDITY_LINES.map((v) => (
+              <div key={v} className="flex items-baseline gap-[10px]">
+                <span className="text-12 font-extrabold text-primary">✓</span>
+                <span className="text-14 font-semibold text-[#555555]">{v}</span>
               </div>
             ))}
           </div>
-        </Container>
-      </Section>
+          <p className="mt-[14px] border-t border-[#F0F0F0] pt-[14px] text-13 leading-[1.7] text-muted">
+            <strong className="text-body">Rollover:</strong> {ROLLOVER_NOTE}
+          </p>
+        </div>
+      </section>
 
-      {/* FAQ + CTA */}
-      <Section>
-        <Container className="grid items-start gap-6 lg:grid-cols-2">
-          <CtaBand
-            headline="Start with a free trial"
-            sub={`No card required. Submit an inquiry and we'll reply ${SLA_RESPONSE_TIME}.`}
+      {/* How enrolment works */}
+      <section className="px-[clamp(20px,5vw,32px)] pb-[56px] pt-0">
+        <div className="mx-auto max-w-[1180px]">
+          <h2 className="mb-[28px] text-center text-d26 font-extrabold">How enrolment works</h2>
+          <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))]">
+            {ENROLMENT_STEPS.map((s) => (
+              <div
+                key={s.n}
+                className="rounded-[16px] border border-border bg-white px-[22px] py-[24px] shadow-[0_2px_6px_rgba(60,60,60,0.05)]"
+              >
+                <span className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-pill bg-link-light text-14 font-extrabold text-link-hover">
+                  {s.n}
+                </span>
+                <div className="mb-[6px] mt-[12px] text-14_5 font-extrabold">{s.t}</div>
+                <p className="text-12_5 leading-[1.6] text-muted">{s.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Find your plan */}
+      <section className="px-[clamp(20px,5vw,32px)] pb-[56px] pt-0">
+        <div className="mx-auto max-w-[1080px]">
+          <div className="text-center">
+            <h2 className="text-d26 font-extrabold">Find your plan</h2>
+            <p className="mt-[10px] text-13 text-muted">
+              Answer three quick questions — we&#39;ll point you at the right plan.
+            </p>
+          </div>
+          <PlanFinder />
+          <p className="mx-auto mt-[28px] max-w-[560px] text-center text-11_5 leading-[1.6] text-muted-3">
+            This is a starting point, not a commitment. Our team confirms your schedule and tutor
+            before any payment — tell us what you need and we&#39;ll sanity-check the plan with you.
+          </p>
+        </div>
+      </section>
+
+      {/* Get started + FAQ */}
+      <section id="faq" className="px-[clamp(20px,5vw,32px)] pb-[72px] pt-0">
+        <div className="mx-auto grid max-w-container items-start gap-[24px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))]">
+          <GetStartedPanel
+            headline="Ready to get started?"
+            sub="Submit an inquiry and we'll match you with a tutor within 24h."
           />
           <div>
-            <h2 className="mb-5 text-d-md text-ink">Pricing questions</h2>
-            <FaqList items={PRICING_FAQS} />
+            <h2 className="mb-[20px] text-d28 font-extrabold tracking-[-0.01em]">
+              Questions parents ask
+            </h2>
+            <FaqList items={PRICING_FAQS} defaultOpen={-1} />
           </div>
-        </Container>
-      </Section>
+        </div>
+      </section>
     </>
   );
 }

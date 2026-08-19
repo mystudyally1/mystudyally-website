@@ -6,81 +6,90 @@ import Image from "next/image";
 import { cn } from "@/lib/cn";
 import { TUTORS, TUTOR_FILTERS } from "@/data/tutors";
 
+// Curriculum tags render with their full names in the card body.
+const FORM_NAME: Record<string, string> = {
+  IELTS: "IELTS Preparation",
+  SAT: "SAT Preparation",
+  American: "American Curriculum",
+  Canadian: "Canadian Curriculum",
+};
+
 export function TutorGrid() {
-  const [filter, setFilter] = useState<string | null>(null);
-  const shown = filter ? TUTORS.filter((t) => t.tags.includes(filter)) : TUTORS;
+  const [filter, setFilter] = useState("All");
+  const options = ["All", ...TUTOR_FILTERS];
+  const shown = filter === "All" ? TUTORS : TUTORS.filter((t) => t.tags.includes(filter));
+
+  const resultCount =
+    `${shown.length} ${shown.length === 1 ? "tutor" : "tutors"} · ` +
+    (filter === "All" ? "showing all curricula" : filter);
 
   return (
     <>
-      <div className="mb-8 flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => setFilter(null)}
-          className={cn(
-            "rounded-pill border-2 px-4 py-2 text-sm font-bold transition",
-            filter === null
-              ? "border-link-light-3 bg-link-light text-link-hover"
-              : "border-border bg-white text-muted hover:border-muted-3",
-          )}
-        >
-          All tutors
-        </button>
-        {TUTOR_FILTERS.map((f) => (
-          <button
-            key={f}
-            type="button"
-            onClick={() => setFilter(f)}
-            className={cn(
-              "rounded-pill border-2 px-4 py-2 text-sm font-bold transition",
-              filter === f
-                ? "border-link-light-3 bg-link-light text-link-hover"
-                : "border-border bg-white text-muted hover:border-muted-3",
-            )}
-          >
-            {f}
-          </button>
-        ))}
+      <div className="mb-[12px] flex flex-wrap gap-[10px]">
+        {options.map((label) => {
+          const on = filter === label;
+          return (
+            <button
+              key={label}
+              type="button"
+              onClick={() => setFilter(label)}
+              className={cn(
+                "cursor-pointer whitespace-nowrap rounded-pill border px-[18px] py-[9px] text-12_5 font-bold",
+                on
+                  ? "border-ink bg-ink text-white"
+                  : "border-[rgba(60,60,60,0.14)] bg-white text-muted",
+              )}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
 
-      <p className="mb-6 text-sm text-muted" aria-live="polite">
-        Showing {shown.length} {shown.length === 1 ? "tutor" : "tutors"}
-        {filter ? ` for ${filter}` : ""}.
-      </p>
+      <div
+        className="mb-[28px] text-13 font-semibold leading-[18px] text-muted-3"
+        aria-live="polite"
+      >
+        {resultCount}
+      </div>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid items-stretch gap-[20px] [grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))]">
         {shown.map((t) => (
           <div
             key={t.photoId}
-            className="flex flex-col overflow-hidden rounded-2xl border-2 border-border bg-white shadow-[0_2px_0_#E5E5E5] transition hover:-translate-y-1 hover:shadow-[0_4px_0_#E5E5E5]"
+            className="flex flex-col overflow-hidden rounded-[22px] border-2 border-border bg-white shadow-[0_2px_0_#E5E5E5] transition-[box-shadow,transform] duration-[250ms] hover:-translate-y-[3px] hover:shadow-[0_4px_0_#E5E5E5]"
           >
-            <div className="relative h-55 bg-surface-alt">
+            <div className="relative h-[220px] bg-surface-alt">
               <Image
                 src={`/images/tutors/${t.photoId}.webp`}
                 alt={t.name}
                 fill
+                sizes="(max-width: 640px) 100vw, 260px"
                 className="object-cover"
               />
             </div>
-            <div className="flex flex-1 flex-col gap-2 p-6">
-              <h3 className="text-lg font-bold text-ink">{t.name}</h3>
-              <div className="text-xs font-semibold text-muted">
+            <div className="flex flex-1 flex-col gap-[8px] px-[24px] pb-[24px] pt-[22px]">
+              <h3 className="text-18 font-bold">{t.name}</h3>
+              <div className="text-12_5 font-semibold text-muted">
                 {t.qual} · {t.years}
               </div>
-              <div className="text-xs font-bold leading-relaxed text-link">{t.expertise}</div>
-              <div className="mt-1 flex flex-wrap gap-1.5">
+              <div className="mt-[4px] flex flex-wrap gap-[6px]">
                 {t.subjects.map((s) => (
                   <span
                     key={s}
-                    className="whitespace-nowrap rounded-pill bg-surface-alt px-3 py-1 text-xs font-semibold text-muted"
+                    className="inline-flex whitespace-nowrap rounded-pill bg-link-light px-[12px] py-[5px] text-11_5 font-bold text-link-hover"
                   >
                     {s}
                   </span>
                 ))}
               </div>
-              <div className="flex-1" />
+              <div className="mt-[2px] flex-1 text-12 text-muted">
+                <span className="font-bold text-body">Curricula:</span>{" "}
+                {t.tags.map((c) => FORM_NAME[c] ?? c).join(" & ")}
+              </div>
               <Link
                 href="/contact/"
-                className="mt-2.5 border-t-2 border-border pt-3.5 text-xs font-bold tracking-wide text-ink hover:text-link"
+                className="mt-[10px] border-t-2 border-border pt-[14px] text-11_5 font-bold tracking-[0.06em] text-body hover:text-link"
               >
                 INQUIRE ABOUT THIS TUTOR ↗
               </Link>
@@ -88,6 +97,21 @@ export function TutorGrid() {
           </div>
         ))}
       </div>
+
+      {shown.length === 0 && (
+        <div className="mx-auto mt-[8px] max-w-[640px] rounded-[22px] border-2 border-dashed border-border px-[clamp(20px,5vw,32px)] py-[48px] text-center">
+          <p className="text-16 leading-[26px] text-muted">
+            We don&#39;t have a tutor featured for {filter} yet — but our network is larger than
+            what&#39;s shown here. Tell us what you need and we&#39;ll find the right match.
+          </p>
+          <Link
+            href="/contact/"
+            className="mt-[20px] inline-block rounded-[16px] bg-primary px-[24px] py-[13px] text-14 font-extrabold text-white shadow-[0_4px_0_#58A700] hover:bg-primary-hover hover:text-white"
+          >
+            Submit an inquiry
+          </Link>
+        </div>
+      )}
     </>
   );
 }

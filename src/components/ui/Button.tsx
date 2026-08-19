@@ -12,9 +12,9 @@ const VARIANTS = {
 } as const;
 
 const SIZES = {
-  sm: "px-4 py-2 text-sm rounded-md",
-  md: "px-6 py-3.5 text-md rounded-lg",
-  lg: "px-7 py-4 text-lg rounded-xl",
+  sm: "px-4 py-2 text-13 rounded-md",
+  md: "px-6 py-3.5 text-15 rounded-lg",
+  lg: "px-7 py-4 text-16 rounded-xl",
 } as const;
 
 type ButtonProps<T extends ElementType> = {

@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { CURRICULA, EXAM_BOARD_CURRICULA, TEST_PREP_CURRICULA } from "@/data/curricula";
-import { Button } from "@/components/ui/Button";
 
+// Structure and every value below mirror "website design/SiteHeader.dc.html".
 const NAV_LINKS = [
   { key: "tutors", label: "Tutors", href: "/tutors/" },
   { key: "pricing", label: "Pricing", href: "/pricing/" },
@@ -21,22 +21,23 @@ export function SiteHeader() {
   const active = useMemo(() => {
     const segment = pathname.split("/").filter(Boolean)[0] ?? "";
     if (segment === "") return "home";
-    if (CURRICULUM_SLUGS.has(segment)) return "curriculum";
+    if (CURRICULUM_SLUGS.has(segment)) return "subjects";
     const navMatch = NAV_LINKS.find((l) => l.key === segment);
     if (navMatch) return navMatch.key;
     if (segment === "subjects") return "subjects";
     return "";
   }, [pathname]);
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [curriculaOpen, setCurriculaOpen] = useState(true);
   const [tab, setTab] = useState(CURRICULA[0].slug);
-  const navRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!menuOpen) return;
-    const onDown = (e: MouseEvent) => {
-      if (navRef.current && navRef.current.contains(e.target as Node)) return;
+    const onDown = (e: PointerEvent) => {
+      if (navRef.current?.contains(e.target as Node)) return;
       setMenuOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
@@ -50,139 +51,129 @@ export function SiteHeader() {
     };
   }, [menuOpen]);
 
-  // Lock body scroll while the mobile drawer is open.
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = "";
-      };
-    }
+    if (!mobileOpen) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [mobileOpen]);
 
-  const currentTab = CURRICULA.find((c) => c.slug === tab) ?? CURRICULA[0];
+  const current = CURRICULA.find((c) => c.slug === tab) ?? CURRICULA[0];
+
+  const railButton = (slug: string, label: string) => (
+    <button
+      key={slug}
+      type="button"
+      onMouseEnter={() => setTab(slug)}
+      onClick={() => setTab(slug)}
+      className={cn(
+        "cursor-pointer rounded-[12px] px-[12px] py-[9px] text-left text-13_5 font-bold",
+        tab === slug ? "bg-link-light text-link-hover" : "bg-transparent text-body",
+      )}
+    >
+      {label}
+    </button>
+  );
 
   return (
     <>
-      <header className="sticky top-0 z-[80] border-b-2 border-border bg-white/90 backdrop-blur-lg">
-        <div className="mx-auto flex min-h-14 max-w-container items-center justify-between gap-4 px-4 py-2.5 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-[80] border-b-2 border-border bg-white/90 backdrop-blur-[18px]">
+        <div className="mx-auto flex min-h-[56px] max-w-container items-center justify-between gap-[16px] px-[clamp(16px,4vw,32px)] py-[10px]">
           <Link
             href="/"
-            className="flex items-center gap-2 whitespace-nowrap text-[17px] font-extrabold text-ink"
+            className="flex shrink-0 items-center gap-[9px] whitespace-nowrap text-17 font-extrabold text-body"
           >
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-primary text-sm font-extrabold text-white shadow-[0_2px_0_#58A700]">
+            <span className="inline-flex h-[28px] w-[28px] items-center justify-center rounded-[9px] bg-primary text-14 font-extrabold text-white shadow-[0_2px_0_#58A700]">
               M
             </span>
             MyStudyAlly
           </Link>
 
-          {/* Desktop nav */}
-          <div className="hidden items-center gap-6 lg:flex">
-            <div ref={navRef} className="relative flex items-center gap-0.5">
-              <button
-                type="button"
-                onClick={() => setMenuOpen((v) => !v)}
-                className={cn(
-                  "whitespace-nowrap rounded-pill px-3.5 py-2 text-sm font-bold hover:text-link",
-                  active === "curriculum"
-                    ? "bg-link-light text-link-hover"
-                    : "bg-transparent text-muted",
-                )}
-              >
-                Curricula {menuOpen ? "▴" : "▾"}
-              </button>
-              {NAV_LINKS.filter((l) => l.key === "tutors" || l.key === "pricing").map(
-                () => null,
+          {/* Desktop: one nav holding Curricula + the section links, gap 2px */}
+          <nav
+            ref={navRef}
+            className="relative hidden items-center gap-[2px] lg:flex"
+            aria-label="Primary"
+          >
+            <button
+              type="button"
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-expanded={menuOpen}
+              className={cn(
+                "cursor-pointer whitespace-nowrap rounded-pill px-[14px] py-[8px] text-13 font-bold hover:text-link",
+                active === "subjects" ? "bg-link-light text-link-hover" : "bg-transparent text-muted",
               )}
-              {menuOpen && (
-                <div className="absolute left-0 top-12 grid w-[min(860px,calc(100vw-48px))] grid-cols-[minmax(190px,250px)_1fr] overflow-hidden rounded-xl border-2 border-border bg-white/97 shadow-panel backdrop-blur-xl">
-                  <div className="flex flex-col gap-0.5 border-r-2 border-border bg-surface-alt p-3">
-                    <div className="px-3 pb-2 pt-1 text-eyebrow text-muted-3">
-                      EXAM BOARD CURRICULA
-                    </div>
-                    {EXAM_BOARD_CURRICULA.map((c) => (
-                      <button
-                        key={c.slug}
-                        type="button"
-                        onMouseEnter={() => setTab(c.slug)}
-                        onClick={() => setTab(c.slug)}
-                        className={cn(
-                          "rounded-md px-3 py-2.5 text-left text-[13.5px] font-bold",
-                          tab === c.slug
-                            ? "bg-link-light text-link-hover"
-                            : "bg-transparent text-ink",
-                        )}
-                      >
-                        {c.shortName}
-                      </button>
-                    ))}
-                    <div className="px-3 pb-2 pt-3 text-eyebrow text-muted-3">
-                      TEST PREP
-                    </div>
-                    {TEST_PREP_CURRICULA.map((c) => (
-                      <button
-                        key={c.slug}
-                        type="button"
-                        onMouseEnter={() => setTab(c.slug)}
-                        onClick={() => setTab(c.slug)}
-                        className={cn(
-                          "rounded-md px-3 py-2.5 text-left text-[13.5px] font-bold",
-                          tab === c.slug
-                            ? "bg-link-light text-link-hover"
-                            : "bg-transparent text-ink",
-                        )}
-                      >
-                        {c.shortName}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="flex flex-col p-6">
-                    <div className="mb-3.5 text-eyebrow text-muted-3">
-                      {currentTab.shortName.toUpperCase()} SUBJECTS
-                    </div>
-                    <div className="grid flex-1 grid-cols-[repeat(auto-fit,minmax(150px,1fr))] content-start gap-x-4.5 gap-y-1.5">
-                      {currentTab.subjects.map((s) => (
-                        <Link
-                          key={s}
-                          href={`/${currentTab.slug}/`}
-                          className="rounded-md px-2 py-1.5 text-[13.5px] font-semibold text-ink hover:bg-link-light hover:text-link-hover"
-                        >
-                          {s}
-                        </Link>
-                      ))}
-                    </div>
-                    <div className="mt-4.5 border-t-2 border-border pt-3.5">
-                      <Link
-                        href={`/${currentTab.slug}/`}
-                        className="text-sm font-extrabold text-link hover:text-link-hover"
-                      >
-                        View all {currentTab.shortName} tutoring ↗
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            >
+              Curricula {menuOpen ? "▴" : "▾"}
+            </button>
+
             {NAV_LINKS.map((l) => (
               <Link
                 key={l.key}
                 href={l.href}
                 className={cn(
-                  "whitespace-nowrap rounded-pill px-3.5 py-2 text-sm font-bold hover:text-link",
-                  active === l.key ? "bg-link-light text-link-hover" : "text-muted",
+                  "whitespace-nowrap rounded-pill px-[14px] py-[8px] text-13 font-bold hover:text-link",
+                  active === l.key ? "bg-link-light text-link-hover" : "bg-transparent text-muted",
                 )}
               >
                 {l.label}
               </Link>
             ))}
-            <div className="flex items-center gap-3.5">
-              <a href="#" className="whitespace-nowrap text-sm font-bold text-ink hover:text-ink">
-                Sign in
-              </a>
-              <Button as={Link} href="/contact/" size="sm" className="rounded-md">
-                Submit an inquiry
-              </Button>
-            </div>
+
+            {menuOpen && (
+              <div className="absolute left-0 top-[48px] grid w-[min(860px,calc(100vw-48px))] grid-cols-[minmax(190px,250px)_1fr] overflow-hidden rounded-[20px] border-2 border-border bg-white/97 shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-[20px]">
+                <div className="flex flex-col gap-[2px] border-r-2 border-border bg-surface-alt px-[12px] py-[16px]">
+                  <div className="px-[12px] pb-[8px] pt-[4px] text-11 font-bold tracking-[0.1em] text-muted-3">
+                    EXAM BOARD CURRICULA
+                  </div>
+                  {EXAM_BOARD_CURRICULA.map((c) => railButton(c.slug, c.shortName))}
+                  <div className="px-[12px] pb-[8px] pt-[12px] text-11 font-bold tracking-[0.1em] text-muted-3">
+                    TEST PREP
+                  </div>
+                  {TEST_PREP_CURRICULA.map((c) => railButton(c.slug, c.shortName))}
+                </div>
+
+                <div className="flex flex-col px-[26px] py-[22px]">
+                  <div className="mb-[14px] text-11 font-bold tracking-[0.1em] text-muted-3">
+                    {current.shortName.toUpperCase()} SUBJECTS
+                  </div>
+                  <div className="grid flex-1 content-start gap-x-[18px] gap-y-[6px] [grid-template-columns:repeat(auto-fit,minmax(150px,1fr))]">
+                    {current.subjects.map((s) => (
+                      <Link
+                        key={s}
+                        href={`/${current.slug}/`}
+                        onClick={() => setMenuOpen(false)}
+                        className="rounded-[10px] px-[8px] py-[6px] text-13_5 font-semibold text-body hover:bg-link-light hover:text-link-hover"
+                      >
+                        {s}
+                      </Link>
+                    ))}
+                  </div>
+                  <div className="mt-[18px] border-t-2 border-border pt-[14px]">
+                    <Link
+                      href={`/${current.slug}/`}
+                      onClick={() => setMenuOpen(false)}
+                      className="text-13 font-extrabold text-link hover:text-link-hover"
+                    >
+                      View all {current.shortName} tutoring ↗
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+          </nav>
+
+          <div className="hidden shrink-0 items-center gap-[14px] lg:flex">
+            <a href="#" className="whitespace-nowrap text-13 font-bold text-body hover:text-ink">
+              Sign in
+            </a>
+            <Link
+              href="/contact/"
+              className="whitespace-nowrap rounded-[14px] bg-primary px-[18px] py-[10px] text-13 font-extrabold tracking-[0.03em] text-white shadow-[0_4px_0_#58A700] hover:bg-primary-hover hover:text-white hover:shadow-[0_4px_0_#49AD00]"
+            >
+              Submit an inquiry
+            </Link>
           </div>
 
           {/* Mobile hamburger */}
@@ -190,24 +181,24 @@ export function SiteHeader() {
             type="button"
             aria-label="Open menu"
             onClick={() => setMobileOpen(true)}
-            className="flex h-11 w-11 flex-col items-end justify-center gap-1.5 lg:hidden"
+            className="flex h-[44px] w-[44px] cursor-pointer flex-col items-end justify-center gap-[5px] p-0 lg:hidden"
           >
-            <span className="block h-[2.5px] w-[22px] rounded bg-ink" />
-            <span className="block h-[2.5px] w-[22px] rounded bg-ink" />
-            <span className="block h-[2.5px] w-[15px] rounded bg-ink" />
+            <span className="block h-[2.5px] w-[22px] rounded-[2px] bg-body" />
+            <span className="block h-[2.5px] w-[22px] rounded-[2px] bg-body" />
+            <span className="block h-[2.5px] w-[15px] rounded-[2px] bg-body" />
           </button>
         </div>
       </header>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-[120] flex flex-col bg-white lg:hidden">
-          <div className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
+          <div className="flex h-[56px] shrink-0 items-center justify-between border-b border-border px-[clamp(16px,4vw,20px)]">
             <Link
               href="/"
-              className="flex items-center gap-2 text-[16px] font-extrabold text-ink"
               onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-[9px] text-16 font-extrabold text-body"
             >
-              <span className="inline-flex h-6.5 w-6.5 items-center justify-center rounded-md bg-primary text-[13px] font-extrabold text-white">
+              <span className="inline-flex h-[26px] w-[26px] items-center justify-center rounded-[8px] bg-primary text-13 font-extrabold text-white">
                 M
               </span>
               MyStudyAlly
@@ -216,19 +207,20 @@ export function SiteHeader() {
               type="button"
               aria-label="Close menu"
               onClick={() => setMobileOpen(false)}
-              className="flex h-11 w-11 items-center justify-center text-xl text-ink"
+              className="h-[44px] w-[44px] cursor-pointer text-22 text-body"
             >
               ✕
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto px-4 pb-5">
+
+          <div className="flex-1 overflow-y-auto px-[clamp(16px,4vw,20px)] pb-[20px]">
             <button
               type="button"
               onClick={() => setCurriculaOpen((v) => !v)}
-              className="flex min-h-14 w-full items-center justify-between border-b border-border text-md font-bold text-ink"
+              className="flex min-h-[56px] w-full cursor-pointer items-center justify-between border-b border-border p-0 text-16 font-bold text-body"
             >
               Curricula
-              <span className="text-sm text-muted">{curriculaOpen ? "▴" : "▾"}</span>
+              <span className="text-13 text-muted">{curriculaOpen ? "▴" : "▾"}</span>
             </button>
             {curriculaOpen && (
               <div className="flex flex-col border-b border-border bg-surface-alt">
@@ -237,7 +229,7 @@ export function SiteHeader() {
                     key={c.slug}
                     href={`/${c.slug}/`}
                     onClick={() => setMobileOpen(false)}
-                    className="flex min-h-12 items-center border-b border-border-2 px-3.5 text-[15px] font-semibold text-ink"
+                    className="flex min-h-[48px] items-center border-b border-border-2 px-[14px] text-15 font-semibold text-body"
                   >
                     {c.name}
                   </Link>
@@ -249,40 +241,40 @@ export function SiteHeader() {
                 key={l.key}
                 href={l.href}
                 onClick={() => setMobileOpen(false)}
-                className="flex min-h-14 items-center border-b border-border text-md font-bold text-ink"
+                className="flex min-h-[56px] items-center border-b border-border text-16 font-bold text-body"
               >
                 {l.label}
               </Link>
             ))}
-            <div className="flex items-center gap-4.5 pt-5">
+            <div className="flex items-center gap-[18px] pt-[20px]">
               <Link
                 href="/blog/"
                 onClick={() => setMobileOpen(false)}
-                className="flex min-h-11 items-center text-xs font-bold uppercase tracking-wide text-muted"
+                className="flex min-h-[44px] items-center text-12 font-bold uppercase tracking-[0.02em] text-muted"
               >
                 Blog
               </Link>
               <Link
                 href="/faq/"
                 onClick={() => setMobileOpen(false)}
-                className="flex min-h-11 items-center text-xs font-bold uppercase tracking-wide text-muted"
+                className="flex min-h-[44px] items-center text-12 font-bold uppercase tracking-[0.02em] text-muted"
               >
                 FAQ
               </Link>
             </div>
           </div>
-          <div className="flex shrink-0 flex-col gap-3 border-t border-border px-4 py-4.5">
-            <a href="#" className="self-start text-sm font-bold text-ink">
+
+          <div className="flex shrink-0 flex-col gap-[12px] border-t border-border px-[clamp(16px,4vw,20px)] pb-[18px] pt-[14px]">
+            <a href="#" className="self-start text-14 font-bold text-body">
               Sign in
             </a>
-            <Button
-              as={Link}
+            <Link
               href="/contact/"
               onClick={() => setMobileOpen(false)}
-              className="flex min-h-13 items-center justify-center rounded-md text-[15px]"
+              className="flex min-h-[52px] items-center justify-center rounded-[14px] bg-primary text-15 font-extrabold text-white shadow-[0_4px_0_#58A700] hover:bg-primary-hover hover:text-white"
             >
               Submit an inquiry
-            </Button>
+            </Link>
           </div>
         </div>
       )}

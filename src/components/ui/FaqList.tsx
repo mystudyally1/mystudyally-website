@@ -8,30 +8,44 @@ export interface FaqItem {
   a: string;
 }
 
-/** Card-style FAQ accordion used on curriculum pages. */
-export function FaqList({ items, className }: { items: FaqItem[]; className?: string }) {
-  const [open, setOpen] = useState<number | null>(0);
+/**
+ * Card-style FAQ accordion. Values mirror the design's `Common Questions`
+ * block; `defaultOpen` matches each page's initial `openFaq` state
+ * (0 on most pages, -1 — all closed — on Pricing and IGCSE).
+ */
+export function FaqList({
+  items,
+  className,
+  defaultOpen = 0,
+}: {
+  items: FaqItem[];
+  className?: string;
+  defaultOpen?: number;
+}) {
+  const [open, setOpen] = useState<number>(defaultOpen);
 
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
+    <div className={cn("flex flex-col gap-[12px]", className)}>
       {items.map((item, i) => {
         const isOpen = open === i;
         return (
           <div
             key={item.q}
-            className="overflow-hidden rounded-xl border-2 border-border bg-white shadow-[0_2px_0_#E5E5E5]"
+            className="overflow-hidden rounded-[18px] border-2 border-border bg-white shadow-[0_2px_0_#E5E5E5]"
           >
             <button
               type="button"
-              onClick={() => setOpen(isOpen ? null : i)}
+              onClick={() => setOpen(isOpen ? -1 : i)}
               aria-expanded={isOpen}
-              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-bold text-ink"
+              className="flex w-full cursor-pointer items-center justify-between gap-[16px] px-[20px] py-[16px] text-left text-14 font-bold text-body"
             >
               {item.q}
-              <span className="text-lg font-normal text-link">{isOpen ? "−" : "+"}</span>
+              <span className="text-18 font-normal text-link" aria-hidden="true">
+                {isOpen ? "−" : "+"}
+              </span>
             </button>
             {isOpen && (
-              <p className="px-5 pb-4.5 text-sm leading-relaxed text-muted">{item.a}</p>
+              <p className="px-[20px] pb-[18px] text-13 leading-[1.7] text-muted">{item.a}</p>
             )}
           </div>
         );

@@ -1,97 +1,189 @@
 import type { Metadata } from "next";
-import { Container } from "@/components/ui/Container";
-import { Section } from "@/components/ui/Section";
+import Link from "next/link";
+import Image from "next/image";
+import { GetStartedPanel } from "@/components/marketing/GetStartedPanel";
 import { FaqList } from "@/components/ui/FaqList";
-import { CtaBand } from "@/components/marketing/CtaBand";
 import { ABOUT_FAQS, ABOUT_ROWS, VETTING_STEPS } from "@/data/about";
-import { CONTACT_ADDRESS, SITE_URL, SLA_RESPONSE_TIME } from "@/lib/constants";
+import { TUTORS } from "@/data/tutors";
+import { CONTACT_EMAIL, SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "MyStudyAlly is managed tutoring, not a marketplace. Our team vets every tutor, handles scheduling, and matches students to specialists in their exact exam board.",
+    "MyStudyAlly matches students with tutors who specialise in their exact curriculum, manages every session through one platform, and keeps a record of everything.",
   alternates: { canonical: `${SITE_URL}/about/` },
 };
+
+const numberWord = (n: number) => {
+  const words: Record<number, string> = {
+    20: "Twenty",
+    21: "Twenty-one",
+    22: "Twenty-two",
+    23: "Twenty-three",
+    24: "Twenty-four",
+    25: "Twenty-five",
+    26: "Twenty-six",
+    27: "Twenty-seven",
+    28: "Twenty-eight",
+    29: "Twenty-nine",
+    30: "Thirty",
+  };
+  return words[n] ?? String(n);
+};
+
+const rowClass =
+  "grid gap-[clamp(10px,3vw,48px)] border-t border-border py-[28px] [grid-template-columns:44px_minmax(min(100%,240px),1fr)_minmax(min(100%,240px),1fr)]";
 
 export default function AboutPage() {
   return (
     <>
-      <Section className="pb-6 pt-14">
-        <Container className="max-w-3xl">
-          <div className="text-eyebrow text-muted">ABOUT US</div>
-          <h1 className="mt-4 text-d-4xl text-ink">Managed tutoring, done properly.</h1>
-          <p className="mt-4 text-lg leading-relaxed text-muted">
-            We&rsquo;re not a marketplace that hands you a directory and wishes you luck. Our team
-            matches every student personally, vets every tutor against the specification they
-            teach, and handles the logistics so families don&rsquo;t have to.
-          </p>
-        </Container>
-      </Section>
+      {/* Hero */}
+      <section className="px-[clamp(20px,5vw,32px)] pb-[8px] pt-[72px]">
+        <div className="mx-auto max-w-container">
+          <div className="max-w-[640px]">
+            <div className="text-12 font-bold tracking-[0.14em] text-muted">ABOUT US</div>
+            <h1 className="mt-[16px] text-d48 font-extrabold leading-[52px] tracking-[-0.02em] [text-wrap:balance]">
+              Built around how tutoring actually works
+            </h1>
+            <p className="mt-[16px] text-16 leading-[26px] text-muted">
+              MyStudyAlly matches students with tutors who specialise in their exact curriculum,
+              manages every session through a single platform, and keeps a record of everything —
+              so nothing depends on memory or a missed WhatsApp message.
+            </p>
+            <p className="mt-[14px] text-13 leading-[18px] text-muted-3">
+              Founded in 2026. Ilford, United Kingdom.
+            </p>
+          </div>
+        </div>
+      </section>
 
-      {/* What makes it different */}
-      <Section className="py-10">
-        <Container className="max-w-4xl">
+      {/* Our story */}
+      <section className="px-[clamp(20px,5vw,32px)] pb-[64px] pt-[56px]">
+        <div className="mx-auto max-w-container">
+          <div className="grid items-stretch gap-[56px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))]">
+            <div className="flex max-w-[640px] flex-col justify-center">
+              <h2 className="mb-[20px] text-d30 font-extrabold tracking-[-0.01em]">Our story</h2>
+              <p className="text-15 leading-[1.8] text-muted">
+                MyStudyAlly started from a simple observation: most tutoring platforms match on
+                subject, not curriculum — and the difference between teaching IGCSE Physics and A
+                Level Physics is significant. We built a platform where curriculum-matching is the
+                starting point, not an afterthought, with every session recorded and every hour
+                tracked, so families always know exactly what they&#39;re paying for and what
+                their child is learning.
+              </p>
+              <p className="mt-[18px] text-15 leading-[1.8] text-muted">
+                Before this, we spent years watching families juggle tutoring over WhatsApp —
+                sessions arranged by memory, hours nobody counted, tutors teaching a syllabus
+                they&#39;d never sat. We built MyStudyAlly to be the version of tutoring
+                we&#39;d want for our own families: matched to the exact exam board, recorded,
+                and accountable. If something isn&#39;t right, you write to us directly.
+              </p>
+            </div>
+            <div className="relative min-h-[460px] overflow-hidden rounded-[26px] shadow-[0_2px_4px_rgba(60,60,60,0.05),0_28px_56px_-16px_rgba(60,60,60,0.22)]">
+              <Image
+                src="/images/site/founder-photo.webp"
+                alt="The MyStudyAlly team"
+                fill
+                sizes="(max-width: 900px) 100vw, 50vw"
+                className="object-cover"
+                style={{ objectPosition: "center 16%" }}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How we vet tutors */}
+      <section className="bg-surface-alt px-[clamp(20px,5vw,32px)] pb-[76px] pt-[72px]">
+        <div className="mx-auto max-w-container">
+          <div className="max-w-[720px]">
+            <div className="text-12 font-bold tracking-[0.14em] text-muted">THE PROCESS</div>
+            <h2 className="mb-[8px] mt-[14px] text-d30 font-extrabold tracking-[-0.01em]">
+              How we vet tutors
+            </h2>
+            <p className="mb-[12px] text-15 leading-[1.7] text-muted">
+              Every page on this site says our tutors are vetted. Here is exactly what that means.
+            </p>
+          </div>
+          <div className="flex flex-col">
+            {VETTING_STEPS.map((s) => (
+              <div key={s.num} className={rowClass}>
+                <span className="pt-[1px] text-24 font-extrabold leading-none tracking-[0.02em] text-muted-3">
+                  {s.num}
+                </span>
+                <h3 className="text-18 font-extrabold">{s.title}</h3>
+                <p className="max-w-[640px] text-15 leading-[1.7] text-muted">{s.body}</p>
+              </div>
+            ))}
+          </div>
+          <p className="border-t border-border pt-[24px] text-13 leading-[18px] text-muted-3">
+            {numberWord(TUTORS.length)} tutors currently teach on MyStudyAlly. Every one of them
+            has been through this process.
+          </p>
+        </div>
+      </section>
+
+      {/* How we operate */}
+      <section className="px-[clamp(20px,5vw,32px)] pb-[80px] pt-[72px]">
+        <div className="mx-auto max-w-container">
+          <h2 className="mb-[12px] text-d30 font-extrabold tracking-[-0.01em]">How we operate</h2>
           <div className="flex flex-col">
             {ABOUT_ROWS.map((r) => (
-              <div
-                key={r.num}
-                className="grid grid-cols-[44px_1fr] gap-6 border-t border-border py-7 sm:grid-cols-[44px_1fr_1fr]"
-              >
-                <span className="text-2xl font-extrabold text-muted-3">{r.num}</span>
-                <h2 className="text-lg font-bold text-ink">{r.title}</h2>
-                <p className="text-md leading-relaxed text-muted sm:col-start-3">{r.body}</p>
+              <div key={r.num} className={rowClass}>
+                <span className="pt-[1px] text-24 font-extrabold leading-none tracking-[0.02em] text-muted-3">
+                  {r.num}
+                </span>
+                <h3 className="text-18 font-extrabold">{r.title}</h3>
+                <p className="max-w-[640px] text-15 leading-[1.7] text-muted">{r.body}</p>
               </div>
             ))}
           </div>
-        </Container>
-      </Section>
+        </div>
+      </section>
 
-      {/* Vetting */}
-      <Section className="my-6 bg-surface-dark">
-        <Container>
-          <div className="mb-11 max-w-xl">
-            <div className="mb-3.5 text-eyebrow text-muted-2">HOW WE VET TUTORS</div>
-            <h2 className="text-d-lg text-white">
-              Every tutor clears four steps{" "}
-              <span className="text-muted-2">before they teach.</span>
+      {/* Closing CTA */}
+      <section className="bg-surface-dark px-[clamp(20px,5vw,32px)] pb-[60px] pt-[56px]">
+        <div className="mx-auto flex max-w-container flex-wrap items-center justify-between gap-[48px]">
+          <div className="max-w-[640px]">
+            <h2 className="text-d30 font-extrabold leading-[34px] text-white [text-wrap:balance]">
+              Ready to get started?
             </h2>
+            <p className="mt-[12px] text-15 leading-[1.7] text-muted-4">
+              Tell us what your child needs — we&#39;ll take it from there.
+            </p>
           </div>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {VETTING_STEPS.map((s) => (
-              <div key={s.num} className="flex flex-col gap-3.5 border-l border-white/20 py-1 pl-6">
-                <span className="text-eyebrow text-muted-2">{s.num}</span>
-                <h3 className="text-lg font-bold text-white">{s.title}</h3>
-                <p className="text-sm leading-relaxed text-muted-4">{s.body}</p>
-              </div>
-            ))}
+          <div className="flex shrink-0 flex-col items-start gap-[12px]">
+            <Link
+              href="/contact/"
+              className="inline-block rounded-[16px] bg-primary px-[26px] py-[14px] text-14 font-extrabold text-white shadow-[0_4px_0_#58A700] hover:bg-primary-hover hover:text-white"
+            >
+              Submit an inquiry
+            </Link>
+            <span className="text-12 text-muted-2">
+              Or email us at{" "}
+              <a href={`mailto:${CONTACT_EMAIL}`} className="text-muted-4 underline hover:text-white">
+                {CONTACT_EMAIL}
+              </a>
+            </span>
           </div>
-        </Container>
-      </Section>
+        </div>
+      </section>
 
-      {/* Where we are */}
-      <Section className="py-10">
-        <Container className="max-w-3xl">
-          <h2 className="text-d-md text-ink">Where we are</h2>
-          <p className="mt-4 text-lg leading-relaxed text-muted">
-            A UK-registered company based in Ilford, supporting families across the UAE, UK, USA,
-            Canada, and Pakistan.
-          </p>
-          <p className="mt-3 text-md text-muted">{CONTACT_ADDRESS}</p>
-        </Container>
-      </Section>
-
-      <Section>
-        <Container className="grid items-start gap-6 lg:grid-cols-2">
-          <CtaBand
+      {/* Get started + FAQ */}
+      <section id="faq" className="px-[clamp(20px,5vw,32px)] pb-[72px] pt-[56px]">
+        <div className="mx-auto grid max-w-container items-start gap-[24px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))]">
+          <GetStartedPanel
             headline="Ready to get started?"
-            sub={`Submit an inquiry and we'll match you with a tutor ${SLA_RESPONSE_TIME}.`}
+            sub="Submit an inquiry and we'll match you with a tutor within 24h."
           />
           <div>
-            <h2 className="mb-5 text-d-md text-ink">Common questions</h2>
+            <h2 className="mb-[20px] text-d28 font-extrabold tracking-[-0.01em]">
+              Common Questions
+            </h2>
             <FaqList items={ABOUT_FAQS} />
           </div>
-        </Container>
-      </Section>
+        </div>
+      </section>
     </>
   );
 }

@@ -3,10 +3,26 @@
 @tailwind utilities;
 
 @layer base {
+  /* Mirrors the design files' page-level base styles:
+     html,body{margin:0;padding:0;background:#FFFFFF;color:#3C3C3C}
+     a{color:#3C3C3C;text-decoration:none} a:hover{color:#131F24} */
   a {
-    @apply text-link;
+    color: #3c3c3c;
+    text-decoration: none;
   }
   a:hover {
-    @apply text-link-hover;
+    color: #131f24;
+  }
+
+  /* The design never sets line-height on headings, so they use `normal`.
+     Tailwind's preflight would otherwise inherit 1.5 from html and make
+     every heading noticeably taller than the mockups. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    line-height: normal;
   }
 }

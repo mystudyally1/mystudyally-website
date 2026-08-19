@@ -27,7 +27,7 @@ export function Accordion({
               type="button"
               onClick={() => setOpenIndex(isOpen ? null : index)}
               aria-expanded={isOpen}
-              className="flex w-full items-center justify-between gap-4 py-5 text-left text-md font-bold text-ink"
+              className="flex w-full items-center justify-between gap-4 py-5 text-left text-15 font-bold text-ink"
             >
               {item.question}
               <span
@@ -40,7 +40,7 @@ export function Accordion({
               </span>
             </button>
             {isOpen && (
-              <div className="pb-5 text-md leading-relaxed text-muted">
+              <div className="pb-5 text-15 leading-relaxed text-muted">
                 {item.answer}
               </div>
             )}

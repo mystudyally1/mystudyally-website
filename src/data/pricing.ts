@@ -268,3 +268,24 @@ export const PRICING_TRUST: string[] = [
 export const CLASS_DURATION_MINUTES = 60;
 
 export const HIGHLIGHT_PLAN = "Academic+";
+
+/** Numeric plan facts used by the "Find your plan" recommender. */
+export interface PlanFinderEntry {
+  name: string;
+  classes: number;
+  price: number;
+  per: string;
+  days: number;
+}
+
+export const PLAN_FINDER: PlanFinderEntry[] = [
+  { name: "Starter", classes: 4, price: 45, per: "$11.25", days: 30 },
+  { name: "Essential", classes: 8, price: 79, per: "$9.88", days: 30 },
+  { name: "Progress", classes: 12, price: 105, per: "$8.75", days: 30 },
+  { name: "Academic+", classes: 16, price: 135, per: "$8.44", days: 30 },
+  { name: "Premium", classes: 24, price: 189, per: "$7.88", days: 45 },
+  { name: "Complete", classes: 32, price: 239, per: "$7.47", days: 60 },
+];
+
+export const ROLLOVER_NOTE =
+  "On 30-day plans, renew before your plan expires and carry up to 2 unused classes forward. The 24 and 32-class plans already include longer validity, so rollover doesn't apply.";

@@ -56,13 +56,13 @@ export default function ContactPage() {
     <>
       <Section className="pb-2 pt-14">
         <Container className="max-w-2xl">
-          <div className="text-eyebrow text-muted">CONTACT</div>
-          <h1 className="mt-4 text-d-4xl text-ink">Get in touch</h1>
-          <p className="mt-4 text-lg text-muted">
-            Tell us what your child needs and we&rsquo;ll match them with a tutor. Or ask us
+          <div className="text-12 font-bold tracking-[0.14em] text-muted">CONTACT</div>
+          <h1 className="mt-4 text-d48 font-extrabold tracking-[-0.02em] text-ink">Get in touch</h1>
+          <p className="mt-4 text-16 text-muted">
+            Tell us what your child needs and we&#39;ll match them with a tutor. Or ask us
             anything first — same team either way.
           </p>
-          <p className="mt-5 text-sm font-bold text-ink">
+          <p className="mt-5 text-13 font-bold text-ink">
             Every inquiry is read by a person, not routed to a queue. We reply {SLA_RESPONSE_TIME}.
           </p>
         </Container>
@@ -80,15 +80,15 @@ export default function ContactPage() {
                 key={d.label}
                 className="grid grid-cols-[90px_1fr] gap-5 border-t border-border py-4 first:pt-0"
               >
-                <span className="pt-0.5 text-xs font-bold tracking-wide text-muted-3">
+                <span className="pt-0.5 text-12 font-bold tracking-wide text-muted-3">
                   {d.label}
                 </span>
                 {d.href ? (
-                  <a href={d.href} className="text-sm font-bold text-ink underline decoration-border underline-offset-4 hover:decoration-ink">
+                  <a href={d.href} className="text-13 font-bold text-ink underline decoration-border underline-offset-4 hover:decoration-ink">
                     {d.value}
                   </a>
                 ) : (
-                  <span className="text-sm leading-relaxed text-ink">{d.value}</span>
+                  <span className="text-13 leading-relaxed text-ink">{d.value}</span>
                 )}
               </div>
             ))}
@@ -98,10 +98,10 @@ export default function ContactPage() {
 
       <Section>
         <Container className="max-w-2xl">
-          <div className="text-eyebrow text-muted">BEFORE YOU WRITE IN</div>
-          <h2 className="mt-3.5 text-d-lg text-ink">Quick answers</h2>
+          <div className="text-12 font-bold tracking-[0.14em] text-muted">BEFORE YOU WRITE IN</div>
+          <h2 className="mt-3.5 text-d34 font-extrabold tracking-[-0.01em] text-ink">Quick answers</h2>
           <Accordion items={FAQS} className="mt-4" />
-          <Link href="/faq/" className="mt-6 inline-block border-b-2 border-primary pb-0.5 text-sm font-bold text-ink">
+          <Link href="/faq/" className="mt-6 inline-block border-b-2 border-primary pb-0.5 text-13 font-bold text-ink">
             Read the full FAQ →
           </Link>
         </Container>

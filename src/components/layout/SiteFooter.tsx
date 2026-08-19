@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CURRICULA } from "@/data/curricula";
+import { FooterVideo } from "@/components/layout/FooterVideo";
 import {
   CONTACT_ADDRESS,
   CONTACT_EMAIL,
@@ -8,6 +9,7 @@ import {
   SOCIAL_LINKS,
 } from "@/lib/constants";
 
+// Mirrors "website design/SiteFooter.dc.html".
 const COMPANY_LINKS = [
   { label: "About Us", href: "/about/" },
   { label: "Blog", href: "/blog/" },
@@ -63,22 +65,27 @@ const SOCIAL_ICONS = [
   },
 ];
 
+const columnLink =
+  "text-13 text-muted hover:text-ink";
+const columnHeading = "mb-[4px] text-11 font-bold tracking-[0.12em] text-muted-3";
+
 export function SiteFooter() {
   return (
-    <footer className="border-t-2 border-border bg-white px-4 pb-8 pt-16 sm:px-6 lg:px-8">
+    <footer className="border-t-2 border-border bg-white px-[clamp(20px,5vw,32px)] pb-[32px] pt-[64px]">
       <div className="mx-auto max-w-container">
-        <div className="flex flex-wrap gap-10">
+        <div className="flex flex-wrap gap-[40px]">
+          {/* Brand */}
           <div className="min-w-0 max-w-[280px] flex-[1_1_190px]">
-            <Link href="/" className="flex items-center gap-2 text-[17px] font-extrabold text-ink">
-              <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-primary text-sm font-extrabold text-white">
+            <Link href="/" className="flex items-center gap-[9px] text-17 font-extrabold text-body">
+              <span className="inline-flex h-[28px] w-[28px] items-center justify-center rounded-[9px] bg-primary text-14 font-extrabold text-white">
                 M
               </span>
               MyStudyAlly
             </Link>
-            <p className="mt-3.5 max-w-[220px] text-sm text-muted">
+            <p className="mt-[14px] max-w-[220px] text-13 text-muted">
               Managed tutoring, done properly.
             </p>
-            <div className="mt-4.5 flex gap-2.5">
+            <div className="mt-[18px] flex gap-[10px]">
               {SOCIAL_ICONS.map((s) => (
                 <a
                   key={s.label}
@@ -86,7 +93,7 @@ export function SiteFooter() {
                   target={s.href.startsWith("http") ? "_blank" : undefined}
                   rel={s.href.startsWith("http") ? "noopener" : undefined}
                   aria-label={s.label}
-                  className="flex h-9.5 w-9.5 items-center justify-center rounded-md border-2 border-border bg-surface-alt text-muted hover:border-primary hover:bg-primary hover:text-white"
+                  className="inline-flex h-[38px] w-[38px] items-center justify-center rounded-[12px] border-2 border-border bg-surface-alt text-muted hover:border-primary hover:bg-primary hover:text-white"
                 >
                   <svg
                     width="19"
@@ -105,50 +112,51 @@ export function SiteFooter() {
             </div>
           </div>
 
-          <div className="flex flex-[0_1_150px] flex-col gap-2.5">
-            <div className="mb-1 text-eyebrow text-muted-3">CURRICULA</div>
+          {/* Curricula */}
+          <div className="flex flex-[0_1_150px] flex-col gap-[10px]">
+            <div className={columnHeading}>CURRICULA</div>
             {CURRICULA.map((c) => (
-              <Link
-                key={c.slug}
-                href={`/${c.slug}/`}
-                className="text-sm text-muted hover:text-ink"
-              >
+              <Link key={c.slug} href={`/${c.slug}/`} className={columnLink}>
                 {c.shortName}
               </Link>
             ))}
           </div>
 
-          <div className="grid min-w-0 flex-[3_1_420px] grid-cols-[repeat(auto-fit,minmax(min(100%,140px),1fr))] gap-x-10 gap-y-7">
-            <div className="flex flex-col gap-2.5">
-              <div className="mb-1 text-eyebrow text-muted-3">COMPANY</div>
-              {COMPANY_LINKS.map((l) => (
-                <Link key={l.label} href={l.href} className="text-sm text-muted hover:text-ink">
-                  {l.label}
-                </Link>
-              ))}
+          {/* Company / Legal / Offices + video */}
+          <div className="flex min-w-0 flex-[3_1_420px] flex-col gap-[14px]">
+            <div className="grid gap-x-[40px] gap-y-[30px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr))]">
+              <div className="flex flex-col gap-[10px]">
+                <div className={columnHeading}>COMPANY</div>
+                {COMPANY_LINKS.map((l) => (
+                  <Link key={l.label} href={l.href} className={columnLink}>
+                    {l.label}
+                  </Link>
+                ))}
+              </div>
+              <div className="flex flex-col gap-[10px]">
+                <div className={columnHeading}>LEGAL</div>
+                {LEGAL_LINKS.map((l) => (
+                  <Link key={l.label} href={l.href} className={columnLink}>
+                    {l.label}
+                  </Link>
+                ))}
+              </div>
+              <div className="flex flex-col gap-[10px]">
+                <div className={columnHeading}>OFFICES</div>
+                <div className="text-13 leading-[1.6] text-muted">{CONTACT_ADDRESS}</div>
+                <a href={`mailto:${CONTACT_EMAIL}`} className={columnLink}>
+                  {CONTACT_EMAIL}
+                </a>
+                <a href={CONTACT_WHATSAPP_LINK} className={columnLink}>
+                  {CONTACT_WHATSAPP_DISPLAY}
+                </a>
+              </div>
             </div>
-            <div className="flex flex-col gap-2.5">
-              <div className="mb-1 text-eyebrow text-muted-3">LEGAL</div>
-              {LEGAL_LINKS.map((l) => (
-                <Link key={l.label} href={l.href} className="text-sm text-muted hover:text-ink">
-                  {l.label}
-                </Link>
-              ))}
-            </div>
-            <div className="flex flex-col gap-2.5">
-              <div className="mb-1 text-eyebrow text-muted-3">OFFICES</div>
-              <div className="text-sm leading-relaxed text-muted">{CONTACT_ADDRESS}</div>
-              <a href={`mailto:${CONTACT_EMAIL}`} className="text-sm text-muted hover:text-ink">
-                {CONTACT_EMAIL}
-              </a>
-              <a href={CONTACT_WHATSAPP_LINK} className="text-sm text-muted hover:text-ink">
-                {CONTACT_WHATSAPP_DISPLAY}
-              </a>
-            </div>
+            <FooterVideo />
           </div>
         </div>
 
-        <div className="mt-11 flex flex-wrap justify-between gap-1.5 border-t-2 border-border pt-5 text-xs leading-relaxed text-muted-3">
+        <div className="mt-[44px] flex flex-wrap justify-between gap-x-[24px] gap-y-[6px] border-t-2 border-border pt-[20px] text-12 leading-[1.6] text-muted-3">
           <span>© {new Date().getFullYear()} MyStudyAlly. All rights reserved.</span>
         </div>
       </div>

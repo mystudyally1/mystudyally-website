@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 import { CHAT_NODES, CHAT_OPENING, CHAT_STARTERS, type ChatNode } from "@/data/chat";
 import { CONTACT_WHATSAPP_LINK } from "@/lib/constants";
 
+// Styling mirrors "website design/ChatWidget.dc.html".
 interface Message {
   id: number;
   from: "bot" | "visitor";
@@ -43,91 +44,74 @@ export function ChatWidget() {
   }
 
   const lastNode = [...messages].reverse().find((m) => m.node)?.node;
+  const showActions = Boolean(lastNode?.actions?.length) || chips.length === 0;
 
   return (
-    <>
-      {/* Launcher */}
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-label={open ? "Close chat assistant" : "Open chat assistant"}
-        aria-expanded={open}
-        className="fixed bottom-5 right-5 z-[100] flex h-14 w-14 items-center justify-center rounded-pill bg-primary text-white shadow-press transition hover:bg-primary-hover active:translate-y-1 active:shadow-none"
-      >
-        {open ? (
-          <span className="text-xl">✕</span>
-        ) : (
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-        )}
-      </button>
-
-      {open && (
+    <div className="fixed bottom-0 right-0 z-[900] font-sans text-ink">
+      {open ? (
         <div
           role="dialog"
           aria-label="Chat assistant"
-          className="fixed bottom-24 right-5 z-[100] flex max-h-[min(560px,calc(100vh-8rem))] w-[min(380px,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border-2 border-border bg-white shadow-panel"
+          className="fixed bottom-[24px] right-[24px] flex h-[min(560px,calc(100vh-48px))] w-[min(360px,calc(100vw-32px))] flex-col overflow-hidden rounded-[12px] bg-white shadow-[0_18px_48px_rgba(19,31,36,0.18)]"
         >
-          <div className="flex items-center justify-between border-b-2 border-border px-4 py-3">
-            <div className="flex items-center gap-2.5">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-sm font-extrabold text-white">
-                M
-              </span>
-              <div>
-                <div className="text-sm font-extrabold text-ink">MyStudyAlly</div>
-                <div className="text-xs text-muted">Answers common questions</div>
-              </div>
+          <div className="flex h-[56px] shrink-0 items-center gap-[10px] bg-surface-dark px-[14px] text-white">
+            <span className="inline-flex h-[28px] w-[28px] items-center justify-center rounded-[8px] bg-primary text-14 font-extrabold text-white">
+              M
+            </span>
+            <div className="flex-1">
+              <div className="text-14 font-bold leading-[18px]">MyStudyAlly</div>
+              <div className="text-11 text-white/70">Answers common questions</div>
             </div>
             <button
               type="button"
               onClick={reset}
-              className="text-xs font-bold text-muted hover:text-ink"
+              className="cursor-pointer rounded-[8px] px-[8px] py-[4px] text-11 font-bold text-white/80 hover:text-white"
             >
               Restart
             </button>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close chat"
+              className="h-[32px] w-[32px] shrink-0 cursor-pointer rounded-[8px] bg-transparent text-15 font-bold text-white"
+            >
+              ✕
+            </button>
           </div>
 
-          <div ref={listRef} className="flex-1 overflow-y-auto px-4 py-4">
-            <div className="flex flex-col gap-3">
-              {messages.map((m) => (
-                <div key={m.id} className="flex flex-col gap-2">
-                  <div
-                    className={cn(
-                      "max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed",
-                      m.from === "bot"
-                        ? "self-start bg-surface-alt text-ink"
-                        : "self-end bg-link text-white",
-                    )}
-                  >
-                    {m.text}
-                  </div>
-                  {m.node?.link && (
-                    <Link
-                      href={m.node.link.href}
-                      onClick={() => setOpen(false)}
-                      className="self-start border-b-2 border-primary pb-0.5 text-xs font-bold text-ink"
-                    >
-                      {m.node.link.label} →
-                    </Link>
+          <div ref={listRef} className="flex flex-1 flex-col gap-[8px] overflow-y-auto bg-white px-[14px] py-[16px]">
+            {messages.map((m) => (
+              <div
+                key={m.id}
+                className={cn(
+                  "flex flex-col gap-[4px]",
+                  m.from === "visitor" ? "items-end" : "items-start",
+                )}
+              >
+                <div
+                  className={cn(
+                    "max-w-[80%] whitespace-pre-wrap rounded-[18px] px-[14px] py-[10px] text-14 leading-[22px]",
+                    m.from === "visitor" ? "bg-ink text-white" : "bg-[#F7F6F2] text-ink",
                   )}
+                >
+                  {m.text}
                 </div>
-              ))}
-            </div>
+                {m.node?.link && (
+                  <Link
+                    href={m.node.link.href}
+                    onClick={() => setOpen(false)}
+                    className="self-start border-b-2 border-primary pb-[2px] text-12 font-bold text-ink"
+                  >
+                    {m.node.link.label} →
+                  </Link>
+                )}
+              </div>
+            ))}
           </div>
 
-          <div className="border-t-2 border-border px-4 py-3">
+          <div className="flex flex-col gap-[10px] border-t border-border bg-white px-[14px] py-[12px]">
             {chips.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-[8px]">
                 {chips.map((id) => {
                   const node = CHAT_NODES[id];
                   if (!node) return null;
@@ -136,7 +120,7 @@ export function ChatWidget() {
                       key={id}
                       type="button"
                       onClick={() => pick(id)}
-                      className="rounded-pill border-2 border-border bg-white px-3 py-1.5 text-xs font-bold text-ink hover:border-link-light-3 hover:bg-link-light hover:text-link-hover"
+                      className="cursor-pointer rounded-pill border border-border bg-white px-[14px] py-[8px] text-13 font-semibold text-ink hover:bg-surface-alt"
                     >
                       {node.question}
                     </button>
@@ -145,12 +129,12 @@ export function ChatWidget() {
               </div>
             )}
 
-            {(lastNode?.actions?.length || chips.length === 0) && (
-              <div className="mt-3 flex flex-col gap-2">
+            {showActions && (
+              <div className="flex flex-col gap-[10px]">
                 <Link
                   href="/contact/"
                   onClick={() => setOpen(false)}
-                  className="rounded-md bg-primary px-4 py-2.5 text-center text-sm font-extrabold text-white shadow-press hover:bg-primary-hover active:translate-y-1 active:shadow-none"
+                  className="min-h-[44px] rounded-[8px] bg-primary px-[12px] py-[11px] text-center text-14 font-bold text-white hover:bg-primary-hover hover:text-white"
                 >
                   Submit an inquiry
                 </Link>
@@ -158,7 +142,7 @@ export function ChatWidget() {
                   href={CONTACT_WHATSAPP_LINK}
                   target="_blank"
                   rel="noopener"
-                  className="rounded-md border-2 border-border px-4 py-2 text-center text-sm font-bold text-ink hover:border-ink"
+                  className="min-h-[44px] rounded-[8px] border border-border px-[12px] py-[11px] text-center text-14 font-bold text-ink hover:bg-surface-alt"
                 >
                   Message us on WhatsApp
                 </a>
@@ -166,7 +150,7 @@ export function ChatWidget() {
                   <button
                     type="button"
                     onClick={reset}
-                    className="text-xs font-bold text-muted hover:text-ink"
+                    className="cursor-pointer text-12 font-bold text-muted hover:text-ink"
                   >
                     ← Back to all questions
                   </button>
@@ -175,7 +159,16 @@ export function ChatWidget() {
             )}
           </div>
         </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Open chat"
+          className="fixed bottom-[24px] right-[24px] inline-flex h-[56px] w-[56px] cursor-pointer items-center justify-center rounded-pill bg-primary text-20 font-extrabold text-white shadow-[0_8px_24px_rgba(19,31,36,0.18)]"
+        >
+          M
+        </button>
       )}
-    </>
+    </div>
   );
 }

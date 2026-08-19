@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <Container className="flex flex-col items-center py-24 text-center">
-      <h1 className="text-d-4xl text-ink">Page not found</h1>
-      <p className="mt-4 max-w-md text-md text-muted">
-        The page you&rsquo;re looking for doesn&rsquo;t exist or has moved.
+      <h1 className="text-d48 font-extrabold tracking-[-0.02em] text-ink">Page not found</h1>
+      <p className="mt-4 max-w-md text-15 text-muted">
+        The page you&#39;re looking for doesn&#39;t exist or has moved.
       </p>
       <Button as={Link} href="/" className="mt-8">
         Back to homepage

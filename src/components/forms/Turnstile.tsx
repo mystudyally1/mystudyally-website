@@ -76,7 +76,7 @@ export function Turnstile({
 
   if (!TURNSTILE_SITE_KEY) {
     return (
-      <p className="text-xs text-muted-3">
+      <p className="text-12 text-muted-3">
         Turnstile site key not configured — set NEXT_PUBLIC_TURNSTILE_SITE_KEY.
       </p>
     );
