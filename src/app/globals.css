@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+  /* Light-only palette. Also set here so the declaration applies even before
+     the metadata-injected <meta name="color-scheme"> is parsed. */
+  :root {
+    color-scheme: light;
+  }
+
   /* Mirrors the design files' page-level base styles:
      html,body{margin:0;padding:0;background:#FFFFFF;color:#3C3C3C}
      a{color:#3C3C3C;text-decoration:none} a:hover{color:#131F24} */

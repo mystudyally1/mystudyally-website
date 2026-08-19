@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FaqBrowser } from "@/components/marketing/FaqBrowser";
+import { DarkCtaSection } from "@/components/marketing/DarkCtaSection";
 import { FAQ_GROUPS } from "@/data/faqs";
-import { CONTACT_EMAIL, SITE_URL } from "@/lib/constants";
+import { SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -60,33 +61,10 @@ export default function FaqPage() {
         </div>
       </section>
 
-      {/* Closing CTA */}
-      <section className="bg-surface-dark px-[clamp(20px,5vw,32px)] pb-[60px] pt-[56px]">
-        <div className="mx-auto flex max-w-container flex-wrap items-center justify-between gap-[48px]">
-          <div className="max-w-[640px]">
-            <h2 className="text-d30 font-extrabold leading-[34px] text-white [text-wrap:balance]">
-              Still have questions?
-            </h2>
-            <p className="mt-[12px] text-15 leading-[1.7] text-muted-4">
-              Tell us what your child needs — we&#39;ll answer the rest personally.
-            </p>
-          </div>
-          <div className="flex shrink-0 flex-col items-start gap-[12px]">
-            <Link
-              href="/contact/"
-              className="inline-block rounded-[16px] bg-primary px-[26px] py-[14px] text-14 font-extrabold text-white shadow-[0_4px_0_#58A700] hover:bg-primary-hover hover:text-white"
-            >
-              Submit an inquiry
-            </Link>
-            <span className="text-12 text-muted-2">
-              Or email us at{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`} className="text-muted-4 underline hover:text-white">
-                {CONTACT_EMAIL}
-              </a>
-            </span>
-          </div>
-        </div>
-      </section>
+      <DarkCtaSection
+        headline={"Still have questions?"}
+        sub={"Tell us what your child needs — we&#39;ll answer the rest personally."}
+      />
     </>
   );
 }

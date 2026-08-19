@@ -8,8 +8,15 @@ export interface PostFrontmatter {
   title: string;
   description: string;
   date: string;
+  /** Uppercase chip shown on the card, e.g. "SAT", "FOR PARENTS". */
+  tag: string;
   tags: string[];
-  author?: string;
+  author: string;
+  readTime: string;
+  image: string;
+  /** Curriculum slug for the "this article covers X" destination block. */
+  destination?: string;
+  destinationLabel?: string;
 }
 
 export interface Post extends PostFrontmatter {
@@ -26,29 +33,49 @@ function parseFrontmatter(slug: string, data: Record<string, unknown>): PostFron
     throw new Error(`Invalid frontmatter in content/blog/${slug}.mdx — ${msg}`);
   };
 
-  const title = data.title;
-  const description = data.description;
+  const str = (key: string, required: boolean): string => {
+    const v = data[key];
+    if (v === undefined || v === null || v === "") {
+      if (required) fail(`\`${key}\` is required`);
+      return "";
+    }
+    if (typeof v !== "string") fail(`\`${key}\` must be a string`);
+    return v as string;
+  };
+
+  const title = str("title", true);
+  const description = str("description", true);
+  const tag = str("tag", true);
+  const author = str("author", true);
+  const readTime = str("readTime", true);
+  const image = str("image", true);
+  const destination = str("destination", false) || undefined;
+  const destinationLabel = str("destinationLabel", false) || undefined;
+
   const date = data.date;
-  const tags = data.tags ?? [];
-  const author = data.author;
-
-  if (typeof title !== "string" || !title.trim()) fail("`title` is required");
-  if (typeof description !== "string" || !description.trim()) fail("`description` is required");
   if (!(date instanceof Date) && typeof date !== "string") fail("`date` is required (YYYY-MM-DD)");
-
   const iso = date instanceof Date ? date.toISOString().slice(0, 10) : String(date).slice(0, 10);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) fail("`date` must be YYYY-MM-DD");
+
+  const tags = data.tags ?? [];
   if (!Array.isArray(tags) || tags.some((t) => typeof t !== "string")) {
     fail("`tags` must be a list of strings");
   }
-  if (author !== undefined && typeof author !== "string") fail("`author` must be a string");
+
+  const imagePath = path.join(process.cwd(), "public", image.replace(/^\//, ""));
+  if (!fs.existsSync(imagePath)) fail(`\`image\` not found at public${image}`);
 
   return {
-    title: title as string,
-    description: description as string,
+    title,
+    description,
     date: iso,
+    tag,
     tags: tags as string[],
-    author: author as string | undefined,
+    author,
+    readTime,
+    image,
+    destination,
+    destinationLabel,
   };
 }
 
@@ -68,6 +95,14 @@ export function getAllPosts(): Post[] {
 
 export function getPost(slug: string): Post | undefined {
   return getAllPosts().find((p) => p.slug === slug);
+}
+
+export function getRelatedPosts(slug: string, limit = 2): Post[] {
+  const all = getAllPosts();
+  const index = all.findIndex((p) => p.slug === slug);
+  if (index === -1) return all.slice(0, limit);
+  // The next posts in reverse-chronological order, wrapping around.
+  return [...all.slice(index + 1), ...all.slice(0, index)].slice(0, limit);
 }
 
 export function getAllTags(): string[] {

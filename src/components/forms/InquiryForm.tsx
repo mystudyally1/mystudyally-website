@@ -22,9 +22,25 @@ export interface InquiryFormProps {
   variant?: "full" | "compact";
   presetCurriculum?: string;
   className?: string;
+  /** Contact page shows the "What can we help with?" intent selector. */
+  showIntent?: boolean;
 }
 
-export function InquiryForm({ variant = "full", presetCurriculum, className }: InquiryFormProps) {
+/** From the design's Contact form: the intent buttons above the fields. */
+const INTENTS = [
+  { key: "tutor", label: "Finding a tutor" },
+  { key: "pricing", label: "Pricing or how it works" },
+  { key: "other", label: "Something else" },
+] as const;
+
+type Intent = (typeof INTENTS)[number]["key"];
+
+export function InquiryForm({
+  variant = "full",
+  presetCurriculum,
+  className,
+  showIntent = false,
+}: InquiryFormProps) {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [rateLimited, setRateLimited] = useState(false);
@@ -35,13 +51,19 @@ export function InquiryForm({ variant = "full", presetCurriculum, className }: I
   const [subjects, setSubjects] = useState<string[]>([]);
   const [subjectFilter, setSubjectFilter] = useState("");
   const [subjectsOpen, setSubjectsOpen] = useState(false);
+  const [intent, setIntent] = useState<Intent>("tutor");
+  const [role, setRole] = useState<InquiryFormValues["contact_role"]>("parent");
+  const [curriculumError, setCurriculumError] = useState(false);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isCompact = variant === "compact";
+  // Only the "finding a tutor" path asks for curriculum, subjects and schedule.
+  const isTutoring = !showIntent || intent === "tutor";
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<InquiryFormValues>({
     resolver: zodResolver(inquirySchema),
@@ -57,6 +79,10 @@ export function InquiryForm({ variant = "full", presetCurriculum, className }: I
   }, [curriculum, subjects, subjectFilter]);
 
   async function onSubmit(values: InquiryFormValues) {
+    if (isTutoring && showIntent && !curriculum) {
+      setCurriculumError(true);
+      return;
+    }
     if (!consent) {
       setConsentError(true);
       return;
@@ -67,8 +93,10 @@ export function InquiryForm({ variant = "full", presetCurriculum, className }: I
 
     const payload = {
       ...values,
-      curriculum: curriculum || undefined,
-      subjects_needed: subjects.length ? subjects : undefined,
+      // Only send the tutoring-specific fields when that's what they asked about,
+      // so a pricing question doesn't arrive tagged with a stale curriculum.
+      curriculum: isTutoring ? curriculum || undefined : undefined,
+      subjects_needed: isTutoring && subjects.length ? subjects : undefined,
       cf_turnstile_token: turnstileToken,
       ...getAttribution(),
     };
@@ -297,6 +325,61 @@ export function InquiryForm({ variant = "full", presetCurriculum, className }: I
     <form onSubmit={handleSubmit(onSubmit)} className={cn("flex flex-col gap-[22px]", className)} noValidate>
       {alerts}
 
+      {showIntent && (
+        <div className="flex flex-col gap-[10px]">
+          <label className="text-14 font-extrabold text-body">What can we help with?</label>
+          <div className="flex gap-[10px]" role="group" aria-label="What can we help with?">
+            {INTENTS.map((o) => (
+              <button
+                key={o.key}
+                type="button"
+                onClick={() => setIntent(o.key)}
+                aria-pressed={intent === o.key}
+                className={cn(
+                  "flex-1 cursor-pointer rounded-[14px] border-2 px-[10px] py-[13px] text-center text-13 font-bold leading-[1.35]",
+                  intent === o.key
+                    ? "border-ink bg-ink text-white"
+                    : "border-border bg-white text-muted hover:border-muted-3",
+                )}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Curriculum leads the form, as in the design */}
+      {isTutoring && (
+        <div className="flex flex-col gap-[6px]">
+          <label className={labelClass} htmlFor="curriculum">
+            Curriculum <span className="text-[#B4462B]">*</span>
+          </label>
+          <select
+            id="curriculum"
+            value={curriculum}
+            onChange={(e) => {
+              setCurriculum(e.target.value);
+              setSubjects([]);
+              setCurriculumError(false);
+            }}
+            className={cn(inputClass, curriculumError && "border-[#B4462B]")}
+          >
+            <option value="">Select a curriculum…</option>
+            {CURRICULA.map((c) => (
+              <option key={c.slug} value={c.name}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+          {curriculumError && (
+            <span className={errorClass}>
+              Please choose a curriculum so we can match the right tutor
+            </span>
+          )}
+        </div>
+      )}
+
       <div className="grid gap-[16px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))]">
         <div className="flex flex-col gap-[6px]">
           <label className={labelClass} htmlFor="contact_name">
@@ -320,29 +403,7 @@ export function InquiryForm({ variant = "full", presetCurriculum, className }: I
         </div>
       </div>
 
-      <div className="flex flex-col gap-[6px]">
-        <label className={labelClass} htmlFor="curriculum">
-          Curriculum
-        </label>
-        <select
-          id="curriculum"
-          value={curriculum}
-          onChange={(e) => {
-            setCurriculum(e.target.value);
-            setSubjects([]);
-          }}
-          className={inputClass}
-        >
-          <option value="">Not sure yet</option>
-          {CURRICULA.map((c) => (
-            <option key={c.slug} value={c.name}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {subjectOptions.length + subjects.length > 0 && (
+      {isTutoring && subjectOptions.length + subjects.length > 0 && (
         <div className="flex flex-col gap-[8px]">
           <label className={labelClass} htmlFor="subjects">
             Subjects needed <span className="font-semibold text-muted-3">(pick any)</span>
@@ -406,18 +467,39 @@ export function InquiryForm({ variant = "full", presetCurriculum, className }: I
         </div>
       )}
 
+      {isTutoring && (
       <div className="grid gap-[16px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))]">
         <div className="flex flex-col gap-[6px]">
-          <label className={labelClass} htmlFor="contact_role">
-            I am a
-          </label>
-          <select id="contact_role" className={inputClass} {...register("contact_role")}>
-            {CONTACT_ROLE_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
+          <span className={labelClass}>I am a</span>
+          {/* Segmented control, per the design — not a dropdown */}
+          <div
+            className="flex gap-[4px] rounded-[12px] bg-surface-alt p-[4px]"
+            role="group"
+            aria-label="I am a"
+          >
+            {CONTACT_ROLE_OPTIONS.map((o) => {
+              const on = role === o.value;
+              return (
+                <button
+                  key={o.value}
+                  type="button"
+                  onClick={() => {
+                    setRole(o.value);
+                    setValue("contact_role", o.value);
+                  }}
+                  aria-pressed={on}
+                  className={cn(
+                    "flex-1 cursor-pointer rounded-[9px] py-[9px] text-12_5 font-bold",
+                    on
+                      ? "bg-white text-body shadow-[0_2px_8px_rgba(60,60,60,0.12)]"
+                      : "bg-transparent text-muted",
+                  )}
+                >
+                  {o.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
         <div className="flex flex-col gap-[6px]">
           <label className={labelClass} htmlFor="student_name">
@@ -426,6 +508,7 @@ export function InquiryForm({ variant = "full", presetCurriculum, className }: I
           <input id="student_name" placeholder="Your child's name" className={inputClass} {...register("student_name")} />
         </div>
       </div>
+      )}
 
       <div className="grid gap-[16px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))]">
         <div className="flex flex-col gap-[6px]">
@@ -434,24 +517,36 @@ export function InquiryForm({ variant = "full", presetCurriculum, className }: I
           </label>
           <input id="contact_phone" placeholder="+44 7700 900000" className={inputClass} {...register("contact_phone")} />
         </div>
-        <div className="flex flex-col gap-[6px]">
-          <label className={labelClass} htmlFor="preferred_schedule">
-            Preferred schedule <span className="font-semibold text-muted-3">(optional)</span>
-          </label>
-          <input
-            id="preferred_schedule"
-            placeholder="e.g. Weekday evenings after 6pm"
-            className={inputClass}
-            {...register("preferred_schedule")}
-          />
-        </div>
+        {isTutoring && (
+          <div className="flex flex-col gap-[6px]">
+            <label className={labelClass} htmlFor="preferred_schedule">
+              Preferred schedule <span className="font-semibold text-muted-3">(optional)</span>
+            </label>
+            <input
+              id="preferred_schedule"
+              placeholder="e.g. Weekday evenings after 6pm"
+              className={inputClass}
+              {...register("preferred_schedule")}
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-[6px]">
         <label className={labelClass} htmlFor="message">
           Message <span className="font-semibold text-muted-3">(optional)</span>
         </label>
-        <textarea id="message" rows={3} className={cn(inputClass, "resize-y")} {...register("message")} />
+        <textarea
+          id="message"
+          rows={3}
+          placeholder={
+            isTutoring
+              ? "Anything else — goals, a tutor you'd like, or 'not sure of curriculum yet'"
+              : "What would you like to know?"
+          }
+          className={cn(inputClass, "resize-y")}
+          {...register("message")}
+        />
       </div>
 
       {consentBox}

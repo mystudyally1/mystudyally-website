@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LoopingVideo } from "@/components/ui/LoopingVideo";
 
 /**
  * The half-width "Get started" panel used beside the FAQ block on the homepage
@@ -20,17 +21,9 @@ export function GetStartedPanel({
 }) {
   return (
     <div className="relative flex min-h-[clamp(360px,42vw,560px)] flex-col items-start justify-center overflow-hidden rounded-[32px] bg-primary px-[clamp(22px,4vw,44px)] py-[clamp(30px,5vw,56px)] shadow-[0_2px_4px_rgba(60,60,60,0.06)]">
-      <video
-        src="/video/cta.mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        aria-hidden="true"
-        tabIndex={-1}
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-      />
+      <div className="pointer-events-none absolute inset-0">
+        <LoopingVideo src="/video/cta.mp4" />
+      </div>
       <div
         className="pointer-events-none absolute inset-0"
         style={{

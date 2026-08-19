@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -21,6 +21,16 @@ export const metadata: Metadata = {
     template: `%s — ${SITE_NAME}`,
   },
   description: SITE_TAGLINE,
+};
+
+/**
+ * The design is a light-only palette. Without an explicit declaration the page
+ * reports `color-scheme: normal`, which lets Chrome/Edge auto-dark-mode apply
+ * its own inversion — it reads as a grey tint over the whole site.
+ */
+export const viewport: Viewport = {
+  colorScheme: "light",
+  themeColor: "#FFFFFF",
 };
 
 const organizationJsonLd = {

@@ -3,68 +3,28 @@
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
-import { PLAN_FINDER } from "@/data/pricing";
+import { recommendPlan } from "@/lib/plan-finder";
 
-// Recommendation logic ported verbatim from "website design/Pricing v2.dc.html".
 export function PlanFinder() {
   const [kids, setKids] = useState(1);
   const [subj, setSubj] = useState(1);
   const [spw, setSpw] = useState(2);
 
-  const monthly = Math.ceil(spw * 4.33);
-  const freqIdx =
-    monthly <= 4 ? 0 : monthly <= 8 ? 1 : monthly <= 12 ? 2 : monthly <= 16 ? 3 : monthly <= 24 ? 4 : 5;
-  const subjIdx = subj === 1 ? 0 : subj === 2 ? 2 : 3;
-  const sibIdx = kids === 1 ? 0 : 4;
-  const recIdx = Math.max(freqIdx, subjIdx, sibIdx);
-  const rec = PLAN_FINDER[recIdx];
-
-  const chips: string[] = [];
-  if (freqIdx === recIdx) chips.push(`Covers ${monthly} classes a month at ${spw}/week`);
-  if (subjIdx === recIdx && subjIdx > 0) {
-    chips.push(
-      `${subj === 4 ? "4+" : subj} subjects need the ${PLAN_FINDER[subjIdx].name} tier or above`,
-    );
-  }
-  if (sibIdx === recIdx && sibIdx > 0) chips.push("Sibling sharing starts at Premium");
-
-  let warmNote: string | null = null;
-  if (sibIdx === recIdx && sibIdx > freqIdx) {
-    warmNote =
-      `${kids === 2 ? "Two children" : "Three or more children"} means you'll want sibling sharing, ` +
-      `which starts with Premium — that's more classes than your schedule strictly needs, but they're ` +
-      `shared across ${kids === 2 ? "both" : "all"} children and the per-class rate drops to $7.88.`;
-  } else if (subjIdx === recIdx && subjIdx > freqIdx) {
-    warmNote =
-      `Covering ${subj === 4 ? "4 or more" : subj} subjects takes more classes than your weekly schedule ` +
-      `strictly needs — ${rec.name} gives each subject room to breathe, and the per-class rate drops to ${rec.per}.`;
-  }
-
-  let validityNote: string | null = null;
-  if (rec.classes / (rec.days / 7) > spw) {
-    const months = Math.ceil(rec.classes / monthly);
-    let si = 0;
-    for (let i = 0; i < PLAN_FINDER.length; i++) {
-      if (PLAN_FINDER[i].classes / (PLAN_FINDER[i].days / 7) <= spw) si = i;
-    }
-    const sp = PLAN_FINDER[si];
-    validityNote =
-      `At ${spw} ${spw === 1 ? "class" : "classes"} a week, you'd need about ${months} months to use all ` +
-      `${rec.classes} classes, but this plan is valid for ${rec.days} days. We'd suggest ${sp.name}, ` +
-      `renewed each month — about $${sp.price * months} over ${months} months.`;
-  }
+  const rec = recommendPlan(kids, subj, spw);
 
   const seg = (
     options: { label: string; value: number }[],
     current: number,
     set: (v: number) => void,
+    groupLabel: string,
   ) => (
-    <div className="flex gap-[8px]">
+    <div className="flex gap-[8px]" role="group" aria-label={groupLabel}>
       {options.map((o) => (
         <button
           key={o.value}
           type="button"
           onClick={() => set(o.value)}
+          aria-pressed={current === o.value}
           className={cn(
             "flex-1 cursor-pointer rounded-[12px] border py-[10px] text-13 font-extrabold",
             current === o.value
@@ -91,6 +51,7 @@ export function PlanFinder() {
             ],
             kids,
             setKids,
+            "Number of children",
           )}
         </div>
         <div>
@@ -104,11 +65,14 @@ export function PlanFinder() {
             ],
             subj,
             setSubj,
+            "Number of subjects",
           )}
         </div>
         <div>
           <div className="mb-[9px] flex items-baseline justify-between">
-            <span className="text-13 font-extrabold">How often do you want classes?</span>
+            <span className="text-13 font-extrabold">
+              How often per {kids > 1 ? "child" : "week"}?
+            </span>
             <span className="text-13 font-extrabold text-link-hover">{spw}×/week</span>
           </div>
           <input
@@ -118,11 +82,13 @@ export function PlanFinder() {
             step={1}
             value={spw}
             onChange={(e) => setSpw(Number(e.target.value))}
-            aria-label="Classes per week"
+            aria-label="Classes per week per child"
             className="w-full cursor-pointer accent-primary"
           />
           <div className="mt-[6px] text-12 font-bold text-primary-shadow">
-            ≈ {monthly} classes a month
+            {kids > 1
+              ? `${rec.totalPerWeek} classes a week across ${kids === 3 ? "3+" : kids} children`
+              : `${rec.totalPerWeek} ${rec.totalPerWeek === 1 ? "class" : "classes"} a week`}
           </div>
         </div>
       </div>
@@ -133,12 +99,14 @@ export function PlanFinder() {
             OUR RECOMMENDATION
           </div>
           <div className="mt-[12px] flex flex-wrap items-baseline gap-[14px]">
-            <span className="text-d30 font-black leading-none text-white">{rec.name}</span>
-            <span className="text-d36 font-black leading-none text-white">${rec.price}</span>
-            <span className="text-15 font-extrabold text-link-light">{rec.classes} classes</span>
+            <span className="text-d30 font-black leading-none text-white">{rec.plan.name}</span>
+            <span className="text-d36 font-black leading-none text-white">${rec.plan.price}</span>
+            <span className="text-15 font-extrabold text-link-light">
+              {rec.plan.classes} classes
+            </span>
           </div>
           <div className="mt-[8px] text-12 font-semibold text-white/80">
-            {rec.per} per class · Valid {rec.days} days
+            {rec.plan.per} per class · Valid {rec.plan.days} days
           </div>
           <Link
             href="/contact/"
@@ -148,9 +116,9 @@ export function PlanFinder() {
           </Link>
         </div>
 
-        {chips.length > 0 && (
+        {rec.reasons.length > 0 && (
           <div className="mt-[14px] flex flex-wrap gap-[8px]">
-            {chips.map((c) => (
+            {rec.reasons.map((c) => (
               <span
                 key={c}
                 className="inline-flex items-center gap-[7px] rounded-pill border border-[#C9E9FB] bg-[#EAF7FE] px-[12px] py-[6px] text-12 font-bold text-link-hover"
@@ -162,17 +130,19 @@ export function PlanFinder() {
           </div>
         )}
 
-        {warmNote && <p className="mt-[12px] text-13 leading-[1.7] text-muted">{warmNote}</p>}
-
-        {validityNote && (
+        {rec.note && (
           <div className="mt-[12px] rounded-[12px] border border-border bg-surface-alt px-[16px] py-[12px]">
-            <span className="text-12 font-extrabold text-body">A note on timing: </span>
-            <span className="text-12_5 leading-[1.65] text-muted">{validityNote}</span>
+            <span className="text-12 font-extrabold text-body">Worth knowing: </span>
+            <span className="text-12_5 leading-[1.65] text-muted">{rec.note}</span>
           </div>
         )}
 
+        {rec.renewalNote && (
+          <p className="mt-[12px] text-13 leading-[1.7] text-muted">{rec.renewalNote}</p>
+        )}
+
         <p className="mt-[12px] text-12 font-bold text-muted-3">
-          About ${Math.round(rec.price / (rec.days / 30))} a month
+          About ${rec.monthlyCost} a month
         </p>
       </div>
     </div>

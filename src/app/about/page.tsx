@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
+import { DarkCtaSection } from "@/components/marketing/DarkCtaSection";
 import { GetStartedPanel } from "@/components/marketing/GetStartedPanel";
 import { FaqList } from "@/components/ui/FaqList";
 import { ABOUT_FAQS, ABOUT_ROWS, VETTING_STEPS } from "@/data/about";
 import { TUTORS } from "@/data/tutors";
-import { CONTACT_EMAIL, SITE_URL } from "@/lib/constants";
+import { SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -141,33 +141,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Closing CTA */}
-      <section className="bg-surface-dark px-[clamp(20px,5vw,32px)] pb-[60px] pt-[56px]">
-        <div className="mx-auto flex max-w-container flex-wrap items-center justify-between gap-[48px]">
-          <div className="max-w-[640px]">
-            <h2 className="text-d30 font-extrabold leading-[34px] text-white [text-wrap:balance]">
-              Ready to get started?
-            </h2>
-            <p className="mt-[12px] text-15 leading-[1.7] text-muted-4">
-              Tell us what your child needs — we&#39;ll take it from there.
-            </p>
-          </div>
-          <div className="flex shrink-0 flex-col items-start gap-[12px]">
-            <Link
-              href="/contact/"
-              className="inline-block rounded-[16px] bg-primary px-[26px] py-[14px] text-14 font-extrabold text-white shadow-[0_4px_0_#58A700] hover:bg-primary-hover hover:text-white"
-            >
-              Submit an inquiry
-            </Link>
-            <span className="text-12 text-muted-2">
-              Or email us at{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`} className="text-muted-4 underline hover:text-white">
-                {CONTACT_EMAIL}
-              </a>
-            </span>
-          </div>
-        </div>
-      </section>
+      <DarkCtaSection
+        headline={"Ready to get started?"}
+        sub={"Tell us what your child needs — we&#39;ll take it from there."}
+      />
 
       {/* Get started + FAQ */}
       <section id="faq" className="px-[clamp(20px,5vw,32px)] pb-[72px] pt-[56px]">

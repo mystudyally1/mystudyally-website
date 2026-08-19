@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Container } from "@/components/ui/Container";
-import { Section } from "@/components/ui/Section";
-import { Card } from "@/components/ui/Card";
-import { Accordion } from "@/components/ui/Accordion";
 import { InquiryFormLazy } from "@/components/forms/InquiryFormLazy";
+import { ContactFaq } from "@/components/marketing/ContactFaq";
 import {
   CONTACT_ADDRESS,
   CONTACT_EMAIL,
   CONTACT_WHATSAPP_DISPLAY,
   CONTACT_WHATSAPP_LINK,
+  SITE_URL,
   SLA_RESPONSE_TIME,
 } from "@/lib/constants";
 
@@ -17,95 +15,104 @@ export const metadata: Metadata = {
   title: "Contact",
   description:
     "Tell us what your child needs and we'll match them with a tutor. Every inquiry is read by a person — we reply within 24 hours.",
+  alternates: { canonical: `${SITE_URL}/contact/` },
 };
 
-const DETAILS = [
+const DETAILS: { label: string; value: string; href?: string }[] = [
   { label: "EMAIL", value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
   { label: "WHATSAPP", value: CONTACT_WHATSAPP_DISPLAY, href: CONTACT_WHATSAPP_LINK },
-  { label: "RESPONSE", value: `${SLA_RESPONSE_TIME.replace(/^within /, "Within ")}, every day` },
+  { label: "RESPONSE", value: "Within 24 hours, every day" },
+  { label: "HOURS", value: "09:00–18:00 GST · 09:00–18:00 GMT" },
   { label: "OFFICES", value: CONTACT_ADDRESS },
-];
-
-const FAQS = [
-  {
-    question: "How much does tutoring cost?",
-    answer: (
-      <>
-        You buy a prepaid package of hours, and hours are deducted as sessions happen. Full rates
-        are on the <Link href="/pricing/">pricing page</Link>.
-      </>
-    ),
-  },
-  {
-    question: "How does matching work?",
-    answer: "You tell us the curriculum and subjects; our team hand-picks a tutor who specialises in that exact exam board.",
-  },
-  {
-    question: "Do you offer a free trial?",
-    answer: "Yes — a 30-minute trial session, no card required.",
-  },
-  {
-    question: "Which curricula do you cover?",
-    answer:
-      "IGCSE, GCSE, A Levels, IB, SABIS, HKDSE, and the American and Canadian curricula — plus IELTS and SAT preparation.",
-  },
 ];
 
 export default function ContactPage() {
   return (
     <>
-      <Section className="pb-2 pt-14">
-        <Container className="max-w-2xl">
-          <div className="text-12 font-bold tracking-[0.14em] text-muted">CONTACT</div>
-          <h1 className="mt-4 text-d48 font-extrabold tracking-[-0.02em] text-ink">Get in touch</h1>
-          <p className="mt-4 text-16 text-muted">
-            Tell us what your child needs and we&#39;ll match them with a tutor. Or ask us
-            anything first — same team either way.
-          </p>
-          <p className="mt-5 text-13 font-bold text-ink">
-            Every inquiry is read by a person, not routed to a queue. We reply {SLA_RESPONSE_TIME}.
-          </p>
-        </Container>
-      </Section>
+      {/* Hero */}
+      <section className="px-[clamp(20px,5vw,32px)] pb-[8px] pt-[72px]">
+        <div className="mx-auto max-w-container">
+          <div className="max-w-[640px]">
+            <div className="text-12 font-bold tracking-[0.14em] text-muted">CONTACT</div>
+            <h1 className="mt-[16px] text-d48 font-extrabold leading-[52px] tracking-[-0.02em]">
+              Get in touch
+            </h1>
+            <p className="mt-[16px] text-16 leading-[26px] text-muted [text-wrap:pretty]">
+              Tell us what your child needs and we&#39;ll match them with a tutor. Or ask us
+              anything first — same team either way.
+            </p>
+            <p className="mt-[20px] text-13 font-bold leading-[22px] text-body">
+              Every inquiry is read by a person, not routed to a queue. We reply{" "}
+              {SLA_RESPONSE_TIME}.
+            </p>
+          </div>
+        </div>
+      </section>
 
-      <Section className="pt-8">
-        <Container className="grid items-start gap-10 lg:grid-cols-[1fr_340px] lg:gap-20">
-          <Card>
-            <InquiryFormLazy variant="full" />
-          </Card>
+      {/* Form + details */}
+      <section className="px-[clamp(20px,5vw,32px)] pb-[72px] pt-[48px]">
+        <div className="mx-auto grid max-w-container items-start gap-[clamp(36px,5vw,80px)] [grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))]">
+          <div>
+            <InquiryFormLazy variant="full" showIntent />
+          </div>
 
-          <div className="flex flex-col">
-            {DETAILS.map((d) => (
+          <div className="pt-[6px]">
+            {DETAILS.map((d, i) => (
               <div
                 key={d.label}
-                className="grid grid-cols-[90px_1fr] gap-5 border-t border-border py-4 first:pt-0"
+                className={
+                  "grid gap-x-[20px] gap-y-[6px] border-t border-border py-[16px] [grid-template-columns:minmax(84px,96px)_minmax(0,1fr)] " +
+                  (i === DETAILS.length - 1 ? "border-b" : "")
+                }
               >
-                <span className="pt-0.5 text-12 font-bold tracking-wide text-muted-3">
+                <span className="pt-[2px] text-12 font-bold tracking-[0.08em] text-muted-3">
                   {d.label}
                 </span>
                 {d.href ? (
-                  <a href={d.href} className="text-13 font-bold text-ink underline decoration-border underline-offset-4 hover:decoration-ink">
+                  <a
+                    href={d.href}
+                    className="text-14 font-bold text-body underline decoration-border underline-offset-[3px] hover:decoration-body"
+                  >
                     {d.value}
                   </a>
                 ) : (
-                  <span className="text-13 leading-relaxed text-ink">{d.value}</span>
+                  <span className="text-14 leading-[1.6] text-body">{d.value}</span>
                 )}
               </div>
             ))}
           </div>
-        </Container>
-      </Section>
+        </div>
+      </section>
 
-      <Section>
-        <Container className="max-w-2xl">
+      {/* Deflection FAQ — left-aligned to the container, per the design */}
+      <section className="px-[clamp(20px,5vw,32px)] pb-[80px] pt-[24px]">
+        <div className="mr-auto max-w-[720px] [margin-left:max(32px,calc((100%-1280px)/2))]">
           <div className="text-12 font-bold tracking-[0.14em] text-muted">BEFORE YOU WRITE IN</div>
-          <h2 className="mt-3.5 text-d34 font-extrabold tracking-[-0.01em] text-ink">Quick answers</h2>
-          <Accordion items={FAQS} className="mt-4" />
-          <Link href="/faq/" className="mt-6 inline-block border-b-2 border-primary pb-0.5 text-13 font-bold text-ink">
+          <h2 className="mb-[8px] mt-[14px] text-d28 font-extrabold tracking-[-0.01em]">
+            Quick answers
+          </h2>
+          <ContactFaq />
+          <Link
+            href="/faq/"
+            className="mt-[24px] inline-block border-b-2 border-primary pb-[2px] text-13 font-bold text-body"
+          >
             Read the full FAQ →
           </Link>
-        </Container>
-      </Section>
+        </div>
+      </section>
+
+      {/* Closing note */}
+      <section className="bg-surface-dark px-[clamp(20px,5vw,32px)] py-[44px]">
+        <div className="mx-auto flex max-w-container items-center justify-between gap-[48px]">
+          <p className="max-w-[640px] text-15 leading-[1.7] text-muted-4">
+            Prefer to just write an email?{" "}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-white underline hover:text-white">
+              {CONTACT_EMAIL}
+            </a>{" "}
+            — read by a person, answered {SLA_RESPONSE_TIME}.
+          </p>
+        </div>
+      </section>
     </>
   );
 }

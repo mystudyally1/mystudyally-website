@@ -341,8 +341,11 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* Find your plan */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[56px] pt-0">
+      {/* Find your plan — id is deep-linked from the chat assistant */}
+      <section
+        id="find-your-plan"
+        className="scroll-mt-[80px] px-[clamp(20px,5vw,32px)] pb-[56px] pt-0"
+      >
         <div className="mx-auto max-w-[1080px]">
           <div className="text-center">
             <h2 className="text-d26 font-extrabold">Find your plan</h2>

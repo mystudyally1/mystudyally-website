@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CtaBand } from "@/components/marketing/CtaBand";
+import { GetStartedPanel } from "@/components/marketing/GetStartedPanel";
 import { CURRICULA } from "@/data/curricula";
 import { FEATURED_TUTORS } from "@/data/tutors";
 
@@ -294,7 +294,7 @@ export default function Home() {
       {/* Get started + FAQ */}
       <section className="px-[clamp(20px,5vw,32px)] pb-[72px] pt-[56px]">
         <div className="mx-auto grid max-w-container items-start gap-[24px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))]">
-          <CtaBand
+          <GetStartedPanel
             headline="Ready to get started?"
             sub="Submit an inquiry and we'll match you with a tutor within 24h."
           />
