@@ -17,7 +17,7 @@ export default function SubjectsPage() {
       {/* Hero */}
       <section className="relative overflow-hidden px-[clamp(20px,5vw,32px)] pb-[48px] pt-[72px]">
         <div
-          className="pointer-events-none absolute -right-[140px] -top-[120px] h-[560px] w-[560px] blur-[24px]"
+          className="pointer-events-none absolute hidden md:block -right-[140px] -top-[120px] h-[560px] w-[560px] blur-[24px]"
           style={{
             background:
               "radial-gradient(circle, rgba(88,204,2,0.14), rgba(88,204,2,0) 65%)",

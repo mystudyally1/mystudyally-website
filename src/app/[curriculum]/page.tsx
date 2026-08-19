@@ -80,7 +80,7 @@ export default async function CurriculumPage(props: PageProps<"/[curriculum]">) 
         className="relative overflow-hidden px-[clamp(20px,5vw,32px)] pb-[48px] pt-[64px]"
       >
         <div
-          className="pointer-events-none absolute -left-[160px] -top-[120px] h-[560px] w-[560px] blur-[24px]"
+          className="pointer-events-none absolute hidden md:block -left-[160px] -top-[120px] h-[560px] w-[560px] blur-[24px]"
           style={{
             background: "radial-gradient(circle, rgba(88,204,2,0.15), rgba(88,204,2,0) 65%)",
           }}
