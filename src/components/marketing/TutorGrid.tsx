@@ -25,6 +25,7 @@ export function TutorGrid() {
 
   return (
     <>
+      <h2 className="sr-only">Filter tutors by curriculum</h2>
       <div className="mb-[12px] flex flex-wrap gap-[10px]">
         {options.map((label) => {
           const on = filter === label;

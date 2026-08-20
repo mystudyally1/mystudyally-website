@@ -164,15 +164,24 @@ export function InquiryForm({
     </div>
   );
 
+  // Positioned off-screen rather than display:none — many bots skip fields that
+  // are not rendered at all, which defeats the trap. Hidden from assistive tech
+  // and removed from the tab order, and it carries a label so it is not an
+  // unlabelled control if either of those ever fails.
   const honeypot = (
-    <input
-      type="text"
-      tabIndex={-1}
-      autoComplete="off"
+    <div
       aria-hidden="true"
-      className="hidden"
-      {...register("website")}
-    />
+      className="pointer-events-none absolute left-[-9999px] top-[-9999px] h-px w-px overflow-hidden"
+    >
+      <label htmlFor="msa-website">Leave this field empty</label>
+      <input
+        id="msa-website"
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        {...register("website")}
+      />
+    </div>
   );
 
   const alerts = errorMessage && (
@@ -192,7 +201,7 @@ export function InquiryForm({
   /* ---------------- compact (curriculum hero) ---------------- */
   if (isCompact) {
     return (
-      <form onSubmit={handleSubmit(onSubmit)} className={cn("flex flex-col gap-[16px]", className)} noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} className={cn("relative flex flex-col gap-[16px]", className)} noValidate>
         {alerts}
 
         <div className="flex flex-col gap-[6px]">
@@ -322,7 +331,7 @@ export function InquiryForm({
 
   /* ---------------- full (contact page) ---------------- */
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={cn("flex flex-col gap-[22px]", className)} noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} className={cn("relative flex flex-col gap-[22px]", className)} noValidate>
       {alerts}
 
       {showIntent && (

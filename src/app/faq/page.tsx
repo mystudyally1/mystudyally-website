@@ -63,7 +63,7 @@ export default function FaqPage() {
 
       <DarkCtaSection
         headline={"Still have questions?"}
-        sub={"Tell us what your child needs — we&#39;ll answer the rest personally."}
+        sub={"Tell us what your child needs — we'll answer the rest personally."}
       />
     </>
   );

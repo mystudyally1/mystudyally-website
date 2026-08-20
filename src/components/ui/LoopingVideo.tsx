@@ -1,34 +1,64 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
 /**
  * Autoplaying muted background video.
  *
- * Browsers silently refuse or drop autoplay in several situations — a client
- * side route change that remounts the element, returning to a backgrounded
- * tab, a stalled buffer. The design works around this with a keepalive that
- * re-issues play() on an interval and on visibilitychange (see the footer
- * video in SiteFooter.dc.html); this does the same, plus a retry on error.
- * Without it the panel renders as a frozen or empty box.
+ * Two things this handles:
+ *
+ * 1. Cost. These are decorative, and the footer one sits below the fold on
+ *    every page. The `src` is only attached once the element is near the
+ *    viewport, so a visitor who never scrolls that far downloads nothing but
+ *    the poster. `preload="none"` keeps the browser from pre-fetching.
+ *
+ * 2. Autoplay reliability. Browsers drop or refuse autoplay after a
+ *    client-side route change, on return to a backgrounded tab, or on a
+ *    stalled buffer. The design works around this with a keepalive that
+ *    re-issues play() on an interval (see SiteFooter.dc.html); without it the
+ *    panel renders as a frozen frame.
  */
 export function LoopingVideo({
   src,
-  className,
   poster,
+  className,
 }: {
   src: string;
-  className?: string;
   poster?: string;
+  className?: string;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
+  const [active, setActive] = useState(false);
 
+  // Attach the source only when the video is close to being seen.
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      // Browser too old to observe — just load it, but off the effect body so
+      // this doesn't run as a synchronous cascading render.
+      const t = setTimeout(() => setActive(true), 0);
+      return () => clearTimeout(t);
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setActive(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "300px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
-    // Set imperatively too: some browsers ignore the muted attribute set by
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !active) return;
+
+    // Set imperatively too: some browsers ignore the muted attribute applied by
     // React on first paint, and an unmuted video is never allowed to autoplay.
     el.muted = true;
     el.defaultMuted = true;
@@ -40,7 +70,6 @@ export function LoopingVideo({
       const p = el.play();
       if (p && typeof p.catch === "function") p.catch(() => {});
     };
-
     const onError = () => {
       if (retries >= 3) return;
       retries += 1;
@@ -64,18 +93,18 @@ export function LoopingVideo({
       el.removeEventListener("error", onError);
       document.removeEventListener("visibilitychange", tryPlay);
     };
-  }, [src]);
+  }, [active, src]);
 
   return (
     <video
       ref={ref}
-      src={src}
+      src={active ? src : undefined}
       poster={poster}
       autoPlay
       muted
       loop
       playsInline
-      preload="auto"
+      preload="none"
       aria-hidden="true"
       tabIndex={-1}
       className={cn("block h-full w-full object-cover", className)}

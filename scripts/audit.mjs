@@ -31,6 +31,11 @@ function visibleText(html) {
     .replace(/\s+/g, " ");
 }
 
+// An HTML entity written inside a JS string prop is never parsed by JSX — it
+// reaches the visitor as literal text like `we&#39;ll`. visibleText() above has
+// already decoded the genuine entities, so anything still matching here is a leak.
+const ENTITY_LEAK = /&(?:#\d+|#x[0-9a-f]+|rsquo|lsquo|ldquo|rdquo|apos|nbsp|mdash|ndash);/i;
+
 const PLACEHOLDER_PATTERNS = [
   /\[POLICY PENDING\]/i,
   /\[Confirm[^\]]*\]/i,
@@ -59,6 +64,11 @@ for (const file of pages) {
     const m = text.match(re);
     if (m) problems.push(`STALE PRICE  ${rel}: "${m[0]}"`);
   }
+  const entity = text.match(ENTITY_LEAK);
+  if (entity) {
+    problems.push(`LITERAL ENTITY ${rel}: "${entity[0]}" is rendering as visible text`);
+  }
+
   // SLA must be the single canonical value.
   if (/within 2 hours/i.test(text)) problems.push(`SLA CONFLICT ${rel}: "within 2 hours"`);
   if (/04:00[–-]18:00/.test(text)) problems.push(`SLA CONFLICT ${rel}: old office-hours caveat`);

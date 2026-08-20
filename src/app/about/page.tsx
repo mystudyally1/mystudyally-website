@@ -32,7 +32,7 @@ const numberWord = (n: number) => {
 };
 
 const rowClass =
-  "grid gap-[clamp(10px,3vw,48px)] border-t border-border py-[28px] [grid-template-columns:44px_minmax(min(100%,240px),1fr)_minmax(min(100%,240px),1fr)]";
+  "grid gap-[clamp(10px,3vw,48px)] border-t border-border py-[28px] grid-cols-[44px_1fr] md:[grid-template-columns:44px_minmax(min(100%,240px),1fr)_minmax(min(100%,240px),1fr)]";
 
 export default function AboutPage() {
   return (
@@ -112,7 +112,7 @@ export default function AboutPage() {
                   {s.num}
                 </span>
                 <h3 className="text-18 font-extrabold">{s.title}</h3>
-                <p className="max-w-[640px] text-15 leading-[1.7] text-muted">{s.body}</p>
+                <p className="col-start-2 max-w-[640px] md:col-start-auto text-15 leading-[1.7] text-muted">{s.body}</p>
               </div>
             ))}
           </div>
@@ -134,7 +134,7 @@ export default function AboutPage() {
                   {r.num}
                 </span>
                 <h3 className="text-18 font-extrabold">{r.title}</h3>
-                <p className="max-w-[640px] text-15 leading-[1.7] text-muted">{r.body}</p>
+                <p className="col-start-2 max-w-[640px] md:col-start-auto text-15 leading-[1.7] text-muted">{r.body}</p>
               </div>
             ))}
           </div>
@@ -143,7 +143,7 @@ export default function AboutPage() {
 
       <DarkCtaSection
         headline={"Ready to get started?"}
-        sub={"Tell us what your child needs — we&#39;ll take it from there."}
+        sub={"Tell us what your child needs — we'll take it from there."}
       />
 
       {/* Get started + FAQ */}

@@ -22,7 +22,7 @@ export function GetStartedPanel({
   return (
     <div className="relative flex min-h-[clamp(360px,42vw,560px)] flex-col items-start justify-center overflow-hidden rounded-[32px] bg-primary px-[clamp(22px,4vw,44px)] py-[clamp(30px,5vw,56px)] shadow-[0_2px_4px_rgba(60,60,60,0.06)]">
       <div className="pointer-events-none absolute inset-0">
-        <LoopingVideo src="/video/cta.mp4" />
+        <LoopingVideo src="/video/cta.mp4" poster="/video/cta-poster.webp" />
       </div>
       <div
         className="pointer-events-none absolute inset-0"

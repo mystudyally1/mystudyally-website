@@ -223,13 +223,13 @@ export default function Home() {
             {PILLARS.map((p) => (
               <div
                 key={p.num}
-                className="grid gap-[32px] border-t border-border py-[26px] [grid-template-columns:44px_minmax(min(100%,240px),1fr)_minmax(min(100%,240px),1fr)]"
+                className="grid gap-[32px] border-t border-border py-[26px] grid-cols-[44px_1fr] md:[grid-template-columns:44px_minmax(min(100%,240px),1fr)_minmax(min(100%,240px),1fr)]"
               >
                 <span className="pt-[1px] text-24 font-extrabold leading-none tracking-[0.02em] text-muted-3">
                   {p.num}
                 </span>
                 <h3 className="text-18 font-bold text-body">{p.title}</h3>
-                <p className="text-14_5 leading-[1.75] text-muted">{p.body}</p>
+                <p className="col-start-2 md:col-start-auto text-14_5 leading-[1.75] text-muted">{p.body}</p>
               </div>
             ))}
           </div>

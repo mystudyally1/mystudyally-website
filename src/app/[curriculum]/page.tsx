@@ -41,7 +41,7 @@ export async function generateMetadata(props: PageProps<"/[curriculum]">): Promi
 }
 
 const pillarRow =
-  "grid gap-[32px] border-t border-border py-[28px] [grid-template-columns:44px_minmax(min(100%,240px),1fr)_minmax(min(100%,240px),1fr)]";
+  "grid gap-[32px] border-t border-border py-[28px] grid-cols-[44px_1fr] md:[grid-template-columns:44px_minmax(min(100%,240px),1fr)_minmax(min(100%,240px),1fr)]";
 
 export default async function CurriculumPage(props: PageProps<"/[curriculum]">) {
   const { curriculum } = await props.params;
@@ -239,7 +239,7 @@ export default async function CurriculumPage(props: PageProps<"/[curriculum]">) 
                     {p.num}
                   </span>
                   <h3 className="text-18 font-bold text-body">{p.title}</h3>
-                  <p className="text-14_5 leading-[1.75] text-muted">{p.body}</p>
+                  <p className="col-start-2 md:col-start-auto text-14_5 leading-[1.75] text-muted">{p.body}</p>
                 </div>
               ))}
             </div>

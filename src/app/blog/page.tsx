@@ -35,6 +35,7 @@ export default function BlogIndex() {
 
       {/* Posts */}
       <section className="px-[clamp(20px,5vw,32px)] pb-[64px] pt-[48px]">
+        <h2 className="sr-only">Latest posts</h2>
         <div className="mx-auto grid max-w-container gap-[20px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))]">
           {posts.map((p) => (
             <Link

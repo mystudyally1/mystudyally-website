@@ -9,7 +9,9 @@ import {
   SOCIAL_LINKS,
 } from "@/lib/constants";
 
-// Mirrors "website design/SiteFooter.dc.html".
+// Desktop layout mirrors "SiteFooter.dc.html"; below md it follows
+// "SiteFooter Mobile.dc.html" — stacked sections, two-column link grids and
+// 34px minimum row height so the links are actually tappable on a phone.
 const COMPANY_LINKS = [
   { label: "About Us", href: "/about/" },
   { label: "Blog", href: "/blog/" },
@@ -65,27 +67,32 @@ const SOCIAL_ICONS = [
   },
 ];
 
+/** 34px rows on mobile (per the mobile design), compact on desktop. */
 const columnLink =
-  "text-13 text-muted hover:text-ink";
-const columnHeading = "mb-[4px] text-11 font-bold tracking-[0.12em] text-muted-3";
+  "flex min-h-[34px] items-center text-13_5 text-muted hover:text-ink md:block md:min-h-0 md:text-13";
+const columnHeading =
+  "text-11 font-extrabold tracking-[0.12em] text-muted-3 md:mb-[4px] md:font-bold";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t-2 border-border bg-white px-[clamp(20px,5vw,32px)] pb-[32px] pt-[64px]">
+    <footer className="border-t-2 border-border bg-white px-[20px] pb-[20px] pt-[28px] md:px-[clamp(20px,5vw,32px)] md:pb-[32px] md:pt-[64px]">
       <div className="mx-auto max-w-container">
-        <div className="flex flex-wrap gap-[40px]">
+        <div className="flex flex-col md:flex-row md:flex-wrap md:gap-[40px]">
           {/* Brand */}
-          <div className="min-w-0 max-w-[280px] flex-[1_1_190px]">
-            <Link href="/" className="flex items-center gap-[9px] text-17 font-extrabold text-body">
+          <div className="min-w-0 md:max-w-[280px] md:flex-[1_1_190px]">
+            <Link
+              href="/"
+              className="flex min-h-[44px] items-center gap-[9px] text-17 font-extrabold text-body md:min-h-0"
+            >
               <span className="inline-flex h-[28px] w-[28px] items-center justify-center rounded-[9px] bg-primary text-14 font-extrabold text-white">
                 M
               </span>
               MyStudyAlly
             </Link>
-            <p className="mt-[14px] max-w-[220px] text-13 text-muted">
+            <p className="mt-[8px] max-w-[220px] text-13 text-muted md:mt-[14px]">
               Managed tutoring, done properly.
             </p>
-            <div className="mt-[18px] flex gap-[10px]">
+            <div className="mt-[18px] flex gap-[12px] md:gap-[10px]">
               {SOCIAL_ICONS.map((s) => (
                 <a
                   key={s.label}
@@ -93,17 +100,18 @@ export function SiteFooter() {
                   target={s.href.startsWith("http") ? "_blank" : undefined}
                   rel={s.href.startsWith("http") ? "noopener" : undefined}
                   aria-label={s.label}
-                  className="inline-flex h-[38px] w-[38px] items-center justify-center rounded-[12px] border-2 border-border bg-surface-alt text-muted hover:border-primary hover:bg-primary hover:text-white"
+                  className="inline-flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[12px] border-2 border-border bg-surface-alt text-muted hover:border-primary hover:bg-primary hover:text-white md:h-[38px] md:w-[38px]"
                 >
                   <svg
-                    width="19"
-                    height="19"
+                    width="20"
+                    height="20"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth={1.8}
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    className="md:h-[19px] md:w-[19px]"
                   >
                     {s.path}
                   </svg>
@@ -112,51 +120,74 @@ export function SiteFooter() {
             </div>
           </div>
 
-          {/* Curricula */}
-          <div className="flex flex-[0_1_150px] flex-col gap-[10px]">
+          {/* Curricula — two columns on mobile, one on desktop */}
+          <div className="mt-[20px] border-t border-border pt-[14px] md:mt-0 md:flex md:flex-[0_1_150px] md:flex-col md:gap-[10px] md:border-t-0 md:pt-0">
             <div className={columnHeading}>CURRICULA</div>
-            {CURRICULA.map((c) => (
-              <Link key={c.slug} href={`/${c.slug}/`} className={columnLink}>
-                {c.shortName}
-              </Link>
-            ))}
+            <div className="mt-[4px] grid grid-cols-2 gap-x-[16px] gap-y-[2px] md:mt-0 md:grid-cols-1 md:gap-y-[10px]">
+              {CURRICULA.map((c) => (
+                <Link key={c.slug} href={`/${c.slug}/`} className={columnLink}>
+                  {c.shortName}
+                </Link>
+              ))}
+            </div>
           </div>
 
-          {/* Company / Legal / Offices + video */}
-          <div className="flex min-w-0 flex-[3_1_420px] flex-col gap-[14px]">
-            <div className="grid gap-x-[40px] gap-y-[30px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr))]">
-              <div className="flex flex-col gap-[10px]">
+          <div className="md:flex md:min-w-0 md:flex-[3_1_420px] md:flex-col md:gap-[14px]">
+            <div className="md:grid md:gap-x-[40px] md:gap-y-[30px] md:[grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr))]">
+              {/* Company */}
+              <div className="mt-[14px] border-t border-border pt-[14px] md:mt-0 md:flex md:flex-col md:gap-[10px] md:border-t-0 md:pt-0">
                 <div className={columnHeading}>COMPANY</div>
-                {COMPANY_LINKS.map((l) => (
-                  <Link key={l.label} href={l.href} className={columnLink}>
-                    {l.label}
-                  </Link>
-                ))}
+                <div className="mt-[4px] grid grid-cols-2 gap-x-[16px] gap-y-[2px] md:mt-0 md:grid-cols-1 md:gap-y-[10px]">
+                  {COMPANY_LINKS.map((l) => (
+                    <Link key={l.label} href={l.href} className={columnLink}>
+                      {l.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
-              <div className="flex flex-col gap-[10px]">
+
+              {/* Legal */}
+              <div className="mt-[14px] border-t border-border pt-[14px] md:mt-0 md:flex md:flex-col md:gap-[10px] md:border-t-0 md:pt-0">
                 <div className={columnHeading}>LEGAL</div>
-                {LEGAL_LINKS.map((l) => (
-                  <Link key={l.label} href={l.href} className={columnLink}>
-                    {l.label}
-                  </Link>
-                ))}
+                <div className="mt-[2px] flex items-center gap-[10px] md:mt-0 md:flex-col md:items-start md:gap-[10px]">
+                  {LEGAL_LINKS.map((l) => (
+                    <Link key={l.label} href={l.href} className={columnLink}>
+                      {l.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
-              <div className="flex flex-col gap-[10px]">
+
+              {/* Offices */}
+              <div className="mt-[14px] border-t border-border pt-[14px] md:mt-0 md:flex md:flex-col md:gap-[10px] md:border-t-0 md:pt-0">
                 <div className={columnHeading}>OFFICES</div>
-                <div className="text-13 leading-[1.6] text-muted">{CONTACT_ADDRESS}</div>
-                <a href={`mailto:${CONTACT_EMAIL}`} className={columnLink}>
-                  {CONTACT_EMAIL}
-                </a>
-                <a href={CONTACT_WHATSAPP_LINK} className={columnLink}>
-                  {CONTACT_WHATSAPP_DISPLAY}
-                </a>
+                <div className="mt-[4px] flex flex-col md:mt-0 md:gap-[10px]">
+                  <div className="py-[4px] text-13 leading-[1.6] text-muted md:py-0">
+                    {CONTACT_ADDRESS}
+                  </div>
+                  <a
+                    href={`mailto:${CONTACT_EMAIL}`}
+                    className="flex min-h-[40px] items-center text-13_5 text-muted hover:text-ink md:block md:min-h-0 md:text-13"
+                  >
+                    {CONTACT_EMAIL}
+                  </a>
+                  <a
+                    href={CONTACT_WHATSAPP_LINK}
+                    className="flex min-h-[40px] items-center text-13_5 text-muted hover:text-ink md:block md:min-h-0 md:text-13"
+                  >
+                    {CONTACT_WHATSAPP_DISPLAY}
+                  </a>
+                </div>
               </div>
             </div>
-            <FooterVideo />
+
+            <div className="mt-[18px] md:mt-0">
+              <FooterVideo />
+            </div>
           </div>
         </div>
 
-        <div className="mt-[44px] flex flex-wrap justify-between gap-x-[24px] gap-y-[6px] border-t-2 border-border pt-[20px] text-12 leading-[1.6] text-muted-3">
+        <div className="mt-[18px] flex flex-wrap justify-between gap-x-[24px] gap-y-[6px] border-t-2 border-border pt-[14px] text-12 leading-[1.6] text-muted-3 md:mt-[44px] md:pt-[20px]">
           <span>© {new Date().getFullYear()} MyStudyAlly. All rights reserved.</span>
         </div>
       </div>
