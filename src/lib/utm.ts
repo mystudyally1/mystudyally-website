@@ -17,18 +17,26 @@ export interface Attribution {
  */
 export function captureAttributionOnce(): void {
   if (typeof window === "undefined") return;
-  if (sessionStorage.getItem(STORAGE_KEY)) return;
 
-  const params = new URLSearchParams(window.location.search);
-  const attribution: Attribution = {
-    utm_source: params.get("utm_source") ?? undefined,
-    utm_medium: params.get("utm_medium") ?? undefined,
-    utm_campaign: params.get("utm_campaign") ?? undefined,
-    referrer_url: document.referrer || undefined,
-    page_path: window.location.pathname,
-  };
+  // Storage access throws outright when cookies/site data are blocked — Safari
+  // private mode and locked-down enterprise profiles both do this. Attribution
+  // is a nice-to-have; it must never take the page down with it.
+  try {
+    if (sessionStorage.getItem(STORAGE_KEY)) return;
 
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(attribution));
+    const params = new URLSearchParams(window.location.search);
+    const attribution: Attribution = {
+      utm_source: params.get("utm_source") ?? undefined,
+      utm_medium: params.get("utm_medium") ?? undefined,
+      utm_campaign: params.get("utm_campaign") ?? undefined,
+      referrer_url: document.referrer || undefined,
+      page_path: window.location.pathname,
+    };
+
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(attribution));
+  } catch {
+    // Storage unavailable — the inquiry still submits, just without attribution.
+  }
 }
 
 export function getAttribution(): Attribution {

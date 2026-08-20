@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { formatDate, getAllPosts, getPost, getRelatedPosts } from "@/lib/blog";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { pageOpenGraph } from "@/lib/metadata";
 
 export const dynamicParams = false;
 
@@ -19,14 +20,14 @@ export async function generateMetadata(props: PageProps<"/blog/[slug]">): Promis
     title: post.title,
     description: post.description,
     alternates: { canonical: `${SITE_URL}/blog/${post.slug}/` },
-    openGraph: {
+    openGraph: pageOpenGraph({
       title: post.title,
       description: post.description,
-      url: `${SITE_URL}/blog/${post.slug}/`,
+      path: `/blog/${post.slug}/`,
       type: "article",
       publishedTime: post.date,
-      images: [{ url: `${SITE_URL}${post.image}` }],
-    },
+      image: post.image,
+    }),
   };
 }
 
@@ -68,6 +69,7 @@ export default async function BlogPost(props: PageProps<"/blog/[slug]">) {
     headline: post.title,
     description: post.description,
     datePublished: post.date,
+    dateModified: post.date,
     image: `${SITE_URL}${post.image}`,
     author: { "@type": "Person", name: post.author },
     publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
@@ -111,6 +113,24 @@ export default async function BlogPost(props: PageProps<"/blog/[slug]">) {
         <article className="mx-auto max-w-[680px] text-18 leading-[30px] text-body">
           <MDXRemote source={post.content} components={components} />
         </article>
+      </section>
+
+      {/* Tag links. The tag pages are generated and sitemapped; without this
+          nothing on the site links to them, so they are orphans a visitor can
+          only reach from search results. */}
+      <section className="px-[clamp(20px,5vw,32px)] pb-0 pt-[36px]">
+        <div className="mx-auto flex max-w-[680px] flex-wrap items-center gap-[8px] border-t border-border pt-[20px]">
+          <span className="text-11 font-bold tracking-[0.14em] text-muted-3">TAGGED</span>
+          {post.tags.map((t) => (
+            <Link
+              key={t}
+              href={`/blog/tag/${t.toLowerCase().replace(/\s+/g, "-")}/`}
+              className="rounded-pill border border-border bg-white px-[14px] py-[7px] text-12 font-bold text-body hover:border-link-light-3 hover:bg-link-light hover:text-link-hover"
+            >
+              {t}
+            </Link>
+          ))}
+        </div>
       </section>
 
       {/* Destination block */}

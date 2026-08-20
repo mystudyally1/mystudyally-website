@@ -34,4 +34,28 @@
   h6 {
     line-height: normal;
   }
+
+  /* Keyboard focus indicator. :focus-visible rather than :focus, so pointer
+     users keep the design's quiet treatment while keyboard users get an
+     indicator that actually meets WCAG 2.4.11 against a white background. */
+  :focus-visible {
+    outline: 3px solid #1cb0f6;
+    outline-offset: 2px;
+  }
+}
+
+/* Honour the OS "reduce motion" setting. The site autoplays two looping
+   background videos and animates card lifts on hover; for a visitor with a
+   vestibular disorder that is the difference between usable and not.
+   `!important` because the animated properties are set by utilities, which
+   otherwise win on specificity. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

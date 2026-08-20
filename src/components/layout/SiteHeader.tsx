@@ -33,6 +33,9 @@ export function SiteHeader() {
   const [curriculaOpen, setCurriculaOpen] = useState(true);
   const [tab, setTab] = useState(CURRICULA[0].slug);
   const navRef = useRef<HTMLElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const drawerCloseRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -51,11 +54,49 @@ export function SiteHeader() {
     };
   }, [menuOpen]);
 
+  /**
+   * The drawer covers the viewport, so it has to behave like a modal: lock the
+   * page behind it, close on Escape, and keep Tab inside it. Without the trap
+   * the focus ring walks off into the hidden page and the visitor is typing
+   * into links they cannot see.
+   */
   useEffect(() => {
     if (!mobileOpen) return;
+
+    const opener = hamburgerRef.current;
     document.body.style.overflow = "hidden";
+    drawerCloseRef.current?.focus();
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMobileOpen(false);
+        return;
+      }
+      if (e.key !== "Tab" || !drawerRef.current) return;
+
+      const focusable = drawerRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKey);
     return () => {
+      document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      // Return focus where it came from, so closing the menu does not dump the
+      // visitor back at the top of the document.
+      opener?.focus();
     };
   }, [mobileOpen]);
 
@@ -100,6 +141,8 @@ export function SiteHeader() {
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
               aria-expanded={menuOpen}
+              aria-haspopup="true"
+              aria-controls="curricula-menu"
               className={cn(
                 "cursor-pointer whitespace-nowrap rounded-pill px-[14px] py-[8px] text-13 font-bold hover:text-link",
                 active === "subjects" ? "bg-link-light text-link-hover" : "bg-transparent text-muted",
@@ -122,7 +165,10 @@ export function SiteHeader() {
             ))}
 
             {menuOpen && (
-              <div className="absolute left-0 top-[48px] grid w-[min(860px,calc(100vw-48px))] grid-cols-[minmax(190px,250px)_1fr] overflow-hidden rounded-[20px] border-2 border-border bg-white/97 shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-[20px]">
+              <div
+                id="curricula-menu"
+                className="absolute left-0 top-[48px] grid w-[min(860px,calc(100vw-48px))] grid-cols-[minmax(190px,250px)_1fr] overflow-hidden rounded-[20px] border-2 border-border bg-white/97 shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-[20px]"
+              >
                 <div className="flex flex-col gap-[2px] border-r-2 border-border bg-surface-alt px-[12px] py-[16px]">
                   <div className="px-[12px] pb-[8px] pt-[4px] text-11 font-bold tracking-[0.1em] text-muted-3">
                     EXAM BOARD CURRICULA
@@ -165,9 +211,10 @@ export function SiteHeader() {
           </nav>
 
           <div className="hidden shrink-0 items-center gap-[14px] lg:flex">
-            <a href="#" className="whitespace-nowrap text-13 font-bold text-body hover:text-ink">
-              Sign in
-            </a>
+            {/* The design shows a "Sign in" link here, but there is no student
+                portal to sign in to yet and it pointed at href="#" — a link
+                that visibly does nothing. Restore it as a <Link> the moment a
+                portal URL exists. */}
             <Link
               href="/contact/"
               className="whitespace-nowrap rounded-[14px] bg-primary px-[18px] py-[10px] text-13 font-extrabold tracking-[0.03em] text-white shadow-[0_4px_0_#58A700] hover:bg-primary-hover hover:text-white hover:shadow-[0_4px_0_#49AD00]"
@@ -178,8 +225,10 @@ export function SiteHeader() {
 
           {/* Mobile hamburger */}
           <button
+            ref={hamburgerRef}
             type="button"
             aria-label="Open menu"
+            aria-expanded={mobileOpen}
             onClick={() => setMobileOpen(true)}
             className="flex h-[44px] w-[44px] cursor-pointer flex-col items-end justify-center gap-[5px] p-0 lg:hidden"
           >
@@ -191,7 +240,13 @@ export function SiteHeader() {
       </header>
 
       {mobileOpen && (
-        <div className="fixed inset-0 z-[120] flex flex-col bg-white lg:hidden">
+        <div
+          ref={drawerRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menu"
+          className="fixed inset-0 z-[120] flex flex-col bg-white lg:hidden"
+        >
           <div className="flex h-[56px] shrink-0 items-center justify-between border-b border-border px-[clamp(16px,4vw,20px)]">
             <Link
               href="/"
@@ -204,6 +259,7 @@ export function SiteHeader() {
               MyStudyAlly
             </Link>
             <button
+              ref={drawerCloseRef}
               type="button"
               aria-label="Close menu"
               onClick={() => setMobileOpen(false)}
@@ -217,6 +273,7 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={() => setCurriculaOpen((v) => !v)}
+              aria-expanded={curriculaOpen}
               className="flex min-h-[56px] w-full cursor-pointer items-center justify-between border-b border-border p-0 text-16 font-bold text-body"
             >
               Curricula
@@ -265,9 +322,6 @@ export function SiteHeader() {
           </div>
 
           <div className="flex shrink-0 flex-col gap-[12px] border-t border-border px-[clamp(16px,4vw,20px)] pb-[18px] pt-[14px]">
-            <a href="#" className="self-start text-14 font-bold text-body">
-              Sign in
-            </a>
             <Link
               href="/contact/"
               onClick={() => setMobileOpen(false)}

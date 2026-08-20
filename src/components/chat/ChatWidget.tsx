@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { CHAT_NODES, CHAT_OPENING, CHAT_STARTERS, type ChatNode } from "@/data/chat";
@@ -23,19 +23,35 @@ export function ChatWidget() {
   const [history, setHistory] = useState<string[][]>([]);
   const nextId = useRef(1);
   const listRef = useRef<HTMLDivElement>(null);
+  const launcherRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, chips]);
 
+  /** Closing unmounts the panel and remounts the launcher, so focus has to be
+   *  handed back explicitly — otherwise it lands on <body> and the next Tab
+   *  starts from the top of the document. */
+  const closeChat = useCallback(() => {
+    setOpen(false);
+    requestAnimationFrame(() => launcherRef.current?.focus());
+  }, []);
+
   useEffect(() => {
     if (!open) return;
+
+    // Opening swaps the launcher out of the DOM, so focus would otherwise be
+    // dropped to <body> and a keyboard user would have to tab the whole page
+    // again to reach the panel they just opened.
+    closeRef.current?.focus();
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") closeChat();
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, closeChat]);
 
   function pick(id: string) {
     const node = CHAT_NODES[id];
@@ -50,11 +66,11 @@ export function ChatWidget() {
   }
 
   function goBack() {
-    setHistory((h) => {
-      if (h.length === 0) return h;
-      setChips(h[h.length - 1]);
-      return h.slice(0, -1);
-    });
+    // Read history here rather than inside a setHistory updater — React may run
+    // an updater more than once, which would fire setChips twice per click.
+    if (history.length === 0) return;
+    setChips(history[history.length - 1]);
+    setHistory((h) => h.slice(0, -1));
     // Drop the last exchange (visitor question + bot answer).
     setMessages((m) => (m.length > 2 ? m.slice(0, -2) : m));
   }
@@ -78,6 +94,7 @@ export function ChatWidget() {
         <div
           role="dialog"
           aria-label="Chat assistant"
+          aria-modal="false"
           className="fixed bottom-[24px] right-[24px] flex h-[min(560px,calc(100vh-48px))] w-[min(360px,calc(100vw-32px))] flex-col overflow-hidden rounded-[12px] bg-white shadow-[0_18px_48px_rgba(19,31,36,0.18)]"
         >
           <div className="flex h-[56px] shrink-0 items-center gap-[10px] bg-surface-dark px-[14px] text-white">
@@ -96,8 +113,9 @@ export function ChatWidget() {
               Restart
             </button>
             <button
+              ref={closeRef}
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={closeChat}
               aria-label="Close chat"
               className="h-[32px] w-[32px] shrink-0 cursor-pointer rounded-[8px] bg-transparent text-15 font-bold text-white"
             >
@@ -105,8 +123,13 @@ export function ChatWidget() {
             </button>
           </div>
 
+          {/* polite, not assertive: replies should be read out after whatever
+              the visitor is currently hearing, never interrupt it. */}
           <div
             ref={listRef}
+            role="log"
+            aria-live="polite"
+            aria-atomic="false"
             className="flex flex-1 flex-col gap-[8px] overflow-y-auto bg-white px-[14px] py-[16px]"
           >
             {messages.map((m) => (
@@ -224,6 +247,7 @@ export function ChatWidget() {
         </div>
       ) : (
         <button
+          ref={launcherRef}
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Open chat"

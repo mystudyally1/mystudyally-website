@@ -6,17 +6,22 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
-import { Turnstile } from "@/components/forms/Turnstile";
+import {
+  Turnstile,
+  type TurnstileHandle,
+  type TurnstileStatus,
+} from "@/components/forms/Turnstile";
 import { getAttribution } from "@/lib/utm";
-import { FORM_ENDPOINT } from "@/lib/constants";
+import { CONTACT_EMAIL, CONTACT_WHATSAPP_LINK, FORM_ENDPOINT } from "@/lib/constants";
 import { CONTACT_ROLE_OPTIONS, inquirySchema, type InquiryFormValues } from "@/lib/schemas/inquiry";
 import { CURRICULA, getCurriculumByName } from "@/data/curricula";
 
 // Field styling mirrors "website design/InquiryForm.dc.html".
 const inputClass =
-  "w-full rounded-[12px] border border-border bg-white px-[14px] py-[12px] text-13 text-body placeholder:text-muted-3 focus:border-[#89E219] focus:outline-none";
+  "w-full rounded-[12px] border border-border bg-white px-[14px] py-[12px] text-13 text-body placeholder:text-muted-3 focus:border-[#89E219] focus:outline-none focus-visible:outline-2 focus-visible:outline-link";
 const labelClass = "text-12 font-bold text-body";
 const errorClass = "text-11_5 font-bold text-[#B4462B]";
+const hintClass = "text-11_5 leading-[1.6] text-muted-3";
 
 export interface InquiryFormProps {
   variant?: "full" | "compact";
@@ -45,6 +50,8 @@ export function InquiryForm({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [rateLimited, setRateLimited] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileStatus, setTurnstileStatus] = useState<TurnstileStatus>("loading");
+  const turnstileRef = useRef<TurnstileHandle>(null);
   const [consent, setConsent] = useState(false);
   const [consentError, setConsentError] = useState(false);
   const [curriculum, setCurriculum] = useState(presetCurriculum ?? "");
@@ -64,6 +71,7 @@ export function InquiryForm({
     register,
     handleSubmit,
     setValue,
+    setFocus,
     formState: { errors, isSubmitting },
   } = useForm<InquiryFormValues>({
     resolver: zodResolver(inquirySchema),
@@ -101,6 +109,16 @@ export function InquiryForm({
       ...getAttribution(),
     };
 
+    // A Turnstile token is single-use. Whatever went wrong, the one we just
+    // sent can never be accepted again — so every failure path re-challenges,
+    // otherwise "try again" retries with a dead token and fails identically
+    // forever.
+    const failWith = (message: string) => {
+      setTurnstileToken("");
+      turnstileRef.current?.reset();
+      setErrorMessage(message);
+    };
+
     try {
       const res = await fetch(FORM_ENDPOINT, {
         method: "POST",
@@ -113,27 +131,69 @@ export function InquiryForm({
       }
       if (res.status === 429) {
         setRateLimited(true);
-        setErrorMessage(
+        failWith(
           "You've submitted a few inquiries recently — please try again later, or reach us on WhatsApp.",
         );
         return;
       }
       if (res.status === 400) {
-        setErrorMessage("We couldn't verify your submission. Please retry the challenge below.");
+        failWith("We couldn't verify your submission. Please retry the challenge below.");
         return;
       }
-      setErrorMessage("Something went wrong on our end. Please try again in a moment.");
+      failWith("Something went wrong on our end. Please try again in a moment.");
     } catch {
-      setErrorMessage(
+      failWith(
         "We couldn't reach the server — check your connection and try again. Your answers are still here.",
       );
     }
   }
 
+  // Validation errors render below their field; without moving focus a screen
+  // reader user submits, hears nothing, and has no idea which field to fix.
+  function onInvalid(formErrors: typeof errors) {
+    const first = (Object.keys(formErrors) as (keyof InquiryFormValues)[])[0];
+    if (first) setFocus(first);
+  }
+
+  const challengeUnavailable = turnstileStatus === "unavailable";
+
+  /** Turnstile is required by the Worker, so if it cannot run there is no
+   *  submit path at all. Offer the channels that still work rather than
+   *  leaving a dead button. */
+  const fallbackContact = (
+    <div className="flex flex-col gap-[10px] rounded-[14px] border-2 border-border bg-surface-alt px-[18px] py-[16px]">
+      <span className="text-13 font-extrabold text-body">Send it to us directly instead</span>
+      <div className="flex flex-wrap gap-[10px]">
+        <a
+          href={CONTACT_WHATSAPP_LINK}
+          target="_blank"
+          rel="noopener"
+          className="inline-flex min-h-[44px] items-center rounded-[12px] bg-primary px-[16px] text-13 font-extrabold text-white hover:bg-primary-hover hover:text-white"
+        >
+          Message us on WhatsApp
+        </a>
+        <a
+          href={`mailto:${CONTACT_EMAIL}`}
+          className="inline-flex min-h-[44px] items-center rounded-[12px] border-2 border-border bg-white px-[16px] text-13 font-extrabold text-body hover:border-muted-3"
+        >
+          Email {CONTACT_EMAIL}
+        </a>
+      </div>
+    </div>
+  );
+
   const consentBox = (
     <div className="flex flex-col gap-[6px]">
+      {/* Rendered as a styled control rather than an <input type="checkbox">,
+          so it has to carry the checkbox role and state itself — otherwise a
+          screen reader announces a button and never reads out whether consent
+          is given. */}
       <button
         type="button"
+        role="checkbox"
+        aria-checked={consent}
+        aria-invalid={consentError || undefined}
+        aria-describedby={consentError ? "consent-error" : undefined}
         onClick={() => {
           setConsent((v) => !v);
           setConsentError(false);
@@ -160,7 +220,11 @@ export function InquiryForm({
           .
         </span>
       </button>
-      {consentError && <span className={errorClass}>Please confirm we may contact you</span>}
+      {consentError && (
+        <span id="consent-error" className={errorClass}>
+          Please confirm we may contact you
+        </span>
+      )}
     </div>
   );
 
@@ -201,7 +265,7 @@ export function InquiryForm({
   /* ---------------- compact (curriculum hero) ---------------- */
   if (isCompact) {
     return (
-      <form onSubmit={handleSubmit(onSubmit)} className={cn("relative flex flex-col gap-[16px]", className)} noValidate>
+      <form onSubmit={(e) => void handleSubmit(onSubmit, onInvalid)(e)} className={cn("relative flex flex-col gap-[16px]", className)} noValidate>
         {alerts}
 
         <div className="flex flex-col gap-[6px]">
@@ -220,8 +284,20 @@ export function InquiryForm({
           <label className={labelClass} htmlFor="q_name">
             Your name <span className="text-[#B4462B]">*</span>
           </label>
-          <input id="q_name" placeholder="Full name" className={inputClass} {...register("contact_name")} />
-          {errors.contact_name && <span className={errorClass}>{errors.contact_name.message}</span>}
+          <input
+            id="q_name"
+            placeholder="Full name"
+            autoComplete="name"
+            aria-invalid={errors.contact_name ? true : undefined}
+            aria-describedby={errors.contact_name ? "q_name-error" : undefined}
+            className={inputClass}
+            {...register("contact_name")}
+          />
+          {errors.contact_name && (
+            <span id="q_name-error" className={errorClass}>
+              {errors.contact_name.message}
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col gap-[6px]">
@@ -231,18 +307,34 @@ export function InquiryForm({
           <input
             id="q_email"
             type="email"
+            inputMode="email"
             placeholder="you@example.com"
+            autoComplete="email"
+            aria-invalid={errors.contact_email ? true : undefined}
+            aria-describedby={errors.contact_email ? "q_email-error" : undefined}
             className={inputClass}
             {...register("contact_email")}
           />
-          {errors.contact_email && <span className={errorClass}>{errors.contact_email.message}</span>}
+          {errors.contact_email && (
+            <span id="q_email-error" className={errorClass}>
+              {errors.contact_email.message}
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col gap-[6px]">
           <label className={labelClass} htmlFor="q_phone">
             Phone <span className="font-semibold text-muted-3">(optional)</span>
           </label>
-          <input id="q_phone" placeholder="+44 7700 900000" className={inputClass} {...register("contact_phone")} />
+          <input
+            id="q_phone"
+            type="tel"
+            inputMode="tel"
+            placeholder="+44 7700 900000"
+            autoComplete="tel"
+            className={inputClass}
+            {...register("contact_phone")}
+          />
         </div>
 
         {subjectOptions.length + subjects.length > 0 && (
@@ -311,15 +403,33 @@ export function InquiryForm({
 
         {consentBox}
         {honeypot}
-        <Turnstile onVerify={setTurnstileToken} onExpire={() => setTurnstileToken("")} />
+        <Turnstile
+          ref={turnstileRef}
+          onVerify={setTurnstileToken}
+          onExpire={() => setTurnstileToken("")}
+          onStatusChange={setTurnstileStatus}
+        />
 
-        <button
-          type="submit"
-          disabled={isSubmitting || !turnstileToken}
-          className="cursor-pointer rounded-pill bg-primary p-[15px] text-14 font-extrabold text-white shadow-[0_4px_0_#58A700] hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isSubmitting ? "Submitting…" : "Submit an inquiry"}
-        </button>
+        {challengeUnavailable ? (
+          fallbackContact
+        ) : (
+          <>
+            <button
+              type="submit"
+              disabled={isSubmitting || !turnstileToken}
+              aria-describedby={!turnstileToken ? "q-submit-hint" : undefined}
+              className="cursor-pointer rounded-pill bg-primary p-[15px] text-14 font-extrabold text-white shadow-[0_4px_0_#58A700] hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSubmitting ? "Submitting…" : "Submit an inquiry"}
+            </button>
+            {/* A disabled button with no stated reason reads as a broken form. */}
+            {!turnstileToken && (
+              <span id="q-submit-hint" className={hintClass}>
+                Complete the verification above to enable submitting.
+              </span>
+            )}
+          </>
+        )}
 
         <div className="flex items-center justify-between">
           <span className="text-11 text-muted-3">Protected by Cloudflare Turnstile</span>
@@ -331,7 +441,7 @@ export function InquiryForm({
 
   /* ---------------- full (contact page) ---------------- */
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={cn("relative flex flex-col gap-[22px]", className)} noValidate>
+    <form onSubmit={(e) => void handleSubmit(onSubmit, onInvalid)(e)} className={cn("relative flex flex-col gap-[22px]", className)} noValidate>
       {alerts}
 
       {showIntent && (
@@ -372,6 +482,8 @@ export function InquiryForm({
               setSubjects([]);
               setCurriculumError(false);
             }}
+            aria-invalid={curriculumError || undefined}
+            aria-describedby={curriculumError ? "curriculum-error" : undefined}
             className={cn(inputClass, curriculumError && "border-[#B4462B]")}
           >
             <option value="">Select a curriculum…</option>
@@ -382,7 +494,7 @@ export function InquiryForm({
             ))}
           </select>
           {curriculumError && (
-            <span className={errorClass}>
+            <span id="curriculum-error" className={errorClass}>
               Please choose a curriculum so we can match the right tutor
             </span>
           )}
@@ -394,8 +506,20 @@ export function InquiryForm({
           <label className={labelClass} htmlFor="contact_name">
             Your name <span className="text-[#B4462B]">*</span>
           </label>
-          <input id="contact_name" placeholder="Full name" className={inputClass} {...register("contact_name")} />
-          {errors.contact_name && <span className={errorClass}>{errors.contact_name.message}</span>}
+          <input
+            id="contact_name"
+            placeholder="Full name"
+            autoComplete="name"
+            aria-invalid={errors.contact_name ? true : undefined}
+            aria-describedby={errors.contact_name ? "contact_name-error" : undefined}
+            className={inputClass}
+            {...register("contact_name")}
+          />
+          {errors.contact_name && (
+            <span id="contact_name-error" className={errorClass}>
+              {errors.contact_name.message}
+            </span>
+          )}
         </div>
         <div className="flex flex-col gap-[6px]">
           <label className={labelClass} htmlFor="contact_email">
@@ -404,11 +528,19 @@ export function InquiryForm({
           <input
             id="contact_email"
             type="email"
+            inputMode="email"
             placeholder="you@example.com"
+            autoComplete="email"
+            aria-invalid={errors.contact_email ? true : undefined}
+            aria-describedby={errors.contact_email ? "contact_email-error" : undefined}
             className={inputClass}
             {...register("contact_email")}
           />
-          {errors.contact_email && <span className={errorClass}>{errors.contact_email.message}</span>}
+          {errors.contact_email && (
+            <span id="contact_email-error" className={errorClass}>
+              {errors.contact_email.message}
+            </span>
+          )}
         </div>
       </div>
 
@@ -514,7 +646,13 @@ export function InquiryForm({
           <label className={labelClass} htmlFor="student_name">
             Student&#39;s name <span className="font-semibold text-muted-3">(optional)</span>
           </label>
-          <input id="student_name" placeholder="Your child's name" className={inputClass} {...register("student_name")} />
+          <input
+            id="student_name"
+            placeholder="Your child's name"
+            autoComplete="off"
+            className={inputClass}
+            {...register("student_name")}
+          />
         </div>
       </div>
       )}
@@ -524,7 +662,15 @@ export function InquiryForm({
           <label className={labelClass} htmlFor="contact_phone">
             Phone <span className="font-semibold text-muted-3">(optional)</span>
           </label>
-          <input id="contact_phone" placeholder="+44 7700 900000" className={inputClass} {...register("contact_phone")} />
+          <input
+            id="contact_phone"
+            type="tel"
+            inputMode="tel"
+            placeholder="+44 7700 900000"
+            autoComplete="tel"
+            className={inputClass}
+            {...register("contact_phone")}
+          />
         </div>
         {isTutoring && (
           <div className="flex flex-col gap-[6px]">
@@ -560,20 +706,36 @@ export function InquiryForm({
 
       {consentBox}
       {honeypot}
-      <Turnstile onVerify={setTurnstileToken} onExpire={() => setTurnstileToken("")} />
+      <Turnstile
+        ref={turnstileRef}
+        onVerify={setTurnstileToken}
+        onExpire={() => setTurnstileToken("")}
+        onStatusChange={setTurnstileStatus}
+      />
 
-      <div className="flex flex-col items-start gap-[12px]">
-        <button
-          type="submit"
-          disabled={isSubmitting || !turnstileToken}
-          className="inline-flex cursor-pointer items-center gap-[10px] rounded-[16px] bg-primary px-[26px] py-[14px] text-14 font-extrabold text-white shadow-[0_4px_0_#58A700] hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isSubmitting ? "Submitting…" : "Submit an inquiry"}
-        </button>
-        <span className="text-11 text-muted-3">
-          Protected by Cloudflare Turnstile · Our team reviews every inquiry personally
-        </span>
-      </div>
+      {challengeUnavailable ? (
+        fallbackContact
+      ) : (
+        <div className="flex flex-col items-start gap-[12px]">
+          <button
+            type="submit"
+            disabled={isSubmitting || !turnstileToken}
+            aria-describedby={!turnstileToken ? "submit-hint" : undefined}
+            className="inline-flex cursor-pointer items-center gap-[10px] rounded-[16px] bg-primary px-[26px] py-[14px] text-14 font-extrabold text-white shadow-[0_4px_0_#58A700] hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSubmitting ? "Submitting…" : "Submit an inquiry"}
+          </button>
+          {/* A disabled button with no stated reason reads as a broken form. */}
+          {!turnstileToken && (
+            <span id="submit-hint" className={hintClass}>
+              Complete the verification above to enable submitting.
+            </span>
+          )}
+          <span className="text-11 text-muted-3">
+            Protected by Cloudflare Turnstile · Our team reviews every inquiry personally
+          </span>
+        </div>
+      )}
     </form>
   );
 }

@@ -60,7 +60,7 @@ export default function TermsPage() {
               Tutoring is sold as prepaid plans of classes. Each class is{" "}
               {CLASS_DURATION_MINUTES} minutes of one-to-one tuition. Classes are deducted from
               your balance as sessions are completed. Plan prices are shown on our{" "}
-              <Link href="/pricing/">pricing page</Link> and include no registration or platform
+              <Link href="/pricing/" className="font-semibold text-body underline underline-offset-[3px] hover:text-ink">pricing page</Link> and include no registration or platform
               fees. Payment is taken by secure link once you choose to enrol.
             </p>
           </section>
@@ -124,12 +124,12 @@ export default function TermsPage() {
           <section>
             <h2 className="mb-2 text-16 font-bold text-ink">11. Contact</h2>
             <p>
-              Questions about these terms: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+              Questions about these terms: <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-body underline underline-offset-[3px] hover:text-ink">{CONTACT_EMAIL}</a>.
             </p>
           </section>
 
           <p>
-            See also our <Link href="/privacy/">Privacy Policy</Link>.
+            See also our <Link href="/privacy/" className="font-semibold text-body underline underline-offset-[3px] hover:text-ink">Privacy Policy</Link>.
           </p>
         </div>
       </Container>

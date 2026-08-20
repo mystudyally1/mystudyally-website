@@ -87,6 +87,17 @@ for (const file of pages) {
     if (desc.length > 170) problems.push(`LONG DESC   ${rel}: ${desc.length} chars`);
   }
 
+  // Structural guarantees that are easy to lose in a refactor and invisible
+  // until someone shares a link or navigates by keyboard.
+  if (!/<main[\s>]/.test(html)) problems.push(`NO MAIN     ${rel}: no <main> landmark`);
+  if (!/href="#main"/.test(html)) problems.push(`NO SKIPLINK ${rel}`);
+  if (!/property="og:image"/.test(html)) problems.push(`NO OG IMAGE ${rel}`);
+  if (!/property="og:title"/.test(html)) problems.push(`NO OG TITLE ${rel}`);
+
+  // A link to "#" looks clickable and does nothing.
+  const deadLinks = (html.match(/<a [^>]*href="#"/g) || []).length;
+  if (deadLinks) problems.push(`DEAD LINK   ${rel}: ${deadLinks} anchor(s) with href="#"`);
+
   // JSON-LD must parse.
   for (const m of html.matchAll(
     /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g,

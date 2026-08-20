@@ -32,7 +32,7 @@ export default function PrivacyPage() {
               {LEGAL_ENTITY_NAME} (&ldquo;MyStudyAlly&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;)
               provides online tutoring services. Our registered address is {CONTACT_ADDRESS}. For
               any privacy question, contact{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+              <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-body underline underline-offset-[3px] hover:text-ink">{CONTACT_EMAIL}</a>.
             </p>
           </section>
 
@@ -98,7 +98,7 @@ export default function PrivacyPage() {
               Under UK GDPR you have the right to access, correct, delete, or restrict processing
               of your personal data, to object to processing, and to data portability. To exercise
               any of these, email{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. You also have the right to
+              <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold text-body underline underline-offset-[3px] hover:text-ink">{CONTACT_EMAIL}</a>. You also have the right to
               complain to the Information Commissioner&#39;s Office (ico.org.uk).
             </p>
           </section>
@@ -130,7 +130,7 @@ export default function PrivacyPage() {
           </section>
 
           <p>
-            See also our <Link href="/terms/">Terms of Service</Link>.
+            See also our <Link href="/terms/" className="font-semibold text-body underline underline-offset-[3px] hover:text-ink">Terms of Service</Link>.
           </p>
         </div>
       </Container>

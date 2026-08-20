@@ -1,0 +1,66 @@
+# Apache/LiteSpeed config for the static export on Hostinger.
+#
+# Next.js `output: "export"` produces plain files — it cannot emit headers, and
+# there is no server to configure. This file is the only place caching, the
+# custom 404 and security headers can be set, and it ships to public_html/
+# because everything in public/ is copied into out/.
+
+# ---------------------------------------------------------------- 404 --------
+# Without this Apache serves its own default 404 and the branded page at
+# /404.html is never reached.
+ErrorDocument 404 /404.html
+
+# ------------------------------------------------------------- MIME ---------
+<IfModule mod_mime.c>
+  AddType image/webp                 .webp
+  AddType image/svg+xml              .svg
+  AddType video/mp4                  .mp4
+  AddType application/manifest+json  .webmanifest
+</IfModule>
+
+# ------------------------------------------------------- compression --------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+  AddOutputFilterByType DEFLATE application/json application/xml
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ------------------------------------------------------------ caching -------
+<IfModule mod_headers.c>
+  # Content-hashed build output: the filename changes whenever the bytes do, so
+  # it can be cached indefinitely.
+  <FilesMatch "\.(js|css|woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Media is stable but not content-hashed — a month, revalidated after.
+  <FilesMatch "\.(webp|png|jpg|jpeg|gif|svg|ico|mp4)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+
+  # HTML must revalidate every time or a deploy is invisible to returning
+  # visitors until their cache expires.
+  <FilesMatch "\.(html|xml|txt)$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+
+  # -------------------------------------------------------- security --------
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+
+  # Content-Security-Policy. Every source below is one the site actually uses:
+  #   challenges.cloudflare.com  Turnstile script + its challenge iframe
+  #   *.workers.dev / forms.*    the inquiry Worker the form POSTs to
+  #   'unsafe-inline' (script)   Next's hydration payload is inline, and a
+  #                              static export has no server to mint a nonce
+  # Adding an analytics or chat vendor later means adding it here too, or it
+  # will be blocked.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self'; connect-src 'self' https://challenges.cloudflare.com https://mystudyally-forms-worker.mystudyally1.workers.dev https://forms.mystudyally.com; frame-src https://challenges.cloudflare.com; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; upgrade-insecure-requests"
+</IfModule>
+
+# --------------------------------------------------------- directory --------
+Options -Indexes
+DirectoryIndex index.html

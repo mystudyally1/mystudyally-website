@@ -37,6 +37,8 @@ export function FaqList({
               type="button"
               onClick={() => setOpen(isOpen ? -1 : i)}
               aria-expanded={isOpen}
+              aria-controls={`faq-panel-${i}`}
+              id={`faq-trigger-${i}`}
               className="flex w-full cursor-pointer items-center justify-between gap-[16px] px-[20px] py-[16px] text-left text-14 font-bold text-body"
             >
               {item.q}
@@ -45,7 +47,14 @@ export function FaqList({
               </span>
             </button>
             {isOpen && (
-              <p className="px-[20px] pb-[18px] text-13 leading-[1.7] text-muted">{item.a}</p>
+              <p
+                id={`faq-panel-${i}`}
+                role="region"
+                aria-labelledby={`faq-trigger-${i}`}
+                className="px-[20px] pb-[18px] text-13 leading-[1.7] text-muted"
+              >
+                {item.a}
+              </p>
             )}
           </div>
         );

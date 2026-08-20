@@ -9,6 +9,7 @@ import { InquiryFormLazy } from "@/components/forms/InquiryFormLazy";
 import { CURRICULA, getCurriculumBySlug } from "@/data/curricula";
 import { CURRICULUM_PAGES } from "@/data/curriculum-pages";
 import { NOINDEX_CURRICULA, SITE_URL } from "@/lib/constants";
+import { pageOpenGraph } from "@/lib/metadata";
 
 // Static export: only these slugs are generated, everything else 404s.
 export const dynamicParams = false;
@@ -31,12 +32,11 @@ export async function generateMetadata(props: PageProps<"/[curriculum]">): Promi
     // SABIS ships noindex until its subject list is verified against the real
     // tutor pool (see implementation plan, Part 3 item 4).
     robots: NOINDEX_CURRICULA.includes(curriculum) ? { index: false, follow: true } : undefined,
-    openGraph: {
+    openGraph: pageOpenGraph({
       title: content.hero.h1,
       description,
-      url: `${SITE_URL}/${curriculum}/`,
-      type: "website",
-    },
+      path: `/${curriculum}/`,
+    }),
   };
 }
 

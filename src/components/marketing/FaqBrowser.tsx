@@ -31,14 +31,14 @@ export function FaqBrowser() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search questions"
           aria-label="Search questions"
-          className="flex-1 border-none bg-transparent py-[14px] text-14 font-semibold text-body outline-none placeholder:text-muted-3"
+          className="flex-1 border-none bg-transparent py-[14px] text-14 font-semibold text-body outline-none placeholder:text-muted-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-link"
         />
         {q && (
           <button
             type="button"
             onClick={() => setQuery("")}
             aria-label="Clear search"
-            className="h-[22px] w-[22px] cursor-pointer rounded-pill bg-surface-alt text-12 text-muted"
+            className="inline-flex h-[24px] w-[24px] shrink-0 cursor-pointer items-center justify-center rounded-pill bg-surface-alt text-12 text-muted"
           >
             ×
           </button>
@@ -102,6 +102,8 @@ export function FaqBrowser() {
                         type="button"
                         onClick={() => setOpen(isOpen && !q ? "" : f.id)}
                         aria-expanded={isOpen}
+                        aria-controls={`${f.id}-panel`}
+                        id={`${f.id}-trigger`}
                         className="flex w-full cursor-pointer items-center justify-between gap-[16px] py-[20px] text-left text-15_5 font-bold text-body"
                       >
                         {f.q}
@@ -113,7 +115,12 @@ export function FaqBrowser() {
                         </span>
                       </button>
                       {isOpen && (
-                        <div className="flex flex-col gap-[12px] pb-[22px] pr-[40px]">
+                        <div
+                          id={`${f.id}-panel`}
+                          role="region"
+                          aria-labelledby={`${f.id}-trigger`}
+                          className="flex flex-col gap-[12px] pb-[22px] pr-[40px]"
+                        >
                           <p className="text-14 leading-[1.75] text-muted">{f.a}</p>
                           {f.linkLabel && f.linkHref && (
                             <Link

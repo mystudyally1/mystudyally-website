@@ -13,7 +13,10 @@ import { cn } from "@/lib/cn";
  *    viewport, so a visitor who never scrolls that far downloads nothing but
  *    the poster. `preload="none"` keeps the browser from pre-fetching.
  *
- * 2. Autoplay reliability. Browsers drop or refuse autoplay after a
+ * 2. Reduced motion. With `prefers-reduced-motion: reduce` the source is never
+ *    attached, so the poster is all that is ever shown.
+ *
+ * 3. Autoplay reliability. Browsers drop or refuse autoplay after a
  *    client-side route change, on return to a backgrounded tab, or on a
  *    stalled buffer. The design works around this with a keepalive that
  *    re-issues play() on an interval (see SiteFooter.dc.html); without it the
@@ -35,6 +38,10 @@ export function LoopingVideo({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // Someone who has asked their OS to reduce motion should not be served a
+    // looping video at all — the poster frame carries the same information at
+    // none of the cost.
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
     if (typeof IntersectionObserver === "undefined") {
       // Browser too old to observe — just load it, but off the effect body so
       // this doesn't run as a synchronous cascading render.
@@ -100,7 +107,7 @@ export function LoopingVideo({
       ref={ref}
       src={active ? src : undefined}
       poster={poster}
-      autoPlay
+      autoPlay={active}
       muted
       loop
       playsInline

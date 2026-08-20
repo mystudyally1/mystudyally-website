@@ -93,7 +93,9 @@ export function PlanFinder() {
         </div>
       </div>
 
-      <div>
+      {/* The recommendation recomputes on every input change; without a live
+          region a screen reader user hears the controls but never the answer. */}
+      <div aria-live="polite">
         <div className="rounded-[16px] border border-link-hover bg-link p-[26px] px-[28px] shadow-[0_14px_32px_rgba(28,176,246,0.30)]">
           <div className="text-11 font-extrabold tracking-[0.14em] text-link-light">
             OUR RECOMMENDATION

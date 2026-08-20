@@ -34,6 +34,7 @@ export function TutorGrid() {
               key={label}
               type="button"
               onClick={() => setFilter(label)}
+              aria-pressed={on}
               className={cn(
                 "cursor-pointer whitespace-nowrap rounded-pill border px-[18px] py-[9px] text-12_5 font-bold",
                 on
