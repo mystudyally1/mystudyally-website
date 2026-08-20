@@ -13,7 +13,8 @@
     "verify": "npm run lint && npm run typecheck && npm run build && npm run audit:content && npm run audit:links && npm run audit:css",
     "audit:css": "node scripts/classcheck.mjs",
     "audit:runtime": "node scripts/audit-runtime.mjs",
-    "audit:behaviour": "node scripts/audit-behaviour.mjs"
+    "audit:behaviour": "node scripts/audit-behaviour.mjs",
+    "audit:mobile": "node scripts/audit-mobile.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.0",

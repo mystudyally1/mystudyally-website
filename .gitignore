@@ -43,3 +43,4 @@ next-env.d.ts
 
 # raw design export dump (see design-reference/ for the tracked, cleaned copy)
 /website design/
+.mobile-audit/
