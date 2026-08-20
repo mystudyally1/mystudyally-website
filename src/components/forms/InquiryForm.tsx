@@ -13,13 +13,27 @@ import {
 } from "@/components/forms/Turnstile";
 import { getAttribution } from "@/lib/utm";
 import { CONTACT_EMAIL, CONTACT_WHATSAPP_LINK, FORM_ENDPOINT } from "@/lib/constants";
-import { CONTACT_ROLE_OPTIONS, inquirySchema, type InquiryFormValues } from "@/lib/schemas/inquiry";
+import {
+  CONTACT_ROLE_OPTIONS,
+  inquiryFormSchema,
+  type InquiryFormValues,
+} from "@/lib/schemas/inquiry";
 import { CURRICULA, getCurriculumByName } from "@/data/curricula";
 
 // Field styling mirrors "website design/InquiryForm.dc.html".
+// Both mobile designs give fields a 48px minimum height; they diverge on
+// everything else, so the quick (curriculum) variant carries its own pair
+// below. All four converge on the desktop treatment at md.
 const inputClass =
-  "w-full rounded-[12px] border border-border bg-white px-[14px] py-[12px] text-13 text-body placeholder:text-muted-3 focus:border-[#89E219] focus:outline-none focus-visible:outline-2 focus-visible:outline-link";
-const labelClass = "text-12 font-bold text-body";
+  "w-full min-h-[48px] rounded-[12px] border border-border bg-white px-[14px] py-[12px] text-13_5 text-body placeholder:text-muted-3 focus:border-[#89E219] focus:outline-none focus-visible:outline-2 focus-visible:outline-link md:min-h-0 md:text-13";
+const labelClass = "text-12 font-extrabold text-ink md:font-bold md:text-body";
+
+/** Quick form on the curriculum pages: uppercase micro-labels, chunkier
+ *  fields, all inside a bordered card ("IGCSE Mobile.dc.html"). */
+const quickInputClass =
+  "w-full min-h-[48px] rounded-[14px] border-2 border-border bg-white px-[14px] text-15 text-body placeholder:text-muted-3 focus:border-[#89E219] focus:outline-none focus-visible:outline-2 focus-visible:outline-link md:min-h-0 md:rounded-[12px] md:border md:py-[12px] md:text-13";
+const quickLabelClass =
+  "text-11 font-bold uppercase tracking-[0.1em] text-muted-3 md:text-12 md:normal-case md:tracking-normal md:text-body";
 const errorClass = "text-11_5 font-bold text-[#B4462B]";
 const hintClass = "text-11_5 leading-[1.6] text-muted-3";
 
@@ -74,7 +88,7 @@ export function InquiryForm({
     setFocus,
     formState: { errors, isSubmitting },
   } = useForm<InquiryFormValues>({
-    resolver: zodResolver(inquirySchema),
+    resolver: zodResolver(inquiryFormSchema),
     defaultValues: { contact_role: "parent", website: "" },
   });
 
@@ -140,6 +154,23 @@ export function InquiryForm({
         failWith("We couldn't verify your submission. Please retry the challenge below.");
         return;
       }
+      // The Worker is the source of truth for validation and its schema can
+      // drift ahead of the client mirror in lib/schemas/inquiry.ts. Without
+      // this branch a 422 reads as "our end", sending the visitor away from
+      // the one thing only they can fix.
+      if (res.status === 422) {
+        failWith("Some of your answers weren’t accepted. Please check the form and try again.");
+        return;
+      }
+      // ALLOWED_ORIGINS on the Worker does not list this hostname — only ever
+      // seen in dev or on a preview deployment, but reporting it as a server
+      // fault is what makes that cost an afternoon.
+      if (res.status === 403) {
+        failWith(
+          "This form is not authorised to submit from this address. Please use mystudyally.com, or reach us on WhatsApp.",
+        );
+        return;
+      }
       failWith("Something went wrong on our end. Please try again in a moment.");
     } catch {
       failWith(
@@ -152,7 +183,15 @@ export function InquiryForm({
   // reader user submits, hears nothing, and has no idea which field to fix.
   function onInvalid(formErrors: typeof errors) {
     const first = (Object.keys(formErrors) as (keyof InquiryFormValues)[])[0];
-    if (first) setFocus(first);
+    if (!first) return;
+    // A resolver error on a field the form does not render has nowhere to show
+    // and nothing to focus, so the click reads as a dead button and the visitor
+    // is left with no way forward. Never swallow the submit silently.
+    if (!document.querySelector(`[name="${first}"]`)) {
+      setErrorMessage("We couldn’t validate the form. Please refresh the page and try again.");
+      return;
+    }
+    setFocus(first);
   }
 
   const challengeUnavailable = turnstileStatus === "unavailable";
@@ -265,23 +304,33 @@ export function InquiryForm({
   /* ---------------- compact (curriculum hero) ---------------- */
   if (isCompact) {
     return (
-      <form onSubmit={(e) => void handleSubmit(onSubmit, onInvalid)(e)} className={cn("relative flex flex-col gap-[16px]", className)} noValidate>
+      <form
+        onSubmit={(e) => void handleSubmit(onSubmit, onInvalid)(e)}
+        className={cn(
+          "relative flex flex-col gap-[16px] rounded-[22px] border-2 border-border bg-white px-[18px] pb-[22px] pt-[20px] shadow-[0_2px_0_#E5E5E5] md:rounded-[20px] md:border md:p-[28px] md:shadow-none",
+          className,
+        )}
+        noValidate
+      >
         {alerts}
 
         <div className="flex flex-col gap-[6px]">
-          <label className={labelClass}>
-            Curriculum <span className="font-semibold text-muted-3">(set for this page)</span>
+          <label className={quickLabelClass}>
+            Curriculum{" "}
+            {/* The design's mobile label is just "CURRICULUM" — the Selected
+                chip already says the page has set it. */}
+            <span className="hidden font-semibold text-muted-3 md:inline">(set for this page)</span>
           </label>
-          <div className="flex items-center justify-between gap-[12px] rounded-[12px] border border-border bg-surface-alt px-[14px] py-[12px] text-13 font-bold text-muted">
+          <div className="flex min-h-[48px] items-center justify-between gap-[12px] rounded-[14px] border-2 border-border bg-surface-alt px-[14px] text-15 font-extrabold text-body md:min-h-0 md:rounded-[12px] md:border md:py-[12px] md:text-13 md:font-bold md:text-muted">
             {curriculum || "Not set"}
-            <span className="inline-flex items-center gap-[6px] rounded-pill bg-primary-light px-[10px] py-[4px] text-11 font-extrabold text-primary-shadow">
-              ✓ Selected
+            <span className="text-11 font-extrabold uppercase tracking-[0.08em] text-primary-shadow md:inline-flex md:items-center md:gap-[6px] md:rounded-pill md:bg-primary-light md:px-[10px] md:py-[4px] md:normal-case md:tracking-normal">
+              <span className="hidden md:inline">✓ </span>Selected
             </span>
           </div>
         </div>
 
         <div className="flex flex-col gap-[6px]">
-          <label className={labelClass} htmlFor="q_name">
+          <label className={quickLabelClass} htmlFor="q_name">
             Your name <span className="text-[#B4462B]">*</span>
           </label>
           <input
@@ -290,7 +339,7 @@ export function InquiryForm({
             autoComplete="name"
             aria-invalid={errors.contact_name ? true : undefined}
             aria-describedby={errors.contact_name ? "q_name-error" : undefined}
-            className={inputClass}
+            className={quickInputClass}
             {...register("contact_name")}
           />
           {errors.contact_name && (
@@ -301,7 +350,7 @@ export function InquiryForm({
         </div>
 
         <div className="flex flex-col gap-[6px]">
-          <label className={labelClass} htmlFor="q_email">
+          <label className={quickLabelClass} htmlFor="q_email">
             Email <span className="text-[#B4462B]">*</span>
           </label>
           <input
@@ -312,7 +361,7 @@ export function InquiryForm({
             autoComplete="email"
             aria-invalid={errors.contact_email ? true : undefined}
             aria-describedby={errors.contact_email ? "q_email-error" : undefined}
-            className={inputClass}
+            className={quickInputClass}
             {...register("contact_email")}
           />
           {errors.contact_email && (
@@ -323,7 +372,7 @@ export function InquiryForm({
         </div>
 
         <div className="flex flex-col gap-[6px]">
-          <label className={labelClass} htmlFor="q_phone">
+          <label className={quickLabelClass} htmlFor="q_phone">
             Phone <span className="font-semibold text-muted-3">(optional)</span>
           </label>
           <input
@@ -332,14 +381,14 @@ export function InquiryForm({
             inputMode="tel"
             placeholder="+44 7700 900000"
             autoComplete="tel"
-            className={inputClass}
+            className={quickInputClass}
             {...register("contact_phone")}
           />
         </div>
 
         {subjectOptions.length + subjects.length > 0 && (
           <div className="flex flex-col gap-[8px]">
-            <label className={labelClass} htmlFor="q_subjects">
+            <label className={quickLabelClass} htmlFor="q_subjects">
               Subjects needed <span className="font-semibold text-muted-3">(pick any)</span>
             </label>
             <div className="relative">
@@ -355,7 +404,7 @@ export function InquiryForm({
                   blurTimer.current = setTimeout(() => setSubjectsOpen(false), 150);
                 }}
                 placeholder="Type to search subjects…"
-                className={inputClass}
+                className={quickInputClass}
                 autoComplete="off"
               />
               {subjectsOpen && subjectOptions.length > 0 && (
@@ -447,7 +496,11 @@ export function InquiryForm({
       {showIntent && (
         <div className="flex flex-col gap-[10px]">
           <label className="text-14 font-extrabold text-body">What can we help with?</label>
-          <div className="flex gap-[10px]" role="group" aria-label="What can we help with?">
+          <div
+            className="flex flex-col gap-[8px] md:flex-row md:gap-[10px]"
+            role="group"
+            aria-label="What can we help with?"
+          >
             {INTENTS.map((o) => (
               <button
                 key={o.key}
@@ -455,7 +508,7 @@ export function InquiryForm({
                 onClick={() => setIntent(o.key)}
                 aria-pressed={intent === o.key}
                 className={cn(
-                  "flex-1 cursor-pointer rounded-[14px] border-2 px-[10px] py-[13px] text-center text-13 font-bold leading-[1.35]",
+                  "flex-1 cursor-pointer rounded-[14px] border-2 px-[10px] py-[13px] text-left text-13 font-bold leading-[1.35] md:text-center",
                   intent === o.key
                     ? "border-ink bg-ink text-white"
                     : "border-border bg-white text-muted hover:border-muted-3",
