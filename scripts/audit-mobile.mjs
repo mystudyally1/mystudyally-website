@@ -75,6 +75,15 @@ const SNAPSHOT = () => {
   };
 };
 
+/** Screenshots are a debugging aid; a slow one must not abort the measurement. */
+async function shoot(page, file) {
+  try {
+    await page.screenshot({ path: file, fullPage: true, timeout: 15000 });
+  } catch {
+    // a very tall page can outrun the font-settle wait — the numbers still hold
+  }
+}
+
 const only = process.argv[2];
 const pages = only
   ? PAGES.filter(([, route]) => route.includes(only) || route === `/${only}/`)
@@ -106,14 +115,14 @@ for (const [file, route] of pages) {
   });
   await dPage.waitForTimeout(2500);
   const design = await dPage.evaluate(SNAPSHOT);
-  await dPage.screenshot({ path: path.join(SHOTS, `${route.replace(/\//g, "_")}design.png`), fullPage: true });
+  await shoot(dPage, path.join(SHOTS, `${route.replace(/\//g, "_")}design.png`));
   await dPage.close();
 
   const bPage = await ctx.newPage();
   await bPage.goto(`http://localhost:8931${route}`, { waitUntil: "load", timeout: 30000 });
   await bPage.waitForTimeout(1200);
   const build = await bPage.evaluate(SNAPSHOT);
-  await bPage.screenshot({ path: path.join(SHOTS, `${route.replace(/\//g, "_")}build.png`), fullPage: true });
+  await shoot(bPage, path.join(SHOTS, `${route.replace(/\//g, "_")}build.png`));
   await bPage.close();
   await ctx.close();
 

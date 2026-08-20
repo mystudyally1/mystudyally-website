@@ -1590,7 +1590,7 @@ export const CURRICULUM_PAGES: Record<string, CurriculumPageContent> = {
       },
       "headings": {
         "why": "Why IELTS preparation is different here",
-        "subjects": null
+        "subjects": "Skills we cover for IELTS"
       },
       "trust": [
         "Band-score-targeted prep",
@@ -1744,7 +1744,7 @@ export const CURRICULUM_PAGES: Record<string, CurriculumPageContent> = {
       },
       "headings": {
         "why": "Why SAT preparation is different here",
-        "subjects": null
+        "subjects": "Sections we cover for SAT"
       },
       "trust": [
         "Digital SAT specialists",

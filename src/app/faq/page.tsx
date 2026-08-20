@@ -33,14 +33,16 @@ export default function FaqPage() {
       />
 
       {/* Hero */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[8px] pt-[72px]">
+      <section className="px-[20px] pb-[16px] pt-[28px] md:px-[clamp(20px,5vw,32px)] md:pb-[8px] md:pt-[72px]">
         <div className="mx-auto max-w-container">
           <div className="max-w-[640px]">
-            <div className="text-12 font-bold tracking-[0.14em] text-muted">FAQ</div>
-            <h1 className="mt-[16px] text-d48 font-extrabold leading-[52px] tracking-[-0.02em]">
+            <div className="text-11 font-extrabold tracking-[0.14em] text-muted md:text-12 md:font-bold">
+              FAQ
+            </div>
+            <h1 className="mt-[12px] text-30 font-extrabold leading-[1.14] tracking-[-0.02em] md:mt-[16px] md:text-d48 md:leading-[52px]">
               Common questions
             </h1>
-            <p className="mt-[16px] text-16 leading-[26px] text-muted [text-wrap:pretty]">
+            <p className="mt-[12px] text-14 leading-[1.65] text-muted [text-wrap:pretty] md:mt-[16px] md:text-16 md:leading-[26px]">
               Everything you need to know before getting started. Still have a question?{" "}
               <Link href="/contact/" className="underline underline-offset-[3px]">
                 Submit an inquiry
@@ -52,7 +54,7 @@ export default function FaqPage() {
       </section>
 
       {/* Search + rail + questions */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[40px] pt-0">
+      <section className="px-[20px] pb-[30px] pt-0 md:px-[clamp(20px,5vw,32px)] md:pb-[40px]">
         <div className="mx-auto max-w-container">
           <div className="max-w-[640px]">
             {/* search input lives inside FaqBrowser so it can drive filtering */}

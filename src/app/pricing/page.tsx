@@ -4,6 +4,7 @@ import { FaqList } from "@/components/ui/FaqList";
 import { GetStartedPanel } from "@/components/marketing/GetStartedPanel";
 import { PlanFinder } from "@/components/marketing/PlanFinder";
 import { cn } from "@/lib/cn";
+import { SnapRail } from "@/components/marketing/SnapRail";
 import {
   CLASS_DURATION_MINUTES,
   ENROLMENT_STEPS,
@@ -44,7 +45,7 @@ export default function PricingPage() {
       />
 
       {/* Hero */}
-      <section className="relative overflow-hidden px-[clamp(20px,5vw,32px)] pb-[36px] pt-[72px]">
+      <section className="relative overflow-hidden px-[20px] pb-[24px] pt-[40px] text-center md:px-[clamp(20px,5vw,32px)] md:pb-[36px] md:pt-[72px] md:text-left">
         <div
           className="pointer-events-none absolute hidden md:block -right-[160px] -top-[120px] h-[560px] w-[560px] blur-[24px]"
           style={{
@@ -74,7 +75,7 @@ export default function PricingPage() {
       </section>
 
       {/* Free trial banner */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[8px] pt-[16px]">
+      <section className="px-[16px] pb-[8px] pt-[4px] md:px-[clamp(20px,5vw,32px)] md:pt-[16px]">
         <div className="mx-auto flex max-w-[1080px] flex-wrap items-center justify-between gap-[28px] rounded-[16px] border border-dashed border-[#CFCFCF] bg-surface-alt px-[28px] py-[22px]">
           <div className="flex items-center gap-[18px]">
             <span className="inline-flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[14px] bg-link-light text-18 font-extrabold text-link">
@@ -100,7 +101,7 @@ export default function PricingPage() {
       </section>
 
       {/* Plans heading */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-0 pt-[44px]">
+      <section className="px-[16px] pb-0 pt-[24px] text-center md:px-[clamp(20px,5vw,32px)] md:pt-[44px] md:text-left">
         <div className="mx-auto max-w-[1080px] text-center">
           <h2 className="text-d30 font-extrabold">Six plans, one simple ladder</h2>
           <p className="mt-[12px] text-13_5 font-bold text-muted">
@@ -112,9 +113,11 @@ export default function PricingPage() {
       </section>
 
       {/* Plan grid */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[48px] pt-[28px]">
+      <section className="pb-[28px] pt-[16px] md:px-[clamp(20px,5vw,32px)] md:pb-[48px] md:pt-[28px]">
         <div className="mx-auto max-w-[1360px]">
-          <div className="mb-[14px] grid gap-[16px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))]">
+          {/* The mobile design carries the group label as a chip inside each
+              card instead of this header row. */}
+          <div className="mb-[14px] hidden gap-[16px] md:grid md:[grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))]">
             {PLAN_GROUPS.map((g) => (
               <div
                 key={g.label}
@@ -128,27 +131,41 @@ export default function PricingPage() {
             ))}
           </div>
 
-          <div className="grid items-stretch gap-[16px] pt-[14px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))]">
+          <SnapRail
+            count={PLANS.length}
+            cardStep={304}
+            railClass="gap-[12px] px-[44px] pb-[8px] pt-[16px] md:gap-[16px] md:px-0 md:pb-0 md:pt-[14px]"
+            gridClass="md:items-stretch md:[grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))]"
+          >
             {PLANS.map((plan) => {
               const hi = plan.name === HIGHLIGHT_PLAN;
               return (
                 <div
                   key={plan.name}
                   className={cn(
-                    "relative flex flex-col rounded-[16px] border",
+                    "relative flex w-[292px] shrink-0 snap-center flex-col rounded-[16px] border p-[20px] md:w-auto md:shrink md:px-[16px]",
                     hi
-                      ? "-translate-y-[12px] border-link-hover bg-link px-[16px] py-[26px] shadow-[0_14px_32px_rgba(28,176,246,0.35)]"
-                      : "border-border bg-white px-[16px] py-[20px] shadow-[0_2px_8px_rgba(60,60,60,0.06)]",
+                      ? "border-link-hover bg-link shadow-[0_14px_32px_rgba(28,176,246,0.35)] md:-translate-y-[12px] md:py-[26px]"
+                      : "border-border bg-white shadow-[0_2px_8px_rgba(60,60,60,0.06)] md:py-[20px]",
                   )}
                 >
                   {hi && (
-                    <span className="absolute -top-[13px] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-pill bg-[#FFC800] px-[12px] py-[4px] text-10 font-extrabold tracking-[0.08em] text-[#7A5B00] shadow-[0_4px_12px_rgba(255,200,0,0.4)]">
+                    <span className="absolute -top-[11px] right-[16px] whitespace-nowrap rounded-pill bg-[#FFC800] px-[12px] py-[4px] text-10 font-extrabold tracking-[0.08em] text-[#7A5B00] shadow-[0_4px_12px_rgba(255,200,0,0.4)] md:-top-[13px] md:left-1/2 md:right-auto md:-translate-x-1/2">
                       RECOMMENDED
                     </span>
                   )}
+                  {/* Mobile-only group chip, replacing the header row above. */}
+                  <span
+                    className={cn(
+                      "self-start rounded-pill px-[10px] py-[3px] text-9_5 font-extrabold tracking-[0.12em] md:hidden",
+                      hi ? "bg-white/20 text-white" : "bg-surface-alt text-primary-shadow",
+                    )}
+                  >
+                    {PLAN_GROUPS[plan.group]?.label}
+                  </span>
                   <div
                     className={cn(
-                      "text-11 font-extrabold tracking-[0.12em]",
+                      "mt-[12px] text-11 font-extrabold tracking-[0.12em] md:mt-0",
                       hi ? "text-link-light" : "text-muted-3",
                     )}
                   >
@@ -237,12 +254,12 @@ export default function PricingPage() {
                 </div>
               );
             })}
-          </div>
+          </SnapRail>
         </div>
       </section>
 
       {/* Comparison table */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[56px] pt-[24px]">
+      <section className="px-[16px] pb-[32px] pt-[8px] md:px-[clamp(20px,5vw,32px)] md:pb-[56px] md:pt-[24px]">
         <div className="mx-auto max-w-[1180px]">
           <h2 className="mb-[24px] text-center text-d26 font-extrabold">Compare every plan</h2>
           <div className="overflow-x-auto rounded-[16px] border border-border shadow-[0_2px_6px_rgba(60,60,60,0.05)]">
@@ -303,7 +320,7 @@ export default function PricingPage() {
       </section>
 
       {/* Validity & rollover */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[56px] pt-0">
+      <section className="px-[16px] pb-[32px] pt-0 md:px-[clamp(20px,5vw,32px)] md:pb-[56px]">
         <div className="mx-auto max-w-[820px] rounded-[16px] border border-border bg-white px-[36px] py-[30px] shadow-[0_2px_6px_rgba(60,60,60,0.05)]">
           <h2 className="mb-[14px] text-20 font-extrabold">Validity &amp; rollover</h2>
           <div className="flex flex-col gap-[7px]">
@@ -321,7 +338,7 @@ export default function PricingPage() {
       </section>
 
       {/* How enrolment works */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[56px] pt-0">
+      <section className="px-[16px] pb-[32px] pt-0 md:px-[clamp(20px,5vw,32px)] md:pb-[56px]">
         <div className="mx-auto max-w-[1180px]">
           <h2 className="mb-[28px] text-center text-d26 font-extrabold">How enrolment works</h2>
           <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))]">
@@ -362,7 +379,7 @@ export default function PricingPage() {
       </section>
 
       {/* Get started + FAQ */}
-      <section id="faq" className="px-[clamp(20px,5vw,32px)] pb-[72px] pt-0">
+      <section id="faq" className="px-[16px] pb-[32px] pt-0 md:px-[clamp(20px,5vw,32px)] md:pb-[72px]">
         <div className="mx-auto grid max-w-container items-start gap-[24px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))]">
           <GetStartedPanel
             headline="Ready to get started?"

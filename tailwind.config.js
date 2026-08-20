@@ -73,6 +73,7 @@ module.exports = {
       // Exact type scale from the design files. Sizes only — the design does
       // not set line-height on headings, so it stays `normal` (see globals.css).
       fontSize: {
+        "9": "9px",
         "9_5": "9.5px",
         "10": "10px",
         "10_5": "10.5px",

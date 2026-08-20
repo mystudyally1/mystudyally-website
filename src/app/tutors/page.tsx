@@ -17,18 +17,20 @@ export default function TutorsPage() {
   return (
     <>
       {/* Hero */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[8px] pt-[clamp(36px,5vw,72px)]">
+      <section className="px-[20px] pb-[20px] pt-[28px] md:px-[clamp(20px,5vw,32px)] md:pb-[8px] md:pt-[clamp(36px,5vw,72px)]">
         <div className="mx-auto max-w-container">
           <div className="max-w-[640px]">
-            <div className="text-12 font-bold tracking-[0.14em] text-muted">OUR TUTORS</div>
-            <h1 className="mt-[16px] text-d48 font-extrabold leading-[1.08] tracking-[-0.02em] [text-wrap:balance]">
+            <div className="text-11 font-extrabold tracking-[0.14em] text-muted md:text-12 md:font-bold">
+              OUR TUTORS
+            </div>
+            <h1 className="mt-[12px] text-30 font-extrabold leading-[1.14] tracking-[-0.02em] [text-wrap:balance] md:mt-[16px] md:text-d48 md:leading-[1.08]">
               Find a tutor who knows your exam board
             </h1>
-            <p className="mt-[16px] text-16 leading-[26px] text-muted">
+            <p className="mt-[12px] text-14 leading-[1.65] text-muted md:mt-[16px] md:text-16 md:leading-[26px]">
               Every tutor here specialises in specific curricula, not generic subject knowledge.
               Browse who teaches what — then tell us what you need, and our team matches you.
             </p>
-            <p className="mt-[14px] text-13 leading-[18px] text-muted-3">
+            <p className="mt-[12px] text-12 leading-[1.55] text-muted-3 md:mt-[14px] md:text-13 md:leading-[18px]">
               Tutors are shown for reference. Matching is handled by our team — there&#39;s no
               direct booking here.
             </p>
@@ -37,7 +39,7 @@ export default function TutorsPage() {
       </section>
 
       {/* Filters + grid */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[56px] pt-[32px]">
+      <section className="pb-[28px] pt-0 md:px-[clamp(20px,5vw,32px)] md:pb-[56px] md:pt-[32px]">
         <div className="mx-auto max-w-container">
           <TutorGrid />
         </div>

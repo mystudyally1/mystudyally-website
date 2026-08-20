@@ -30,7 +30,7 @@ export default function ContactPage() {
   return (
     <>
       {/* Hero */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[8px] pt-[72px]">
+      <section className="px-[20px] pb-[22px] pt-[28px] md:px-[clamp(20px,5vw,32px)] md:pb-[8px] md:pt-[72px]">
         <div className="mx-auto max-w-container">
           <div className="max-w-[640px]">
             <div className="text-12 font-bold tracking-[0.14em] text-muted">CONTACT</div>

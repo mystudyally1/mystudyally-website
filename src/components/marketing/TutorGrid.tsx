@@ -26,7 +26,7 @@ export function TutorGrid() {
   return (
     <>
       <h2 className="sr-only">Filter tutors by curriculum</h2>
-      <div className="mb-[12px] flex flex-wrap gap-[10px]">
+      <div className="flex gap-[8px] overflow-x-auto px-[20px] py-[10px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mb-[12px] md:flex-wrap md:overflow-visible md:px-0 md:py-0 md:pb-0">
         {options.map((label) => {
           const on = filter === label;
           return (
@@ -36,7 +36,7 @@ export function TutorGrid() {
               onClick={() => setFilter(label)}
               aria-pressed={on}
               className={cn(
-                "cursor-pointer whitespace-nowrap rounded-pill border px-[18px] py-[9px] text-12_5 font-bold",
+                "inline-flex shrink-0 cursor-pointer items-center whitespace-nowrap rounded-pill border px-[18px] text-13 font-extrabold min-h-[44px] md:min-h-0 md:py-[9px] md:text-12_5 md:font-bold",
                 on
                   ? "border-ink bg-ink text-white"
                   : "border-[rgba(60,60,60,0.14)] bg-white text-muted",
@@ -49,19 +49,19 @@ export function TutorGrid() {
       </div>
 
       <div
-        className="mb-[28px] text-13 font-semibold leading-[18px] text-muted-3"
+        className="border-b border-border px-[20px] pb-[10px] pt-[8px] text-12 font-bold leading-[18px] text-muted-3 md:mb-[28px] md:border-0 md:px-0 md:pb-0 md:pt-0 md:text-13 md:font-semibold"
         aria-live="polite"
       >
         {resultCount}
       </div>
 
-      <div className="grid items-stretch gap-[20px] [grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))]">
+      <div className="flex flex-col gap-[14px] px-[20px] pt-[16px] md:grid md:items-stretch md:gap-[20px] md:px-0 md:pt-0 md:[grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))]">
         {shown.map((t) => (
           <div
             key={t.photoId}
-            className="flex flex-col overflow-hidden rounded-[22px] border-2 border-border bg-white shadow-[0_2px_0_#E5E5E5] transition-[box-shadow,transform] duration-[250ms] hover:-translate-y-[3px] hover:shadow-[0_4px_0_#E5E5E5]"
+            className="flex flex-col overflow-hidden rounded-[18px] border border-border bg-white shadow-[0_2px_0_#EFEFEF] md:rounded-[22px] md:border-2 md:shadow-[0_2px_0_#E5E5E5] md:transition-[box-shadow,transform] md:duration-[250ms] md:hover:-translate-y-[3px] md:hover:shadow-[0_4px_0_#E5E5E5]"
           >
-            <div className="relative h-[220px] bg-surface-alt">
+            <div className="relative aspect-[4/3] bg-surface-alt md:aspect-auto md:h-[220px]">
               <Image
                 src={`/images/tutors/${t.photoId}.webp`}
                 alt={t.name}
@@ -70,8 +70,8 @@ export function TutorGrid() {
                 className="object-cover"
               />
             </div>
-            <div className="flex flex-1 flex-col gap-[8px] px-[24px] pb-[24px] pt-[22px]">
-              <h3 className="text-18 font-bold">{t.name}</h3>
+            <div className="flex flex-1 flex-col gap-[8px] p-[16px] md:px-[24px] md:pb-[24px] md:pt-[22px]">
+              <h3 className="text-17 font-extrabold md:text-18 md:font-bold">{t.name}</h3>
               <div className="text-12_5 font-semibold text-muted">
                 {t.qual} · {t.years}
               </div>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { GetStartedPanel } from "@/components/marketing/GetStartedPanel";
 import { CURRICULA } from "@/data/curricula";
+import { SnapRail } from "@/components/marketing/SnapRail";
 import { FEATURED_TUTORS } from "@/data/tutors";
 
 // Every value here is taken from "website design/MyStudyAlly Homepage.dc.html".
@@ -71,23 +72,32 @@ export default function Home() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="mx-auto grid max-w-container items-center gap-[clamp(32px,4vw,56px)] px-[clamp(20px,5vw,32px)] pb-[72px] pt-[76px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))]">
+        <div className="mx-auto grid max-w-container items-center gap-[28px] px-[20px] pb-[28px] pt-[32px] md:gap-[clamp(32px,4vw,56px)] md:px-[clamp(20px,5vw,32px)] md:pb-[72px] md:pt-[76px] md:[grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))]">
           <div>
-            <div className="text-13 font-bold uppercase tracking-[0.02em] text-muted-3">
+            <div className="text-10_5 font-bold uppercase tracking-[0.14em] text-muted-3 md:text-13 md:tracking-[0.02em]">
               Online Tutoring, Properly Managed
             </div>
-            <h1 className="mt-[22px] text-d52 font-extrabold leading-[1.07] tracking-[-0.02em] [text-wrap:balance]">
+            <h1 className="mt-[12px] text-30 font-extrabold leading-[1.14] tracking-[-0.02em] [text-wrap:balance] md:mt-[22px] md:text-d52 md:leading-[1.07]">
               Curriculum-matched tutoring, without the guesswork
             </h1>
-            <p className="mt-[22px] max-w-[46ch] text-15_5 leading-[1.7] text-muted">
+            <p className="mt-[12px] max-w-[46ch] text-14 leading-[1.65] text-muted md:mt-[22px] md:text-15_5 md:leading-[1.7]">
               We match your child with a vetted tutor who already knows their exam board. IGCSE,
               GCSE, A Levels, IB, and seven more.
             </p>
-            <div className="mt-[28px] flex flex-wrap gap-[10px]">
+            {/* Mobile-only: on a phone the picker and the form are both below
+                the fold, so the design puts a jump CTA right under the intro
+                ("Mobile Hero"). The desktop hero has no button. */}
+            <Link
+              href="/contact/"
+              className="mt-[20px] flex items-center justify-center rounded-[14px] bg-primary py-[14px] text-14 font-extrabold tracking-[0.02em] text-white shadow-[0_4px_0_#49AD00] hover:bg-primary-bright hover:text-white md:hidden"
+            >
+              Submit an inquiry
+            </Link>
+            <div className="mt-[14px] flex flex-wrap gap-[7px] md:mt-[28px] md:gap-[10px]">
               {HERO_TRUST.map((t) => (
                 <span
                   key={t}
-                  className="inline-flex items-center gap-[8px] whitespace-nowrap rounded-pill bg-primary-light px-[14px] py-[8px] text-12 font-bold text-primary-shadow"
+                  className="inline-flex items-center gap-[6px] whitespace-nowrap rounded-pill bg-primary-light px-[11px] py-[6px] text-11 font-bold text-primary-shadow md:gap-[8px] md:px-[14px] md:py-[8px] md:text-12"
                 >
                   <span className="font-extrabold">✓</span>
                   {t}
@@ -97,27 +107,27 @@ export default function Home() {
           </div>
 
           <div>
-            <div className="mb-[14px] text-12 font-bold uppercase tracking-[0.1em] text-muted-3">
+            <div className="mb-[10px] text-11 font-bold uppercase tracking-[0.1em] text-muted-3 md:mb-[14px] md:text-12">
               Which curriculum is your child studying?
             </div>
-            <div className="grid grid-cols-2 gap-[10px]">
+            <div className="grid grid-cols-2 gap-[8px] md:gap-[10px]">
               {CURRICULA.map((c) => (
                 <Link
                   key={c.slug}
                   href={`/${c.slug}/`}
-                  className="flex flex-col gap-[3px] rounded-[14px] border border-border bg-white px-[16px] py-[14px] text-body transition-[box-shadow,transform,border-color] duration-200 hover:-translate-y-[2px] hover:border-link-light-2 hover:text-body hover:shadow-[0_3px_0_#E5E5E5]"
+                  className="flex min-h-[62px] flex-col justify-center gap-[2px] rounded-[14px] border border-border bg-white px-[13px] py-[12px] text-body shadow-[0_2px_0_#EFEFEF] md:min-h-0 md:gap-[3px] md:px-[16px] md:py-[14px] md:shadow-none md:transition-[box-shadow,transform,border-color] md:duration-200 md:hover:-translate-y-[2px] md:hover:border-link-light-2 md:hover:text-body md:hover:shadow-[0_3px_0_#E5E5E5]"
                 >
-                  <span className="text-14_5 font-bold">{c.shortName}</span>
-                  <span className="text-11_5 font-semibold tracking-[0.02em] text-muted-3">
+                  <span className="text-14 font-bold md:text-14_5">{c.shortName}</span>
+                  <span className="text-10_5 font-semibold leading-[1.3] tracking-[0.02em] text-muted-3 md:text-11_5">
                     {c.tagline}
                   </span>
                 </Link>
               ))}
             </div>
-            <div className="mt-[14px]">
+            <div className="mt-[14px] text-center md:text-left">
               <Link
                 href="/contact/"
-                className="border-b-2 border-primary pb-[2px] text-13 font-bold text-body hover:text-link"
+                className="border-b-2 border-primary pb-[2px] text-12_5 font-bold text-body hover:text-link md:text-13"
               >
                 Not sure which curriculum? Talk to us →
               </Link>
@@ -127,10 +137,10 @@ export default function Home() {
       </section>
 
       {/* Proof strip */}
-      <section className="px-[clamp(20px,5vw,32px)]">
-        <div className="mx-auto flex max-w-container flex-wrap items-center justify-center gap-x-[16px] gap-y-[8px] border-y border-border py-[18px] text-center text-12 font-bold uppercase tracking-[0.08em] text-muted-3">
+      <section className="px-[20px] md:px-[clamp(20px,5vw,32px)]">
+        <div className="mx-auto flex max-w-container flex-wrap items-center justify-center gap-x-[10px] gap-y-[6px] border-y border-border py-[14px] text-center text-10 font-bold uppercase tracking-[0.08em] text-muted-3 md:gap-x-[16px] md:gap-y-[8px] md:py-[18px] md:text-12">
           {PROOF_STRIP.map((item, i) => (
-            <span key={item} className="flex items-center gap-[16px]">
+            <span key={item} className="flex items-center gap-[10px] md:gap-[16px]">
               {i > 0 && <span className="text-border">·</span>}
               {item}
             </span>
@@ -139,25 +149,33 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section className="mt-[24px] bg-surface-dark px-[clamp(20px,5vw,32px)] pb-[76px] pt-[72px]">
+      <section className="mt-[24px] bg-surface-dark px-[20px] pb-[40px] pt-[36px] md:px-[clamp(20px,5vw,32px)] md:pb-[76px] md:pt-[72px]">
         <div className="mx-auto max-w-container">
-          <div className="mb-[52px] max-w-[640px]">
-            <div className="mb-[14px] text-11 font-bold tracking-[0.16em] text-muted-2">
+          <div className="mb-[22px] max-w-[640px] md:mb-[52px]">
+            <div className="mb-[10px] text-10 font-bold tracking-[0.16em] text-muted-2 md:mb-[14px] md:text-11">
               HOW IT WORKS
             </div>
-            <h2 className="text-d34 font-extrabold tracking-[-0.01em] text-white [text-wrap:balance]">
+            <h2 className="text-23 font-extrabold tracking-[-0.01em] text-white [text-wrap:balance] md:text-d34">
               From inquiry to first session, <span className="text-muted-2">we handle it.</span>
             </h2>
           </div>
-          <div className="grid gap-y-[32px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))]">
+          <div className="flex flex-col gap-[16px] md:grid md:gap-y-[32px] md:[grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))]">
             {STEPS.map((step) => (
               <div
                 key={step.num}
-                className="flex flex-col gap-[14px] border-l border-white/[0.22] px-[28px] pb-[8px] pt-[4px]"
+                className="flex items-start gap-[14px] md:flex-col md:gap-[14px] md:border-l md:border-white/[0.22] md:px-[28px] md:pb-[8px] md:pt-[4px]"
               >
-                <span className="text-11 font-bold tracking-[0.16em] text-muted-2">{step.num}</span>
-                <h3 className="text-18 font-bold text-white">{step.title}</h3>
-                <p className="text-13_5 leading-[1.7] text-muted-4">{step.body}</p>
+                <span className="inline-flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-pill border border-white/[0.28] text-10_5 font-extrabold text-muted-2 md:h-auto md:w-auto md:rounded-none md:border-0 md:text-11 md:font-bold md:tracking-[0.16em]">
+                  {step.num}
+                </span>
+                <div className="flex-1 border-b border-white/[0.14] pb-[16px] md:border-b-0 md:pb-0">
+                  <h3 className="text-15 font-extrabold text-white md:text-18 md:font-bold">
+                    {step.title}
+                  </h3>
+                  <p className="mt-[5px] text-12_5 leading-[1.65] text-muted-4 md:mt-[14px] md:text-13_5 md:leading-[1.7]">
+                    {step.body}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -165,18 +183,23 @@ export default function Home() {
       </section>
 
       {/* Tutors */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[72px] pt-[40px]">
+      <section className="pb-[8px] pt-[32px] md:px-[clamp(20px,5vw,32px)] md:pb-[72px] md:pt-[40px]">
         <div className="mx-auto max-w-container">
-          <h2 className="mb-[36px] max-w-[560px] text-d34 font-extrabold tracking-[-0.01em] [text-wrap:balance]">
+          <h2 className="mb-[4px] max-w-[560px] px-[20px] text-21 font-extrabold tracking-[-0.01em] [text-wrap:balance] md:mb-[36px] md:px-0 md:text-d34">
             Some of the tutors you could be matched with
           </h2>
-          <div className="grid gap-[20px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))]">
+          <SnapRail
+            count={FEATURED_TUTORS.length}
+            cardStep={284}
+            railClass="gap-[12px] px-[20px] pb-[8px] pt-[16px] md:gap-[20px] md:px-0 md:pb-0 md:pt-0"
+            gridClass="md:[grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))]"
+          >
             {FEATURED_TUTORS.map((t) => (
               <div
                 key={t.photoId}
-                className="flex flex-col overflow-hidden rounded-[22px] border-2 border-border bg-white shadow-[0_2px_0_#E5E5E5] transition-[box-shadow,transform] duration-[250ms] hover:-translate-y-[3px] hover:shadow-[0_4px_0_#E5E5E5]"
+                className="flex w-[272px] shrink-0 snap-center flex-col overflow-hidden rounded-[20px] border-2 border-border bg-white shadow-[0_2px_0_#E5E5E5] md:w-auto md:shrink md:rounded-[22px] md:transition-[box-shadow,transform] md:duration-[250ms] md:hover:-translate-y-[3px] md:hover:shadow-[0_4px_0_#E5E5E5]"
               >
-                <div className="relative h-[200px] bg-surface-alt">
+                <div className="relative h-[168px] bg-surface-alt md:h-[200px]">
                   <Image
                     src={`/images/tutors/${t.photoId}.webp`}
                     alt={t.name}
@@ -185,51 +208,59 @@ export default function Home() {
                     className="object-cover"
                   />
                 </div>
-                <div className="flex flex-1 flex-col gap-[8px] px-[22px] pb-[22px] pt-[20px]">
-                  <h3 className="text-17 font-bold">{t.name}</h3>
-                  <div className="text-12 font-semibold text-muted">
+                <div className="flex flex-1 flex-col gap-[6px] px-[18px] pb-[18px] pt-[16px] md:gap-[8px] md:px-[22px] md:pb-[22px] md:pt-[20px]">
+                  <h3 className="text-16 font-extrabold md:text-17 md:font-bold">{t.name}</h3>
+                  <div className="text-11 font-bold text-muted md:text-12 md:font-semibold">
                     {t.qual} · {t.years}
                   </div>
-                  <div className="text-12 font-bold leading-[1.5] text-link">{t.expertise}</div>
-                  <p className="mb-[8px] mt-[4px] flex-1 text-12 leading-[1.6] text-muted">
+                  <div className="text-11 font-extrabold leading-[1.45] text-link md:text-12 md:font-bold md:leading-[1.5]">
+                    {t.expertise}
+                  </div>
+                  <p className="mb-[8px] mt-[2px] flex-1 text-11_5 leading-[1.6] text-muted md:mt-[4px] md:text-12">
                     {t.bio}
                   </p>
                   <Link
                     href="/contact/"
-                    className="border-t-2 border-border pt-[14px] text-11_5 font-bold tracking-[0.06em] text-body hover:text-link"
+                    className="flex min-h-[44px] items-center border-t-2 border-border pt-[12px] text-10_5 font-extrabold tracking-[0.06em] text-body hover:text-link md:min-h-0 md:pt-[14px] md:text-11_5 md:font-bold"
                   >
                     INQUIRE ABOUT THIS TUTOR ↗
                   </Link>
                 </div>
               </div>
             ))}
-          </div>
-          <div className="mt-[32px] text-center">
+          </SnapRail>
+          <div className="mt-[14px] px-[20px] text-center md:mt-[32px] md:px-0">
             <Link
               href="/tutors/"
-              className="border-b-2 border-primary pb-[2px] text-13 font-bold text-body hover:text-link"
+              className="border-b-2 border-primary pb-[2px] text-12_5 font-bold text-body hover:text-link md:text-13"
             >
-              Meet All Our Tutors ↗
+              Meet all our tutors ↗
             </Link>
           </div>
         </div>
       </section>
 
       {/* What you get */}
-      <section className="mt-[24px] bg-surface-alt px-[clamp(20px,5vw,32px)] pb-[60px] pt-[56px]">
+      <section className="mt-[28px] bg-surface-alt px-[20px] pb-[36px] pt-[32px] md:mt-[24px] md:px-[clamp(20px,5vw,32px)] md:pb-[60px] md:pt-[56px]">
         <div className="mx-auto max-w-[1080px]">
-          <h2 className="mb-[32px] text-d30 font-extrabold tracking-[-0.01em]">What you get</h2>
+          <h2 className="mb-[6px] text-21 font-extrabold tracking-[-0.01em] md:mb-[32px] md:text-d30">
+            What you get
+          </h2>
           <div className="flex flex-col">
             {PILLARS.map((p) => (
               <div
                 key={p.num}
-                className="grid gap-[32px] border-t border-border py-[26px] grid-cols-[44px_1fr] md:[grid-template-columns:44px_minmax(min(100%,240px),1fr)_minmax(min(100%,240px),1fr)]"
+                className="flex flex-col gap-[8px] border-t border-border py-[18px] md:grid md:gap-[32px] md:py-[26px] md:[grid-template-columns:44px_minmax(min(100%,240px),1fr)_minmax(min(100%,240px),1fr)]"
               >
-                <span className="pt-[1px] text-24 font-extrabold leading-none tracking-[0.02em] text-muted-3">
+                <span className="text-20 font-extrabold leading-none tracking-[0.02em] text-muted-3 md:pt-[1px] md:text-24">
                   {p.num}
                 </span>
-                <h3 className="text-18 font-bold text-body">{p.title}</h3>
-                <p className="col-start-2 md:col-start-auto text-14_5 leading-[1.75] text-muted">{p.body}</p>
+                <h3 className="text-15_5 font-extrabold text-body md:text-18 md:font-bold">
+                  {p.title}
+                </h3>
+                <p className="text-13 leading-[1.7] text-muted md:col-start-auto md:text-14_5 md:leading-[1.75]">
+                  {p.body}
+                </p>
               </div>
             ))}
           </div>
@@ -237,53 +268,58 @@ export default function Home() {
       </section>
 
       {/* Pricing snapshot */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[64px] pt-[56px]">
+      <section className="px-[20px] pb-[36px] pt-[32px] md:px-[clamp(20px,5vw,32px)] md:pb-[64px] md:pt-[56px]">
         <div className="mx-auto max-w-[1080px]">
-          <div className="rounded-[18px] border border-border bg-white px-[clamp(20px,5vw,32px)] py-[28px]">
-            <h2 className="text-d22 font-extrabold">
+          {/* Dashed, centred and on the alt surface on mobile, per the design. */}
+          <div className="rounded-[14px] border border-dashed border-[#CFCFCF] bg-surface-alt p-[18px] text-center md:rounded-[18px] md:border-solid md:border-border md:bg-white md:px-[clamp(20px,5vw,32px)] md:py-[28px] md:text-left">
+            <h2 className="text-15 font-extrabold md:text-d22">
               Not sure yet? Start with a free trial session.
             </h2>
-            <p className="mt-[10px] max-w-[70ch] text-14 leading-[1.7] text-muted">
+            <p className="mt-[6px] max-w-[70ch] text-12 leading-[1.6] text-muted md:mt-[10px] md:text-14 md:leading-[1.7]">
               No payment required — submit an inquiry and we&#39;ll match you with a tutor for a
               trial before you commit to a package.
             </p>
           </div>
-          <p className="mb-[28px] mt-[20px] text-16 leading-[1.6] text-body">
+          <p className="mb-[18px] mt-[16px] text-13_5 leading-[1.65] text-body md:mb-[28px] md:mt-[20px] md:text-16 md:leading-[1.6]">
             MyStudyAlly is new. Your trial session is free precisely so you don&#39;t have to
             take our word for it.
           </p>
-          <div className="grid gap-[16px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))]">
+          <div className="flex flex-col gap-[10px] md:grid md:gap-[16px] md:[grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))]">
             {PRICING_SNAPSHOT.map((p) => (
               <div
                 key={p.label}
                 className={
-                  "relative flex flex-col gap-[6px] rounded-[18px] bg-white px-[clamp(20px,5vw,32px)] py-[28px] " +
+                  "relative flex items-baseline justify-between gap-[12px] rounded-[16px] bg-white px-[18px] py-[16px] md:flex-col md:items-stretch md:gap-[6px] md:rounded-[18px] md:px-[clamp(20px,5vw,32px)] md:py-[28px] " +
                   (p.recommended ? "border-2 border-primary" : "border border-border")
                 }
               >
                 {p.recommended && (
-                  <span className="absolute -top-[12px] right-[20px] rounded-pill bg-primary px-[12px] py-[4px] text-10 font-extrabold tracking-[0.1em] text-white">
+                  <span className="absolute -top-[10px] right-[14px] rounded-pill bg-primary px-[10px] py-[3px] text-9_5 font-extrabold tracking-[0.1em] text-white md:-top-[12px] md:right-[20px] md:px-[12px] md:py-[4px] md:text-10">
                     RECOMMENDED
                   </span>
                 )}
-                <div className="text-12 font-bold uppercase tracking-[0.1em] text-muted-3">
-                  {p.label}
+                <div className="md:contents">
+                  <div className="text-10_5 font-extrabold uppercase tracking-[0.1em] text-muted-3 md:text-12 md:font-bold">
+                    {p.label}
+                  </div>
+                  <div className="mt-[4px] text-11_5 font-bold text-muted md:order-3 md:mt-0 md:text-13 md:font-semibold">
+                    {p.detail}
+                  </div>
                 </div>
-                <div className="text-d34 font-extrabold tracking-[-0.01em]">
-                  {p.price} <span className="text-14 font-semibold text-muted">USD</span>
+                <div className="shrink-0 whitespace-nowrap text-24 font-black tracking-[-0.02em] md:order-2 md:text-d34 md:font-extrabold md:tracking-[-0.01em]">
+                  {p.price} <span className="text-11 font-bold text-muted-3 md:text-14 md:font-semibold md:text-muted">USD</span>
                 </div>
-                <div className="text-13 font-semibold text-muted">{p.detail}</div>
               </div>
             ))}
           </div>
-          <p className="mt-[14px] text-13 leading-[1.7] text-muted">
+          <p className="mt-[12px] text-12 leading-[1.65] text-muted md:mt-[14px] md:text-13 md:leading-[1.7]">
             Six plans from 4 to 32 classes. No registration or platform fees — the plan price is
             all you pay.
           </p>
-          <div className="mt-[18px]">
+          <div className="mt-[14px] md:mt-[18px]">
             <Link
               href="/pricing/"
-              className="border-b-2 border-primary pb-[2px] text-13 font-bold text-body hover:text-link"
+              className="border-b-2 border-primary pb-[2px] text-12_5 font-bold text-body hover:text-link md:text-13"
             >
               See full pricing →
             </Link>
@@ -292,17 +328,18 @@ export default function Home() {
       </section>
 
       {/* Get started + FAQ */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[72px] pt-[56px]">
-        <div className="mx-auto grid max-w-container items-start gap-[24px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))]">
+      <section className="px-[20px] pb-[28px] md:px-[clamp(20px,5vw,32px)] md:pb-[72px] md:pt-[56px]">
+        <div className="mx-auto grid max-w-container items-start gap-[20px] md:gap-[24px] md:[grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))]">
           <GetStartedPanel
             headline="Ready to get started?"
             sub="Submit an inquiry and we'll match you with a tutor within 24h."
           />
-          <div className="max-w-[520px] self-center">
-            <h2 className="text-d28 font-extrabold tracking-[-0.01em]">
+          {/* A bordered card on mobile; plain column from md up. */}
+          <div className="max-w-[520px] rounded-[16px] border border-border bg-white p-[20px] md:self-center md:rounded-none md:border-0 md:p-0">
+            <h2 className="text-17 font-extrabold tracking-[-0.01em] md:text-d28">
               Questions before you start?
             </h2>
-            <p className="mt-[16px] text-16 leading-[26px] text-muted [text-wrap:pretty]">
+            <p className="mt-[8px] text-13 leading-[1.7] text-muted [text-wrap:pretty] md:mt-[16px] md:text-16 md:leading-[26px]">
               Pricing, scheduling, tutor vetting, recordings, and what happens to unused classes —
               all answered in one place.
             </p>

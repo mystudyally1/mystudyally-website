@@ -18,14 +18,14 @@ export default function BlogIndex() {
   return (
     <>
       {/* Hero */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[8px] pt-[72px]">
+      <section className="px-[20px] pb-[6px] pt-[30px] md:px-[clamp(20px,5vw,32px)] md:pb-[8px] md:pt-[72px]">
         <div className="mx-auto max-w-container">
           <div className="max-w-[640px]">
-            <div className="text-12 font-bold tracking-[0.14em] text-muted">BLOG</div>
-            <h1 className="mt-[16px] text-d48 font-extrabold leading-[52px] tracking-[-0.02em] [text-wrap:balance]">
+            <div className="text-11 font-bold tracking-[0.14em] text-muted md:text-12">BLOG</div>
+            <h1 className="mt-[12px] text-28 font-extrabold leading-[1.16] tracking-[-0.02em] [text-wrap:balance] md:mt-[16px] md:text-d48 md:leading-[52px]">
               Study Tips &amp; Exam Guidance
             </h1>
-            <p className="mt-[16px] text-16 leading-[26px] text-muted">
+            <p className="mt-[14px] text-14_5 leading-[1.7] text-muted md:mt-[16px] md:text-16 md:leading-[26px]">
               Practical advice for parents and students navigating IGCSE, GCSE, A Levels, IB, and
               more.
             </p>
@@ -34,16 +34,16 @@ export default function BlogIndex() {
       </section>
 
       {/* Posts */}
-      <section className="px-[clamp(20px,5vw,32px)] pb-[64px] pt-[48px]">
+      <section className="px-[20px] pb-[34px] pt-[24px] md:px-[clamp(20px,5vw,32px)] md:pb-[64px] md:pt-[48px]">
         <h2 className="sr-only">Latest posts</h2>
-        <div className="mx-auto grid max-w-container gap-[20px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))]">
+        <div className="mx-auto grid max-w-container gap-[16px] md:gap-[20px] md:[grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))]">
           {posts.map((p) => (
             <Link
               key={p.slug}
               href={`/blog/${p.slug}/`}
-              className="flex min-h-[300px] flex-col overflow-hidden rounded-[22px] border-2 border-border bg-white pb-[22px] text-body shadow-[0_2px_0_#E5E5E5] transition-[box-shadow,transform] duration-[250ms] hover:-translate-y-[3px] hover:text-body hover:shadow-[0_4px_0_#E5E5E5]"
+              className="flex flex-col overflow-hidden rounded-[20px] border-2 border-border bg-white text-body shadow-[0_2px_0_#E5E5E5] hover:shadow-[0_4px_0_#E5E5E5] md:min-h-[300px] md:rounded-[22px] md:pb-[22px] md:transition-[box-shadow,transform] md:duration-[250ms] md:hover:-translate-y-[3px] md:hover:text-body"
             >
-              <div className="relative h-[170px] shrink-0 border-b-2 border-border bg-surface-alt">
+              <div className="relative aspect-[16/9] shrink-0 border-b-2 border-border bg-surface-alt md:aspect-auto md:h-[170px]">
                 <Image
                   src={p.image}
                   alt=""
@@ -52,15 +52,17 @@ export default function BlogIndex() {
                   className="object-cover"
                 />
               </div>
-              <div className="flex flex-1 flex-col px-[26px] pt-[22px]">
-                <span className="text-11 font-bold tracking-[0.14em] text-muted">{p.tag}</span>
-                <h3 className="mt-[14px] line-clamp-2 text-19 font-extrabold leading-[24px] tracking-[-0.01em]">
+              <div className="flex flex-1 flex-col px-[18px] pb-[18px] pt-[16px] md:px-[26px] md:pb-0 md:pt-[22px]">
+                <span className="text-10_5 font-bold tracking-[0.14em] text-muted md:text-11">
+                  {p.tag}
+                </span>
+                <h3 className="mt-[10px] line-clamp-2 text-18 font-extrabold leading-[1.28] tracking-[-0.01em] md:mt-[14px] md:text-19 md:leading-[24px]">
                   {p.title}
                 </h3>
-                <p className="mb-[20px] mt-[10px] line-clamp-3 text-13_5 leading-[1.65] text-muted">
+                <p className="mb-[16px] mt-[8px] line-clamp-2 text-13_5 leading-[1.6] text-muted md:mb-[20px] md:mt-[10px] md:line-clamp-3 md:leading-[1.65]">
                   {p.description}
                 </p>
-                <div className="mt-auto flex flex-col gap-[3px] border-t border-border pt-[14px]">
+                <div className="mt-auto flex flex-col gap-[3px] border-t border-border pt-[12px] md:pt-[14px]">
                   <span className="text-12_5 font-bold text-body">Written by {p.author}</span>
                   <span className="text-12 font-semibold text-muted-3">
                     {formatDate(p.date)} · {p.readTime}
