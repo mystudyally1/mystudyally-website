@@ -73,6 +73,7 @@ module.exports = {
       // Exact type scale from the design files. Sizes only — the design does
       // not set line-height on headings, so it stays `normal` (see globals.css).
       fontSize: {
+        "9_5": "9.5px",
         "10": "10px",
         "10_5": "10.5px",
         "11": "11px",
@@ -92,7 +93,12 @@ module.exports = {
         "20": "20px",
         "21": "21px",
         "22": "22px",
+        "23": "23px",
         "24": "24px",
+        "25": "25px",
+        "26": "26px",
+        "27": "27px",
+        "30": "30px",
         d22: "clamp(20px,1.72vw,22px)",
         d24: "clamp(20px,1.88vw,24px)",
         d26: "clamp(20px,2.03vw,26px)",
