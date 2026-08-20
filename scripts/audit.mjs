@@ -16,6 +16,13 @@ function walk(dir, files = []) {
 
 const pages = walk(OUT);
 const problems = [];
+
+// public/.htaccess carries the custom 404, cache lifetimes and every security
+// header. It is a dotfile, so it is exactly the sort of thing a copy or upload
+// step silently drops.
+if (!fs.existsSync(path.join(OUT, ".htaccess"))) {
+  problems.push("NO HTACCESS out/.htaccess missing — hosting config will not deploy");
+}
 const titles = new Map();
 const descs = new Map();
 

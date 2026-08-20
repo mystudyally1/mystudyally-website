@@ -82,7 +82,10 @@ for (const width of widths) {
       seen.push(`requestfailed: ${r.url().slice(0, 100)} (${err})`);
     });
     page.on("response", (r) => {
-      if (r.status() >= 400) seen.push(`HTTP ${r.status()}: ${r.url().slice(0, 110)}`);
+      // /does-not-exist/ is in the route list on purpose, to prove the branded
+      // 404 renders; its 404 status is the expected result, not a fault.
+      if (r.status() >= 400 && !r.url().endsWith("/does-not-exist/"))
+        seen.push(`HTTP ${r.status()}: ${r.url().slice(0, 110)}`);
     });
 
     // "load", not "networkidle": the Turnstile script is fetched cross-origin

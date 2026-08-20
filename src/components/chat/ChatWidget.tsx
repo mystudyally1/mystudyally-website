@@ -89,7 +89,7 @@ export function ChatWidget() {
     "min-h-[44px] rounded-[8px] px-[12px] py-[11px] text-center text-14 font-bold";
 
   return (
-    <div className="fixed bottom-0 right-0 z-[900] font-sans text-ink">
+    <div data-chat-root className="fixed bottom-0 right-0 z-[900] font-sans text-ink">
       {open ? (
         <div
           role="dialog"

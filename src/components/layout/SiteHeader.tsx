@@ -16,6 +16,46 @@ const NAV_LINKS = [
 
 const CURRICULUM_SLUGS = new Set(CURRICULA.map((c) => c.slug));
 
+/**
+ * The design's header carries a "Sign in", but the student portal does not
+ * exist yet. Shipping it as a real link meant an anchor that visibly did
+ * nothing; shipping nothing lost the signal that an account is coming. So it
+ * renders as a disabled control with a status tag.
+ *
+ * `disabled` (not `aria-disabled`) is deliberate: there is nothing to activate,
+ * so it should leave the tab order rather than trap a keyboard user on a dead
+ * stop. The accessible name folds the tag in, because the badge itself is
+ * decorative once the name says it.
+ */
+function SignInSoon({
+  labelClass,
+  badgeLabel,
+  className,
+}: {
+  labelClass: string;
+  badgeLabel: string;
+  className?: string;
+}) {
+  return (
+    <span className={cn("flex items-center gap-[7px]", className)}>
+      <button
+        type="button"
+        disabled
+        aria-label="Sign in — coming soon"
+        className={cn("cursor-not-allowed whitespace-nowrap bg-transparent p-0", labelClass)}
+      >
+        Sign in
+      </button>
+      <span
+        aria-hidden="true"
+        className="whitespace-nowrap rounded-pill border border-border bg-surface-alt px-[7px] py-[2px] text-10 font-extrabold uppercase tracking-[0.06em] text-muted-3"
+      >
+        {badgeLabel}
+      </span>
+    </span>
+  );
+}
+
 export function SiteHeader() {
   const pathname = usePathname();
   const active = useMemo(() => {
@@ -65,6 +105,9 @@ export function SiteHeader() {
 
     const opener = hamburgerRef.current;
     document.body.style.overflow = "hidden";
+    // The chat launcher is fixed at z-900, well above this drawer, so without
+    // a signal it floats over the menu and covers the "Submit an inquiry" CTA.
+    document.body.dataset.drawerOpen = "true";
     drawerCloseRef.current?.focus();
 
     const onKey = (e: KeyboardEvent) => {
@@ -94,6 +137,7 @@ export function SiteHeader() {
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      delete document.body.dataset.drawerOpen;
       // Return focus where it came from, so closing the menu does not dump the
       // visitor back at the top of the document.
       opener?.focus();
@@ -211,10 +255,9 @@ export function SiteHeader() {
           </nav>
 
           <div className="hidden shrink-0 items-center gap-[14px] lg:flex">
-            {/* The design shows a "Sign in" link here, but there is no student
-                portal to sign in to yet and it pointed at href="#" — a link
-                that visibly does nothing. Restore it as a <Link> the moment a
-                portal URL exists. */}
+            {/* Short badge here — the header row is tightest at the lg
+                breakpoint, where the nav, this and the CTA all have to fit. */}
+            <SignInSoon labelClass="text-13 font-bold text-muted-3" badgeLabel="Soon" />
             <Link
               href="/contact/"
               className="whitespace-nowrap rounded-[14px] bg-primary px-[18px] py-[10px] text-13 font-extrabold tracking-[0.03em] text-white shadow-[0_4px_0_#58A700] hover:bg-primary-hover hover:text-white hover:shadow-[0_4px_0_#49AD00]"
@@ -322,6 +365,11 @@ export function SiteHeader() {
           </div>
 
           <div className="flex shrink-0 flex-col gap-[12px] border-t border-border px-[clamp(16px,4vw,20px)] pb-[18px] pt-[14px]">
+            <SignInSoon
+              labelClass="text-14 font-bold text-muted-3"
+              badgeLabel="Coming soon"
+              className="self-start"
+            />
             <Link
               href="/contact/"
               onClick={() => setMobileOpen(false)}

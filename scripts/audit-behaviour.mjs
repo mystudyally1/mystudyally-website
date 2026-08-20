@@ -73,6 +73,37 @@ const browser = await chromium.launch();
   await page.close();
 }
 
+// ---- 2b. Nothing floats over the open drawer --------------------------------
+{
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  await page.goto(`${BASE}/`, { waitUntil: "load" });
+  // The chat widget is a deferred island, so wait for it rather than assuming.
+  await page.locator('button[aria-label="Open chat"]').waitFor({ state: "visible", timeout: 10000 });
+  const before = await page.locator('button[aria-label="Open chat"]').isVisible();
+  await page.click('button[aria-label="Open menu"]');
+  await page.waitForTimeout(300);
+  const during = await page.locator('button[aria-label="Open chat"]').isVisible();
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(300);
+  const after = await page.locator('button[aria-label="Open chat"]').isVisible();
+  check("chat launcher stands down while the drawer is open",
+    before && !during && after, `before=${before} during=${during} after=${after}`);
+  await page.close();
+}
+
+// ---- 2c. "Sign in" is inert, labelled, and out of the tab order -------------
+{
+  const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  await page.goto(`${BASE}/`, { waitUntil: "load" });
+  const signIn = page.locator('button[aria-label="Sign in — coming soon"]').first();
+  check("Sign in renders as a disabled control", await signIn.isDisabled());
+  check("Sign in is skipped by the keyboard",
+    await page.evaluate(() =>
+      ![...document.querySelectorAll("button:not([disabled]), a[href]")].some((e) =>
+        (e.getAttribute("aria-label") || "").startsWith("Sign in"))));
+  await page.close();
+}
+
 // ---- 3. Chat: focus in on open, back to launcher on close -------------------
 {
   const page = await browser.newPage();

@@ -44,6 +44,13 @@
   }
 }
 
+/* The mobile menu is a full-screen modal; nothing else fixed to the viewport
+   should sit on top of it. Driven by a body attribute rather than shared React
+   state so the drawer does not need a handle on every floating widget. */
+body[data-drawer-open] [data-chat-root] {
+  display: none;
+}
+
 /* Honour the OS "reduce motion" setting. The site autoplays two looping
    background videos and animates card lifts on hover; for a visitor with a
    vestibular disorder that is the difference between usable and not.

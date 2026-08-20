@@ -143,9 +143,11 @@ See the launch checklist in the project notes. In short:
 - **Cancellation and refund policy** is still described as "being finalised".
 - **SABIS subject verification** — the page ships `noindex` and is out of the
   sitemap until its subjects are checked against the real tutor pool.
-- **A "Sign in" link** appears in the design's header but there is no portal to
-  sign into, so it is not rendered. `src/components/layout/SiteHeader.tsx` marks
-  the spot; restore it as a `<Link>` when a URL exists.
+- **The student portal.** The header's "Sign in" renders as a disabled control
+  with a "coming soon" tag (`SignInSoon` in
+  `src/components/layout/SiteHeader.tsx`). When a portal URL exists, swap that
+  component for a `<Link>` — both the desktop header and the mobile drawer read
+  from it, so it is a single edit.
 - **Colour contrast.** Several of the design's own greys fall below WCAG AA on
   white: `#777777` at 4.48:1 (needs 4.5), `#AFAFAF` at 2.19:1, and white on the
   brand green `#58CC02` at 2.09:1. These are palette decisions, not code

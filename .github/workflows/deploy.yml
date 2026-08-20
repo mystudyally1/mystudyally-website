@@ -46,3 +46,10 @@ jobs:
           password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
           local-dir: ./out/
           server-dir: ./public_html/
+          # Default excludes drop .git* but keep other dotfiles. out/.htaccess
+          # carries the 404 page, cache headers and CSP, so confirm it lands in
+          # public_html/ after the first deploy — none of that config applies
+          # if the upload skips it.
+          exclude: |
+            **/.git*
+            **/.git*/**
