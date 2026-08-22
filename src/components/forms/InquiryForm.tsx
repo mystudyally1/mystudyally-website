@@ -19,6 +19,7 @@ import {
   type InquiryFormValues,
 } from "@/lib/schemas/inquiry";
 import { CURRICULA, getCurriculumByName } from "@/data/curricula";
+import { SelectMenu } from "@/components/forms/SelectMenu";
 
 // Field styling mirrors "website design/InquiryForm.dc.html".
 // Both mobile designs give fields a 48px minimum height; they diverge on
@@ -34,6 +35,8 @@ const quickInputClass =
   "w-full min-h-[48px] rounded-[14px] border-2 border-border bg-white px-[14px] text-15 text-body placeholder:text-muted-3 focus:border-[#89E219] focus:outline-none focus-visible:outline-2 focus-visible:outline-link md:min-h-0 md:rounded-[12px] md:border md:py-[12px] md:text-13";
 const quickLabelClass =
   "text-11 font-bold uppercase tracking-[0.1em] text-muted-3 md:text-12 md:normal-case md:tracking-normal md:text-body";
+const CURRICULUM_NAMES = CURRICULA.map((c) => c.name);
+
 const errorClass = "text-11_5 font-bold text-[#B4462B]";
 const hintClass = "text-11_5 leading-[1.6] text-muted-3";
 
@@ -524,28 +527,24 @@ export function InquiryForm({
       {/* Curriculum leads the form, as in the design */}
       {isTutoring && (
         <div className="flex flex-col gap-[6px]">
-          <label className={labelClass} htmlFor="curriculum">
+          <label className={labelClass} htmlFor="curriculum" id="curriculum-label">
             Curriculum <span className="text-[#B4462B]">*</span>
           </label>
-          <select
+          <SelectMenu
             id="curriculum"
+            labelledBy="curriculum-label"
             value={curriculum}
-            onChange={(e) => {
-              setCurriculum(e.target.value);
+            onChange={(v) => {
+              setCurriculum(v);
               setSubjects([]);
               setCurriculumError(false);
             }}
-            aria-invalid={curriculumError || undefined}
-            aria-describedby={curriculumError ? "curriculum-error" : undefined}
+            options={CURRICULUM_NAMES}
+            placeholder="Select a curriculum…"
+            invalid={curriculumError}
+            describedBy={curriculumError ? "curriculum-error" : undefined}
             className={cn(inputClass, curriculumError && "border-[#B4462B]")}
-          >
-            <option value="">Select a curriculum…</option>
-            {CURRICULA.map((c) => (
-              <option key={c.slug} value={c.name}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          />
           {curriculumError && (
             <span id="curriculum-error" className={errorClass}>
               Please choose a curriculum so we can match the right tutor
