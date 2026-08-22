@@ -324,12 +324,10 @@ See the launch checklist in the project notes. In short:
   `src/components/layout/SiteHeader.tsx`). When a portal URL exists, swap that
   component for a `<Link>` — both the desktop header and the mobile drawer read
   from it, so it is a single edit.
-- **Colour contrast.** Several of the design's own greys fall below WCAG AA on
-  white: `#777777` at 4.48:1 (needs 4.5), `#AFAFAF` at 2.19:1, and white on the
-  brand green `#58CC02` at 2.09:1. These are palette decisions, not code
-  defects, so they are left as designed — but they are the site's largest
-  remaining accessibility gap. `#777777` -> `#6F6F6F` would clear AA on both
-  white and `#F7F7F7` and is visually indistinguishable.
-- **`NEXT_PUBLIC_GA4_ID`** is plumbed through `.env.example` and the deploy
-  workflow but nothing reads it — there is no analytics on the site. Wire it up
-  or drop the variable.
+- **Colour contrast.** `muted` was `#777777` — 4.48:1 on white and 4.18:1 on
+  `#F7F7F7`, below WCAG AA either way, on the token that styles most secondary
+  text on the site. It is now `#6F6F6F` (5.02:1 and 4.69:1), the swap this
+  section already described as visually indistinguishable. Two palette values
+  still fail and are left as designed, because changing them changes the brand:
+  `#AFAFAF` (`muted-3`) at 2.19:1, and white on the brand green `#58CC02` at
+  2.09:1. Neither is a code defect.

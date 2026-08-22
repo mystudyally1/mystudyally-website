@@ -53,7 +53,7 @@ module.exports = {
         ink: "#131F24",
         body: "#3C3C3C",
         muted: {
-          DEFAULT: "#777777",
+          DEFAULT: "#6F6F6F",
           2: "#7A8B93",
           3: "#AFAFAF",
           4: "#B6C2C8",
