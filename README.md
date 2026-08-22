@@ -265,8 +265,10 @@ and committed. Re-run only if the mark or tagline changes.
 ## Content and data
 
 Page copy lives in typed files under `src/data/`, extracted from the Claude
-Design exports in `website design/` (untracked; `design-reference/` holds the
-tracked copy). Files marked `// GENERATED` were produced from those exports —
+Design exports in `website design/`, which is untracked and local-only — the
+design audits below read it, so keep a copy. (A cleaned `design-reference/`
+used to be tracked; it was 24MB that nothing read, and it is in git history if
+you want it back.) Files marked `// GENERATED` were produced from those exports —
 edit the data file directly, and re-extraction scripts live in the scratchpad,
 not the repo.
 
