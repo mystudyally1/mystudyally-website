@@ -62,3 +62,39 @@ export const COUNTRY_CURRENCY: Record<string, string> = {
   OM: "OMR",
   BH: "BHD",
 };
+
+// Fallback region signal, read straight from the browser with no network call.
+// It is what makes local pricing work before (or without) the Worker's /geo
+// answering — and it is instant, so most visitors never see USD flash first.
+//
+// Deliberately approximate in one place: tzdata makes Asia/Kuwait, Asia/Qatar
+// and Asia/Bahrain links to Asia/Riyadh, and Windows maps Oman onto Asia/Dubai,
+// so a Kuwaiti or Omani device often reports its neighbour's zone. The Worker
+// lookup corrects that when it is reachable; there is no way to tell them apart
+// from the timezone alone. Unlisted zones — the US included — stay on USD.
+export const ZONE_COUNTRY: Record<string, string> = {
+  "Europe/London": "GB",
+  "Europe/Belfast": "GB",
+  "Asia/Karachi": "PK",
+  "Asia/Dubai": "AE",
+  "Asia/Muscat": "OM",
+  "Asia/Riyadh": "SA",
+  "Asia/Kuwait": "KW",
+  "Asia/Qatar": "QA",
+  "Asia/Bahrain": "BH",
+  "Asia/Hong_Kong": "HK",
+  "Asia/Kuala_Lumpur": "MY",
+  "Asia/Kuching": "MY",
+  "Asia/Singapore": "SG",
+  "America/Toronto": "CA",
+  "America/Montreal": "CA",
+  "America/Vancouver": "CA",
+  "America/Edmonton": "CA",
+  "America/Winnipeg": "CA",
+  "America/Halifax": "CA",
+  "America/Moncton": "CA",
+  "America/Regina": "CA",
+  "America/St_Johns": "CA",
+  "America/Whitehorse": "CA",
+  "America/Iqaluit": "CA",
+};

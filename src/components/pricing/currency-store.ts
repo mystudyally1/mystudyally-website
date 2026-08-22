@@ -1,19 +1,25 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { BASE_CURRENCY, CURRENCIES } from "@/data/currencies";
+import { BASE_CURRENCY, CURRENCIES, ZONE_COUNTRY } from "@/data/currencies";
 import { currencyForCountry, getCurrency } from "@/lib/currency";
 import { GEO_ENDPOINT } from "@/lib/constants";
 
 /**
  * The site is a static export, so there is no request to read a country from
- * at render time. Detection is client-side against the forms Worker's /geo,
- * which is on Cloudflare and so is handed the country in CF-IPCountry — the
- * site's own infrastructure rather than a third-party geo API.
+ * at render time. Region is worked out client-side, from two signals:
  *
- * Any failure — offline, Worker down, blocked — leaves prices in USD, which is
- * the currency the plans are actually charged in. There is no currency
- * selector, so the fallback has to be the honest number rather than a guess.
+ * 1. The browser's timezone, which needs no network and so applies on the
+ *    first frame. Right for the great majority of visitors.
+ * 2. The forms Worker's /geo, which is on Cloudflare and is handed the real
+ *    country in CF-IPCountry. It arrives a moment later and wins, correcting
+ *    the cases the timezone cannot resolve — chiefly the Gulf states, which
+ *    share timezone identifiers.
+ *
+ * Neither is required. With both unavailable — no Worker, an unlisted zone,
+ * offline — prices stay in USD, which is what the plans are actually charged
+ * in. There is no currency selector, so the fallback has to be the honest
+ * number rather than a guess.
  *
  * Held outside React as a store rather than in a context so the lookup runs
  * once for the whole page however many prices are on it, and so the server
@@ -34,6 +40,16 @@ function set(code: string) {
 function detect() {
   if (started) return;
   started = true;
+
+  // Instant, offline, and good enough on its own for every market here except
+  // telling the Gulf states apart.
+  try {
+    const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const country = zone ? ZONE_COUNTRY[zone] : undefined;
+    if (country) set(currencyForCountry(country));
+  } catch {
+    // Intl missing or throwing — the lookup below is the other chance.
+  }
 
   fetch(GEO_ENDPOINT, { cache: "no-store" })
     .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
