@@ -35,6 +35,37 @@ const TYPES = {
   ".txt": "text/plain", ".xml": "application/xml", ".json": "application/json",
 };
 
+/**
+ * Resolves Next 16's segment-prefetch payloads the way Vercel does.
+ *
+ * The client asks for the payload with the segment path flattened onto one
+ * filename (`/igcse/__next.$d$curriculum.__PAGE__.txt`) while `output: "export"`
+ * writes it into a nested directory (`__next.$d$curriculum/__PAGE__.txt`).
+ * Vercel reconciles the two itself, so these resolve in production; a plain
+ * file server does not, and without this every route would report a dozen
+ * broken requests that the deployment never sees.
+ */
+function segmentPrefetchFallback(file) {
+  const dir = path.dirname(file);
+  const parts = path.basename(file).split(".");
+  if (!parts[0].startsWith("__next") || parts.length < 3) return file;
+  // Any of the dots may have been a path separator before flattening, and a
+  // nested route uses more than one ("__next.blog.$d$slug.__PAGE__.txt" is
+  // "__next.blog/$d$slug/__PAGE__.txt"). The extension is always a real dot,
+  // so try every combination for the rest — at most a handful of candidates.
+  const gaps = parts.length - 2;
+  for (let mask = 0; mask < 1 << gaps; mask += 1) {
+    let rel = parts[0];
+    for (let i = 0; i < gaps; i += 1) {
+      rel += (mask & (1 << i) ? path.sep : ".") + parts[i + 1];
+    }
+    rel += `.${parts[parts.length - 1]}`;
+    const candidate = path.join(dir, rel);
+    if (fs.existsSync(candidate)) return candidate;
+  }
+  return file;
+}
+
 const server = http.createServer((req, res) => {
   let p = decodeURIComponent(req.url.split("?")[0]);
 
@@ -49,6 +80,7 @@ const server = http.createServer((req, res) => {
   }
   let file = path.join(OUT, p);
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, "index.html");
+  if (!fs.existsSync(file)) file = segmentPrefetchFallback(file);
   if (!fs.existsSync(file)) {
     res.writeHead(404, { "Content-Type": "text/html", "Content-Security-Policy": CSP });
     return res.end(fs.readFileSync(path.join(OUT, "404.html")));
