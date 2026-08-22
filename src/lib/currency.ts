@@ -2,6 +2,7 @@ import {
   BASE_CURRENCY,
   COUNTRY_CURRENCY,
   CURRENCIES,
+  PRICE_OVERRIDES,
   type Currency,
 } from "@/data/currencies";
 
@@ -16,11 +17,27 @@ export function currencyForCountry(country: string): string {
 
 const round = (value: number, step: number) => Math.round(value / step) * step;
 
+/** True where this currency has prices set for it rather than converted. */
+export function hasFixedPrices(currency: Currency): boolean {
+  return PRICE_OVERRIDES[currency.code] !== undefined;
+}
+
 /**
  * A USD plan total in local money, rounded to the currency's step. USD is
  * returned untouched — it is the price actually charged, not a conversion.
+ *
+ * `planUsd` names the plan an amount belongs to, for currencies carrying a
+ * fixed price list. Pass it for anything derived from a plan price rather than
+ * being one — two plans bought together, a monthly share — and the figure
+ * scales with the fixed price instead of falling back to the rate, which would
+ * put the finder's totals and the plan's own price in different money.
  */
-export function convert(usd: number, currency: Currency): number {
+export function convert(usd: number, currency: Currency, planUsd: number = usd): number {
+  const fixed = PRICE_OVERRIDES[currency.code]?.[planUsd];
+  if (fixed !== undefined) {
+    if (usd === planUsd) return fixed;
+    return round(fixed * (usd / planUsd), currency.step);
+  }
   if (currency.code === BASE_CURRENCY) return usd;
   return round(usd * currency.rate, currency.step);
 }
@@ -40,8 +57,8 @@ export function formatAmount(value: number, currency: Currency): string {
 }
 
 /** A USD plan total, converted and formatted. */
-export function formatPrice(usd: number, currency: Currency): string {
-  return formatAmount(convert(usd, currency), currency);
+export function formatPrice(usd: number, currency: Currency, planUsd: number = usd): string {
+  return formatAmount(convert(usd, currency, planUsd), currency);
 }
 
 /**

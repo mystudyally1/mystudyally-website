@@ -44,6 +44,26 @@ export const CURRENCIES: Record<string, Currency> = {
   PKR: { code: "PKR", symbol: "Rs ", label: "Pakistani rupee", rate: 280, step: 500 },
 };
 
+/**
+ * Fixed local price lists, keyed by currency and then by the plan's USD price.
+ * A currency listed here is not converted at all for those plans — its prices
+ * are set deliberately for that market, and the rate above is used only for
+ * anything derived that is not a plan price outright.
+ */
+export const PRICE_OVERRIDES: Record<string, Record<number, number>> = {
+  // Hong Kong is priced per class: HK$90 on Starter, rising HK$20 a tier.
+  // Unlike the converted markets this ladder charges more per class as the
+  // plan grows, so the totals climb steeply — Complete is 32 x HK$190.
+  HKD: {
+    45: 360,
+    79: 880,
+    105: 1560,
+    135: 2400,
+    189: 4080,
+    239: 6080,
+  },
+};
+
 // ISO 3166-1 alpha-2 -> currency. Anywhere not listed — including the Middle
 // East outside the Gulf states, where pricing in USD is the norm — falls back
 // to USD rather than guessing at a currency we have not set a rate for.
