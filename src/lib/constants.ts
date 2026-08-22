@@ -57,11 +57,16 @@ export const FORM_ENDPOINT =
   "https://mystudyally-forms-worker.mystudyally1.workers.dev/";
 export const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
-// Region-based pricing reads the visitor's country from the same Worker. The
-// site is a static export on Vercel — it has no request context of its own at
-// render time — and the Worker is on Cloudflare, which hands it CF-IPCountry
-// for free. Derived from FORM_ENDPOINT so there is one Worker address to change.
-export const GEO_ENDPOINT = `${FORM_ENDPOINT.replace(/\/?$/, "/")}geo`;
+// Region-based pricing needs the visitor's country by IP, and this site is a
+// static export on Vercel: no request context of its own at render time, and
+// no /cdn-cgi/ endpoints, because Vercel is not Cloudflare.
+//
+// The forms Worker's hostname is on Cloudflare, though, and Cloudflare serves
+// its trace endpoint there — with Access-Control-Allow-Origin: *, so the
+// browser can read it cross-origin. That makes the country available from our
+// own domain with no third-party geo service and nothing to deploy. Derived
+// from FORM_ENDPOINT's origin so there is one address to change.
+export const GEO_TRACE_ENDPOINT = `${new URL(FORM_ENDPOINT).origin}/cdn-cgi/trace`;
 
 // ---------------------------------------------------------------- SEO -------
 

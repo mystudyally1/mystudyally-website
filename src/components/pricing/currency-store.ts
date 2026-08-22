@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { BASE_CURRENCY, CURRENCIES, ZONE_COUNTRY } from "@/data/currencies";
 import { currencyForCountry, getCurrency } from "@/lib/currency";
-import { GEO_ENDPOINT } from "@/lib/constants";
+import { GEO_TRACE_ENDPOINT } from "@/lib/constants";
 
 /**
  * The site is a static export, so there is no request to read a country from
@@ -11,15 +11,16 @@ import { GEO_ENDPOINT } from "@/lib/constants";
  *
  * 1. The browser's timezone, which needs no network and so applies on the
  *    first frame. Right for the great majority of visitors.
- * 2. The forms Worker's /geo, which is on Cloudflare and is handed the real
- *    country in CF-IPCountry. It arrives a moment later and wins, correcting
- *    the cases the timezone cannot resolve — chiefly the Gulf states, which
- *    share timezone identifiers.
+ * 2. The country by IP, from Cloudflare's trace endpoint on the forms Worker's
+ *    hostname. It arrives a moment later and wins. This is the one that
+ *    follows a VPN — a timezone is a device setting and does not move with the
+ *    connection — and the only thing that can tell the Gulf states apart,
+ *    since they share timezone identifiers.
  *
- * Neither is required. With both unavailable — no Worker, an unlisted zone,
- * offline — prices stay in USD, which is what the plans are actually charged
- * in. There is no currency selector, so the fallback has to be the honest
- * number rather than a guess.
+ * Neither is required. With both unavailable — an unlisted zone, offline —
+ * prices stay in USD, which is what the plans are actually charged in. There
+ * is no currency selector, so the fallback has to be the honest number rather
+ * than a guess.
  *
  * Held outside React as a store rather than in a context so the lookup runs
  * once for the whole page however many prices are on it, and so the server
@@ -51,13 +52,14 @@ function detect() {
     // Intl missing or throwing — the lookup below is the other chance.
   }
 
-  fetch(GEO_ENDPOINT, { cache: "no-store" })
-    .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-    .then((body: { country?: string }) => {
-      if (body.country) set(currencyForCountry(body.country));
+  fetch(GEO_TRACE_ENDPOINT, { cache: "no-store" })
+    .then((r) => (r.ok ? r.text() : Promise.reject(new Error(String(r.status)))))
+    .then((text) => {
+      const loc = /^loc=([A-Z]{2})$/m.exec(text);
+      if (loc) set(currencyForCountry(loc[1]!));
     })
     .catch(() => {
-      // Offline, blocked, or the Worker is unreachable — USD stands.
+      // Offline or blocked — whatever the timezone said stands.
     });
 }
 
