@@ -1,5 +1,12 @@
 /**
- * Generates `out/llms.txt` after the build.
+ * Generates `public/llms.txt` after the build.
+ *
+ * It writes into `public/`, not `out/`, because Vercel serves a Next build from
+ * Next's own output plus `public/` — anything a post-build step drops into
+ * `out/` is never uploaded, so the previous `out/llms.txt` 404'd in production
+ * while looking correct locally. `public/` is copied into the export by the
+ * next build, so this is a committed artifact: `npm run build` refreshes it and
+ * the change shows up in `git status`.
  *
  * What this is and is not: Google states plainly that it ignores llms.txt for
  * Search, including its AI features, and that having one "won't harm (nor help)"
@@ -110,7 +117,11 @@ const body = [
   .filter((block, i, all) => block !== "" || all[i - 1] !== "")
   .join("\n");
 
-fs.writeFileSync(path.join(OUT, "llms.txt"), body.replace(/\n{3,}/g, "\n\n"), "utf-8");
+const text = body.replace(/\n{3,}/g, "\n\n");
+// public/ is the copy that ships; out/ keeps the just-built export complete
+// so local previews and the link audit see what the site will serve.
+fs.writeFileSync(path.join(root, "public", "llms.txt"), text, "utf-8");
+fs.writeFileSync(path.join(OUT, "llms.txt"), text, "utf-8");
 
 const counts = {
   curricula: paths.filter(isCurriculum).length,

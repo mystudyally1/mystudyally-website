@@ -1,0 +1,55 @@
+# MyStudyAlly
+
+> Online 1-to-1 tutoring matched to a student's exact exam board — IGCSE, GCSE,
+> A Levels, IB, HKDSE, American and Canadian curricula, plus IELTS and SAT
+> preparation. Tutors are matched by a person, not an algorithm. Every session
+> runs on Zoom and is recorded. Trials are free and need no card.
+
+## Core pages
+
+- [MyStudyAlly — Online Tutoring Matched to Your Exam Board](https://mystudyally.com/): Online 1-to-1 tutoring matched to your exact exam board — IGCSE, GCSE, A Levels, IB, IELTS and SAT. Every session recorded, and a free trial with no card required.
+- [Subjects & Curricula We Tutor — MyStudyAlly](https://mystudyally.com/subjects/): Every curriculum and subject MyStudyAlly covers — IGCSE, GCSE, A Levels, IB, SABIS, HKDSE, American and Canadian curricula, plus IELTS and SAT preparation.
+- [Our Tutors — MyStudyAlly](https://mystudyally.com/tutors/): Every MyStudyAlly tutor specialises in specific curricula, not generic subject knowledge. Browse who teaches what, then tell us what you need and we match you.
+- [Tutoring Prices — Plans from $45 — MyStudyAlly](https://mystudyally.com/pricing/): Affordable 1-to-1 tutoring with flexible scheduling, specialist tutors and personalised academic support. Six plans from 4 to 32 classes, starting from just $45.
+- [Frequently Asked Questions — MyStudyAlly](https://mystudyally.com/faq/): Answers on matching, pricing and payments, scheduling, tutors, and account access — everything families ask before starting with MyStudyAlly.
+- [About Us — MyStudyAlly](https://mystudyally.com/about/): MyStudyAlly matches students with tutors who specialise in their exact curriculum, manages every session through one platform, and keeps a record of everything.
+- [Contact Us — MyStudyAlly](https://mystudyally.com/contact/): Tell us what your child needs and we'll match them with a tutor. Every inquiry is read by a person — we reply within 24 hours.
+
+## Curricula and exam boards
+
+- [IGCSE Tutoring — Cambridge and Edexcel — MyStudyAlly](https://mystudyally.com/igcse/): One-to-one tutoring matched to the exact IGCSE exam board your child is studying — Cambridge or Edexcel — across 11 subjects.
+- [GCSE Tutoring — AQA, Edexcel, OCR — MyStudyAlly](https://mystudyally.com/gcse/): One-to-one support across AQA, Edexcel, and OCR — matched to the specification your school actually teaches.
+- [A Levels Tutoring — Subject specialists — MyStudyAlly](https://mystudyally.com/a-levels/): Focused, subject-intensive support for the 3–4 A Levels that matter most to where you're headed next. Matched to your exam board and taught one-to-one online.
+- [IB Tutoring — HL, SL, and the Core — MyStudyAlly](https://mystudyally.com/ib/): Support for the six subject groups, the Extended Essay, and Theory of Knowledge — the full breadth the IB actually demands.
+- [HKDSE Tutoring — Core and electives — MyStudyAlly](https://mystudyally.com/hkdse/): Core and elective subject support built around the NSS structure. Matched to your exam board and taught one-to-one online.
+- [American Curriculum Tutoring — MyStudyAlly](https://mystudyally.com/american-curriculum/): GPA-focused subject support plus AP exam preparation from tutors who know what US admissions actually weigh.
+- [Canadian Curriculum Tutoring — MyStudyAlly](https://mystudyally.com/canadian-curriculum/): Course-specific support across Applied, Academic, and University Preparation streams. Matched to your exam board and taught one-to-one online.
+- [IELTS Tutoring — All four modules — MyStudyAlly](https://mystudyally.com/ielts/): Focused practice across Listening, Reading, Writing, and Speaking — Academic or General Training. Matched to your exam board and taught one-to-one online.
+- [SAT Tutoring — Math and EBRW — MyStudyAlly](https://mystudyally.com/sat/): Focused Math and Reading & Writing preparation for the adaptive, computer-based SAT. Matched to your exam board and taught one-to-one online.
+
+## Articles
+
+- [Digital SAT: What Changed and How to Prepare — MyStudyAlly](https://mystudyally.com/blog/digital-sat-what-changed/): The SAT is now shorter, adaptive, and fully digital. A practical guide to the new format and how prep should change with it.
+- [When to Start Tutoring Before the Summer Exam Season](https://mystudyally.com/blog/when-to-start-tutoring/): Start too late and you're cramming; too early and momentum fades. How to time support around mocks, entries, and the exam calendar.
+- [What Grade Boundaries Mean — and Why They Move Every Year](https://mystudyally.com/blog/what-grade-boundaries-mean/): Boundaries aren't fixed targets. What they actually measure, why they shift between series, and how to read a mock result against them.
+- [Your Child's School Offers Both IGCSE and GCSE: How to Choose](https://mystudyally.com/blog/igcse-or-gcse-how-to-choose/): When a school runs both qualifications, the decision comes down to exam board, grading path, and where your child studies next.
+- [How to Support Your Child Through IB Diploma Year 1](https://mystudyally.com/blog/supporting-ib-diploma-year-1/): Six subjects, TOK, and the Extended Essay — how parents can help without adding pressure in the first Diploma year.
+- [How to Read an IELTS Band Score — and What to Do Next](https://mystudyally.com/blog/how-to-read-an-ielts-band-score/): Your child sat the test and got a 6.5. What that means for university offers, and where focused prep moves the needle fastest.
+
+## Legal
+
+- [Terms of Service — MyStudyAlly](https://mystudyally.com/terms/): The terms under which MyStudyAlly provides tutoring services, including plans, scheduling, recordings, and conduct.
+- [Privacy Policy — MyStudyAlly](https://mystudyally.com/privacy/): How MyStudyAlly collects, uses, and protects the personal data you submit through inquiry forms.
+
+## Key facts
+
+- Tutoring is one-to-one and online, delivered over Zoom.
+- Every session is recorded and available to rewatch.
+- Tutors are matched to a specific exam board, not just a subject.
+- Matching is done by MyStudyAlly's team; there is no self-service booking.
+- Plans run from 4 to 32 classes, priced $45 to $239 USD. Classes are 60 minutes.
+- The first trial session is free and requires no payment card.
+- Inquiries are answered within 24 hours by a person.
+- Registered office: 7 Leamington Gardens, Ilford IG3 9TX, United Kingdom.
+- Contact: info@mystudyally.com · +44 7868 197793 (WhatsApp).
+- Students are served across the UAE, UK, USA, Canada and Pakistan.
