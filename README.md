@@ -247,7 +247,7 @@ passes every local audit, and 404s in production. `llms.txt` was in exactly
 that state, which is why `gen-llms-txt.mjs` now writes `public/llms.txt` and
 that file is committed.
 
-The same discovery retired `fix-segment-prefetch.mjs`. Next 16.3.0's client
+The same discovery retired `fix-segment-prefetch.mjs`. Next 16.3's client
 asks for a route's prefetch payload with the segment path flattened onto one
 filename (`/igcse/__next.$d$curriculum.__PAGE__.txt`) while `output: "export"`
 writes it into a nested directory. That mismatch matters on a plain file host,
