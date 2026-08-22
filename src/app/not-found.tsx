@@ -5,7 +5,8 @@ import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
   title: "Page not found",
-  description: "The page you were looking for doesn't exist or has moved.",
+  description:
+    "The page you were looking for does not exist or has moved. Head back to the homepage to find tutoring by curriculum, pricing, or the blog.",
   robots: { index: false, follow: true },
 };
 

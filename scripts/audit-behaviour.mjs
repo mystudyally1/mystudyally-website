@@ -30,7 +30,10 @@ const results = [];
 const check = (name, pass, detail = "") =>
   results.push(`${pass ? "PASS" : "FAIL"}  ${name}${detail ? ` — ${detail}` : ""}`);
 
-const browser = await chromium.launch();
+// playwright-core ships no browser; CHROME_PATH lets a system Chrome stand in.
+const browser = await chromium.launch(
+  process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {},
+);
 
 // ---- 1. Skip link is reachable and moves focus ------------------------------
 {

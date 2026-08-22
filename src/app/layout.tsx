@@ -5,15 +5,17 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { AttributionCapture } from "@/components/forms/AttributionCapture";
 import { ChatWidgetLazy } from "@/components/chat/ChatWidgetLazy";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import {
-  CONTACT_ADDRESS_PARTS,
-  CONTACT_EMAIL,
-  CONTACT_WHATSAPP_DISPLAY,
+  BING_SITE_VERIFICATION,
+  GOOGLE_SITE_VERIFICATION,
   OG_IMAGE_PATH,
+  SITE_DESCRIPTION,
   SITE_NAME,
   SITE_TAGLINE,
   SITE_URL,
-  SOCIAL_LINKS,
 } from "@/lib/constants";
 
 const nunito = Nunito({
@@ -29,8 +31,40 @@ export const metadata: Metadata = {
     default: `${SITE_NAME} — ${SITE_TAGLINE}`,
     template: `%s — ${SITE_NAME}`,
   },
-  description: SITE_TAGLINE,
+  description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  category: "education",
+  // Site-wide crawl defaults. `max-image-preview: large` is the switch that
+  // lets Google use the full-width thumbnail in results and Discover instead of
+  // a postage stamp; `max-snippet: -1` lifts the snippet length cap. Neither is
+  // on by default. Pages that need to stay out of the index (thank-you, 404,
+  // unverified curricula) set their own `robots` block, which replaces this one.
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  // Phone numbers are already marked up as WhatsApp links; leaving iOS to
+  // auto-detect them wraps stray digits (prices, dates) in tel: links too.
+  formatDetection: { telephone: false, address: false, email: false },
+  ...(GOOGLE_SITE_VERIFICATION || BING_SITE_VERIFICATION
+    ? {
+        verification: {
+          ...(GOOGLE_SITE_VERIFICATION ? { google: GOOGLE_SITE_VERIFICATION } : {}),
+          ...(BING_SITE_VERIFICATION ? { other: { "msvalidate.01": BING_SITE_VERIFICATION } } : {}),
+        },
+      }
+    : {}),
+  manifest: "/site.webmanifest",
   // Inherited by every page unless it overrides a field. Without these a link
   // pasted into WhatsApp — the channel most families reach us on — renders as
   // a bare URL with no title, description or image.
@@ -40,13 +74,13 @@ export const metadata: Metadata = {
     locale: "en_GB",
     url: SITE_URL,
     title: `${SITE_NAME} — ${SITE_TAGLINE}`,
-    description: SITE_TAGLINE,
+    description: SITE_DESCRIPTION,
     images: [{ url: OG_IMAGE_PATH, width: 1200, height: 630, alt: `${SITE_NAME} — ${SITE_TAGLINE}` }],
   },
   twitter: {
     card: "summary_large_image",
     title: `${SITE_NAME} — ${SITE_TAGLINE}`,
-    description: SITE_TAGLINE,
+    description: SITE_DESCRIPTION,
     images: [OG_IMAGE_PATH],
   },
 };
@@ -61,42 +95,14 @@ export const viewport: Viewport = {
   themeColor: "#FFFFFF",
 };
 
-// EducationalOrganization rather than plain Organization: it is the type
-// Google maps to the tutoring/education entity, and it accepts the address and
-// service-area fields that a bare Organization ignores.
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "EducationalOrganization",
-  "@id": `${SITE_URL}/#organization`,
-  name: SITE_NAME,
-  alternateName: `${SITE_NAME} Tutoring`,
-  description: SITE_TAGLINE,
-  url: SITE_URL,
-  logo: `${SITE_URL}${OG_IMAGE_PATH}`,
-  image: `${SITE_URL}${OG_IMAGE_PATH}`,
-  email: CONTACT_EMAIL,
-  telephone: CONTACT_WHATSAPP_DISPLAY,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: CONTACT_ADDRESS_PARTS.street,
-    addressLocality: CONTACT_ADDRESS_PARTS.locality,
-    postalCode: CONTACT_ADDRESS_PARTS.postalCode,
-    addressCountry: CONTACT_ADDRESS_PARTS.countryCode,
-  },
-  areaServed: "Worldwide",
-  // Verified profiles only — sameAs is how search engines reconcile this entity
-  // with its social presence, and a wrong URL here merges the wrong brand.
-  sameAs: [SOCIAL_LINKS.instagram, SOCIAL_LINKS.trustpilot],
-};
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={nunito.variable}>
       <body className="flex min-h-screen flex-col bg-surface font-sans text-body antialiased">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-        />
+        {/* The two site-wide entity nodes. Every page's own schema points at
+            these by @id, so the whole domain resolves to one organisation and
+            one site rather than a fresh entity per URL. */}
+        <JsonLd nodes={[organizationJsonLd, websiteJsonLd]} />
         <AttributionCapture />
         {/* Every page opens with a sticky header and, on Curricula, a 10-item
             mega menu. Without this a keyboard or screen-reader user re-walks
@@ -117,6 +123,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </main>
         <SiteFooter />
         <ChatWidgetLazy />
+        {/* Real-user Core Web Vitals, reported to Vercel Speed Insights. The
+            beacon is same-origin (/_vercel/speed-insights/*), so it needs no
+            third-party origin — but it does need Speed Insights enabled on the
+            Vercel project, and any CSP added later must allow those paths. */}
+        <SpeedInsights />
       </body>
     </html>
   );

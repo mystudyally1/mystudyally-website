@@ -54,3 +54,67 @@ export const FORM_ENDPOINT =
   process.env.NEXT_PUBLIC_FORM_ENDPOINT ??
   "https://mystudyally-forms-worker.mystudyally1.workers.dev/";
 export const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
+
+// ---------------------------------------------------------------- SEO -------
+
+// Homepage/meta description. Deliberately longer and more specific than
+// SITE_TAGLINE: the tagline is a brand line, this is the ~155-character snippet
+// Google renders under the result, so it names the curricula families search
+// for and the two differentiators (curriculum-matched, recorded).
+export const SITE_DESCRIPTION =
+  "Online 1-to-1 tutoring matched to your exact exam board — IGCSE, GCSE, A Levels, IB, IELTS and SAT. Every session recorded, and a free trial with no card required.";
+
+// Used by the EducationalOrganization JSON-LD. Founded date is stated on
+// /about/ ("Founded in 2026"); keep the two in step.
+export const FOUNDING_YEAR = "2026";
+
+// The markets named in the homepage proof strip. Mirrored into `areaServed` so
+// the entity is associated with these regions rather than a vague "Worldwide".
+export const SERVICE_AREA_COUNTRIES = [
+  "United Arab Emirates",
+  "United Kingdom",
+  "United States",
+  "Canada",
+  "Pakistan",
+] as const;
+
+// Subject/topic entities the organisation is an authority on. `knowsAbout` is
+// how a service entity declares its topical scope to search engines.
+export const KNOWS_ABOUT = [
+  "IGCSE tutoring",
+  "GCSE tutoring",
+  "A Level tutoring",
+  "IB Diploma tutoring",
+  "HKDSE tutoring",
+  "American curriculum tutoring",
+  "Canadian curriculum tutoring",
+  "IELTS preparation",
+  "SAT preparation",
+  "Online private tutoring",
+] as const;
+
+// Search Console / Bing ownership tokens. Left blank until the properties are
+// verified — an empty string emits no tag, a wrong one is worse than none.
+export const GOOGLE_SITE_VERIFICATION = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? "";
+export const BING_SITE_VERIFICATION = process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION ?? "";
+
+// Support hours. Rendered on /contact/ and marked up in the organisation's
+// ContactPoint and the /contact/ page schema — previously three independent
+// copies of the same fact. Hours that disagree between the visible page and the
+// markup are exactly the inconsistency that keeps a business panel from
+// resolving, so they derive from here.
+export const SUPPORT_HOURS = {
+  opens: "09:00",
+  closes: "18:00",
+  /** Both teams keep the same local window; the display names both zones. */
+  display: "09:00–18:00 GST · 09:00–18:00 GMT",
+  days: [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ],
+} as const;

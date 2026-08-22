@@ -1,11 +1,14 @@
-// Compares each built page against its mobile design file at phone width.
+// Compares each built page against its design file and reports the height
+// delta plus the heading sequence, so a section that is missing, reordered or
+// laid out differently shows up as a number rather than a hunch.
 //
-// The design exports ship a separate "<Page> Mobile.dc.html" for every page.
-// This renders both and reports the height delta plus the heading sequence, so
-// a section that is missing, reordered or laid out differently on mobile shows
-// up as a number rather than a hunch.
+// The exports ship a separate "<Page> Mobile.dc.html" for every page, so the
+// two breakpoints are checked against different sources:
 //
-//   npm install --no-save playwright-core && npm run audit:mobile [slug]
+//   npm run audit:mobile  [slug]   390px  vs "<Page> Mobile.dc.html"
+//   npm run audit:desktop [slug]  1280px  vs "<Page>.dc.html"
+//
+// Needs a browser: npm install --no-save playwright-core
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
@@ -16,10 +19,11 @@ const DESIGN = path.join(ROOT, "website design");
 const OUT = path.join(ROOT, "out");
 const SHOTS = path.join(ROOT, ".mobile-audit");
 
-const WIDTH = 390; // iPhone 14/15 logical width
+const DESKTOP = process.argv.includes("--desktop");
+const WIDTH = DESKTOP ? 1280 : 390; // desktop container / iPhone 14 logical width
 
 /** design file (without extension) -> built route */
-const PAGES = [
+const MOBILE_PAGES = [
   ["Homepage Mobile", "/"],
   ["About Mobile", "/about/"],
   ["Tutors Mobile", "/tutors/"],
@@ -38,6 +42,29 @@ const PAGES = [
   ["American Curriculum Mobile", "/american-curriculum/"],
   ["Canadian Curriculum Mobile", "/canadian-curriculum/"],
 ];
+
+const DESKTOP_PAGES = [
+  ["MyStudyAlly Homepage", "/"],
+  ["About", "/about/"],
+  ["Tutors", "/tutors/"],
+  ["Pricing v2", "/pricing/"],
+  ["FAQ", "/faq/"],
+  ["Blog", "/blog/"],
+  ["Contact", "/contact/"],
+  ["Subjects", "/subjects/"],
+  ["IGCSE", "/igcse/"],
+  ["GCSE", "/gcse/"],
+  ["A Levels", "/a-levels/"],
+  ["IB", "/ib/"],
+  ["SAT", "/sat/"],
+  ["IELTS", "/ielts/"],
+  ["HKDSE", "/hkdse/"],
+  ["SABIS", "/sabis/"],
+  ["American Curriculum", "/american-curriculum/"],
+  ["Canadian Curriculum", "/canadian-curriculum/"],
+];
+
+const PAGES = DESKTOP ? DESKTOP_PAGES : MOBILE_PAGES;
 
 const TYPES = {
   ".html": "text/html", ".js": "text/javascript", ".css": "text/css",
@@ -84,17 +111,20 @@ async function shoot(page, file) {
   }
 }
 
-const only = process.argv[2];
+const only = process.argv.slice(2).find((a) => !a.startsWith("--"));
 const pages = only
   ? PAGES.filter(([, route]) => route.includes(only) || route === `/${only}/`)
   : PAGES;
 
-fs.rmSync(SHOTS, { recursive: true, force: true });
+if (!only) fs.rmSync(SHOTS, { recursive: true, force: true });
 fs.mkdirSync(SHOTS, { recursive: true });
 
 const designServer = await serve(DESIGN, 8930);
 const buildServer = await serve(OUT, 8931);
-const browser = await chromium.launch();
+// playwright-core ships no browser; CHROME_PATH lets a system Chrome stand in.
+const browser = await chromium.launch(
+  process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {},
+);
 
 console.log(`Comparing ${pages.length} page(s) at ${WIDTH}px.\n`);
 console.log("page                     design    build    delta   overflow  headings");
@@ -103,9 +133,9 @@ const report = [];
 for (const [file, route] of pages) {
   const ctx = await browser.newContext({
     viewport: { width: WIDTH, height: 900 },
-    deviceScaleFactor: 2,
-    isMobile: true,
-    hasTouch: true,
+    deviceScaleFactor: DESKTOP ? 1 : 2,
+    isMobile: !DESKTOP,
+    hasTouch: !DESKTOP,
   });
 
   const dPage = await ctx.newPage();
@@ -115,14 +145,14 @@ for (const [file, route] of pages) {
   });
   await dPage.waitForTimeout(2500);
   const design = await dPage.evaluate(SNAPSHOT);
-  await shoot(dPage, path.join(SHOTS, `${route.replace(/\//g, "_")}design.png`));
+  await shoot(dPage, path.join(SHOTS, `${route.replace(/\//g, "_")}${DESKTOP ? "desktop-" : ""}design.png`));
   await dPage.close();
 
   const bPage = await ctx.newPage();
   await bPage.goto(`http://localhost:8931${route}`, { waitUntil: "load", timeout: 30000 });
   await bPage.waitForTimeout(1200);
   const build = await bPage.evaluate(SNAPSHOT);
-  await shoot(bPage, path.join(SHOTS, `${route.replace(/\//g, "_")}build.png`));
+  await shoot(bPage, path.join(SHOTS, `${route.replace(/\//g, "_")}${DESKTOP ? "desktop-" : ""}build.png`));
   await bPage.close();
   await ctx.close();
 
@@ -146,7 +176,10 @@ await browser.close();
 designServer.close();
 buildServer.close();
 
-fs.writeFileSync(path.join(SHOTS, "report.json"), JSON.stringify(report, null, 2));
+fs.writeFileSync(
+  path.join(SHOTS, DESKTOP ? "report-desktop.json" : "report.json"),
+  JSON.stringify(report, null, 2),
+);
 
 console.log(`\nScreenshots and report.json in .mobile-audit/`);
 for (const r of report) {

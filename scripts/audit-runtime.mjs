@@ -1,5 +1,5 @@
 // Browser-driven audit of the built export: renders every route at three
-// widths with the .htaccess security headers applied, and reports CSP
+// widths with the vercel.json security headers applied, and reports CSP
 // violations, console errors, failed requests, horizontal overflow, duplicate
 // ids, heading-order jumps, broken images and missing landmarks.
 //
@@ -14,13 +14,19 @@ import { chromium } from "playwright-core";
 const OUT = path.join(import.meta.dirname, "..", "out");
 const PORT = 8911;
 
-const CSP =
-  "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; " +
-  "style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; " +
-  "media-src 'self'; connect-src 'self' https://challenges.cloudflare.com " +
-  "https://mystudyally-forms-worker.mystudyally1.workers.dev https://forms.mystudyally.com; " +
-  "frame-src https://challenges.cloudflare.com; form-action 'self'; base-uri 'self'; " +
-  "object-src 'none'; frame-ancestors 'self'";
+// Read from vercel.json rather than restated here: a copy in this file would
+// drift from the policy that actually ships, and the audit would then pass
+// against a policy no browser ever sees.
+const VERCEL_CONFIG = JSON.parse(
+  fs.readFileSync(path.join(import.meta.dirname, "..", "vercel.json"), "utf8"),
+);
+const CSP = VERCEL_CONFIG.headers
+  .flatMap((rule) => rule.headers)
+  .find((h) => h.key === "Content-Security-Policy")?.value;
+if (!CSP) {
+  console.error("No Content-Security-Policy found in vercel.json — nothing to audit against.");
+  process.exit(1);
+}
 
 const TYPES = {
   ".html": "text/html", ".js": "text/javascript", ".css": "text/css",
@@ -31,6 +37,16 @@ const TYPES = {
 
 const server = http.createServer((req, res) => {
   let p = decodeURIComponent(req.url.split("?")[0]);
+
+  // Vercel serves /_vercel/* from the edge, so it exists on a deployment but
+  // never in the export. Speed Insights asks for its script from there on
+  // every page; without this stub each route reports a broken request here and
+  // the real failures get lost in the noise.
+  if (p.startsWith("/_vercel/")) {
+    res.writeHead(200, { "Content-Type": "text/javascript", "Content-Security-Policy": CSP });
+    res.end("");
+    return;
+  }
   let file = path.join(OUT, p);
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, "index.html");
   if (!fs.existsSync(file)) {
@@ -57,7 +73,11 @@ const routes = [
 ];
 
 const widths = [360, 768, 1280];
-const browser = await chromium.launch();
+// playwright-core ships no browser. Use a system Chrome when CHROME_PATH
+// points at one, so this runs without a separate ~150 MB download.
+const browser = await chromium.launch(
+  process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {},
+);
 const problems = [];
 
 for (const width of widths) {

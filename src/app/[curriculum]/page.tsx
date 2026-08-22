@@ -9,7 +9,9 @@ import { InquiryFormLazy } from "@/components/forms/InquiryFormLazy";
 import { CURRICULA, getCurriculumBySlug } from "@/data/curricula";
 import { CURRICULUM_PAGES } from "@/data/curriculum-pages";
 import { NOINDEX_CURRICULA, SITE_URL } from "@/lib/constants";
-import { pageOpenGraph } from "@/lib/metadata";
+import { pageSocial } from "@/lib/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { ORGANIZATION_ID, abs, breadcrumbJsonLd, homeCrumb, webPageJsonLd } from "@/lib/seo";
 
 // Static export: only these slugs are generated, everything else 404s.
 export const dynamicParams = false;
@@ -24,15 +26,48 @@ export async function generateMetadata(props: PageProps<"/[curriculum]">): Promi
   const meta = getCurriculumBySlug(curriculum);
   if (!content || !meta) return {};
 
-  const description = content.hero.sub;
+  // The <h1> is a marketing headline ("IGCSE Tutoring That Knows the Syllabus,
+  // Not Just the Subject") and runs to ~70 characters before the " — MyStudyAlly"
+  // suffix, so search results cut it mid-phrase. The title tag gets its own
+  // short form built from the curriculum name and board tagline; the headline
+  // on the page is unchanged.
+  // "IGCSE Tutoring — Cambridge and Edexcel" where it fits inside the ~60
+  // characters a result shows once the " — MyStudyAlly" suffix is added; the
+  // two longest curriculum names ("American Curriculum", "Canadian Curriculum")
+  // drop the board tagline rather than the brand.
+  const BRAND_SUFFIX = " — MyStudyAlly".length;
+  const withTagline = `${meta.name} Tutoring — ${meta.tagline}`;
+  const title =
+    withTagline.length + BRAND_SUFFIX <= 60 ? withTagline : `${meta.name} Tutoring`;
+
+  // Hero copy is written for the page, not for a 155-character snippet, and a
+  // couple of curricula come in under the length where Google will use the
+  // description at all. Those get one true clause appended rather than a
+  // rewritten hero.
+  const description =
+    content.hero.sub.length >= 105
+      ? content.hero.sub
+      : `${content.hero.sub} Matched to your exam board and taught one-to-one online.`;
+
   return {
-    title: content.hero.h1,
+    title,
     description,
     alternates: { canonical: `${SITE_URL}/${curriculum}/` },
     // SABIS ships noindex until its subject list is verified against the real
     // tutor pool (see implementation plan, Part 3 item 4).
     robots: NOINDEX_CURRICULA.includes(curriculum) ? { index: false, follow: true } : undefined,
-    openGraph: pageOpenGraph({
+    // The subject list is the page's substance and the long tail it ranks for
+    // ("IGCSE Additional Mathematics tutor"). Keywords carry little weight with
+    // Google but Bing still reads them, and they cost nothing to derive.
+    keywords: [
+      `${meta.name} tutoring`,
+      `${meta.name} tutor`,
+      `online ${meta.name} tutoring`,
+      ...meta.subjects.slice(0, 8).map((sub) => `${meta.name} ${sub} tutor`),
+    ],
+    ...pageSocial({
+      // The headline, not the trimmed title tag: a share card has room for it
+      // and reads better with the full phrasing.
       title: content.hero.h1,
       description,
       path: `/${curriculum}/`,
@@ -51,29 +86,91 @@ export default async function CurriculumPage(props: PageProps<"/[curriculum]">) 
   const meta = getCurriculumBySlug(curriculum);
   if (!content || !meta) notFound();
 
+  const path = `/${curriculum}/`;
+  const crumbs = [
+    homeCrumb,
+    { name: "Subjects & Curricula", path: "/subjects/" },
+    { name: meta.name, path },
+  ];
+
+  // The quick answers render as a second accordion further down the page; both
+  // sets are real Q&A on the page, so both belong in the FAQPage node.
+  const allFaqs = [...content.faqs, ...content.quick];
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: content.faqs.map((f) => ({
+    "@id": `${abs(path)}#faq`,
+    mainEntity: allFaqs.map((f) => ({
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },
     })),
   };
 
+  // Google needs `hasCourseInstance` with a mode and a schedule before a Course
+  // is eligible for anything; a bare name/description/provider triple is valid
+  // schema that no rich result will ever use. Everything stated here is true of
+  // every plan: online, one-to-one, scheduled weekly with the family.
   const courseJsonLd = {
     "@context": "https://schema.org",
     "@type": "Course",
+    "@id": `${abs(path)}#course`,
     name: content.hero.h1,
     description: content.hero.sub,
-    provider: { "@type": "Organization", name: "MyStudyAlly", url: SITE_URL },
+    url: abs(path),
+    inLanguage: "en",
+    educationalLevel: meta.group === "test-prep" ? "Test preparation" : "Secondary education",
+    teaches: meta.subjects,
+    about: meta.subjects.map((sub) => ({ "@type": "Thing", name: `${meta.name} ${sub}` })),
+    provider: { "@id": ORGANIZATION_ID },
+    offers: {
+      "@type": "Offer",
+      category: "Paid",
+      priceCurrency: "USD",
+      price: 45,
+      url: abs("/pricing/"),
+      availability: "https://schema.org/InStock",
+    },
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "Online",
+      courseWorkload: "PT1H",
+      location: { "@type": "VirtualLocation", url: SITE_URL },
+      instructor: { "@id": ORGANIZATION_ID },
+    },
+  };
+
+  // The subjects this curriculum covers, as an addressable list. Each entry is
+  // a heading on the page, so this is markup for content that is really there.
+  const subjectsListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${abs(path)}#subjects`,
+    name: content.headings.subjects ?? `Subjects we cover for ${meta.name}`,
+    numberOfItems: content.subjects.length,
+    itemListElement: content.subjects.map((sub, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: sub.code ? `${sub.name} (${sub.code})` : sub.name,
+      description: sub.blurb,
+    })),
   };
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify([faqJsonLd, courseJsonLd]) }}
+      <JsonLd
+        nodes={[
+          webPageJsonLd({
+            title: content.hero.h1,
+            description: content.hero.sub,
+            path,
+            crumbs,
+          }),
+          breadcrumbJsonLd(crumbs),
+          courseJsonLd,
+          subjectsListJsonLd,
+          faqJsonLd,
+        ]}
       />
 
       {/* Hero + inline inquiry form */}
@@ -150,7 +247,11 @@ export default async function CurriculumPage(props: PageProps<"/[curriculum]">) 
                   <div className="relative aspect-[4/3] bg-surface-alt md:aspect-auto md:h-[220px]">
                     <Image
                       src={`/images/tutors/${t.photoId}.webp`}
-                      alt={t.name}
+                      alt={
+                        t.expertise
+                          ? `${t.name}, ${t.expertise} tutor`
+                          : `${t.name}, ${meta.name} tutor`
+                      }
                       fill
                       sizes="(max-width: 640px) 100vw, 260px"
                       className="object-cover"

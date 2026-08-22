@@ -99,6 +99,7 @@ module.exports = {
         "25": "25px",
         "26": "26px",
         "27": "27px",
+        "28": "28px",
         "30": "30px",
         d22: "clamp(20px,1.72vw,22px)",
         d24: "clamp(20px,1.88vw,24px)",

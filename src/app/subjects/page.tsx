@@ -3,17 +3,62 @@ import Link from "next/link";
 import { CtaBand } from "@/components/marketing/CtaBand";
 import { SUBJECT_GROUPS } from "@/data/subject-groups";
 import { SITE_URL } from "@/lib/constants";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { abs, breadcrumbJsonLd, homeCrumb, webPageJsonLd } from "@/lib/seo";
+import { pageSocial } from "@/lib/metadata";
+
+const TITLE = "Subjects & Curricula We Tutor";
+const DESCRIPTION =
+  "Every curriculum and subject MyStudyAlly covers — IGCSE, GCSE, A Levels, IB, SABIS, HKDSE, American and Canadian curricula, plus IELTS and SAT preparation.";
 
 export const metadata: Metadata = {
-  title: "Subjects & Curricula",
-  description:
-    "Every curriculum and subject MyStudyAlly covers — IGCSE, GCSE, A Levels, IB, SABIS, HKDSE, American and Canadian curricula, plus IELTS and SAT preparation.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: `${SITE_URL}/subjects/` },
+  ...pageSocial({ title: TITLE, description: DESCRIPTION, path: "/subjects/" }),
 };
 
+const CRUMBS = [homeCrumb, { name: "Subjects & Curricula", path: "/subjects/" }];
+
 export default function SubjectsPage() {
+  // A directory page's job for search is to be legible as a directory. The
+  // ItemList names every curriculum section and the subjects under it, which
+  // is the same structure the page renders.
+  const directoryJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${abs("/subjects/")}#directory`,
+    name: "Curricula and subjects",
+    numberOfItems: SUBJECT_GROUPS.length,
+    itemListElement: SUBJECT_GROUPS.map((g, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      item: {
+        "@type": "Course",
+        name: `${g.name} tutoring`,
+        description: g.desc,
+        url: abs(`/${g.slug}/`),
+        teaches: g.subjects,
+      },
+    })),
+  };
+
   return (
     <>
+      <JsonLd
+        nodes={[
+          webPageJsonLd({
+            type: "CollectionPage",
+            title: TITLE,
+            description: DESCRIPTION,
+            path: "/subjects/",
+            crumbs: CRUMBS,
+          }),
+          breadcrumbJsonLd(CRUMBS),
+          directoryJsonLd,
+        ]}
+      />
+
       {/* Hero */}
       <section className="relative overflow-hidden px-[clamp(20px,5vw,32px)] pb-[48px] pt-[72px]">
         <div

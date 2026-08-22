@@ -64,36 +64,46 @@ export function TutorGrid() {
             <div className="relative aspect-[4/3] bg-surface-alt md:aspect-auto md:h-[220px]">
               <Image
                 src={`/images/tutors/${t.photoId}.webp`}
-                alt={t.name}
+                alt={`${t.name}, ${t.expertise} tutor`}
                 fill
                 sizes="(max-width: 640px) 100vw, 260px"
                 className="object-cover"
               />
             </div>
             <div className="flex flex-1 flex-col gap-[8px] p-[16px] md:px-[24px] md:pb-[24px] md:pt-[22px]">
-              <h3 className="text-17 font-extrabold md:text-18 md:font-bold">{t.name}</h3>
-              <div className="text-12_5 font-semibold text-muted">
+              <h3 className="text-19 font-extrabold text-ink md:text-18 md:font-bold md:text-body">
+                {t.name}
+              </h3>
+              <div className="truncate text-13 font-semibold text-muted md:overflow-visible md:whitespace-normal md:text-12_5">
                 {t.qual} · {t.years}
               </div>
               <div className="mt-[4px] flex flex-wrap gap-[6px]">
                 {t.subjects.map((s) => (
                   <span
                     key={s}
-                    className="inline-flex whitespace-nowrap rounded-pill bg-link-light px-[12px] py-[5px] text-11_5 font-bold text-link-hover"
+                    className="inline-flex items-center whitespace-nowrap rounded-pill border border-[#D6DADC] bg-transparent px-[12px] py-[5px] text-12 font-bold text-ink md:border-0 md:bg-link-light md:text-11_5 md:text-link-hover"
                   >
                     {s}
                   </span>
                 ))}
               </div>
-              <div className="mt-[2px] flex-1 text-12 text-muted">
-                <span className="font-bold text-body">Curricula:</span>{" "}
-                {t.tags.map((c) => FORM_NAME[c] ?? c).join(" & ")}
+              {/* Mobile stacks the label above the value; desktop runs them
+                  inline. Values from "Mobile Tutor Cards". */}
+              <div className="mt-[4px] flex flex-1 flex-col gap-[2px] md:mt-[2px] md:block">
+                <span className="text-11 font-extrabold tracking-[0.08em] text-muted-3 md:text-12 md:font-bold md:tracking-normal md:text-body">
+                  <span className="md:hidden">CURRICULA:</span>
+                  <span className="hidden md:inline">Curricula:</span>
+                </span>{" "}
+                <span className="line-clamp-2 text-13 font-semibold leading-[1.5] text-ink md:text-12 md:font-normal md:text-muted">
+                  {t.tags.map((c) => FORM_NAME[c] ?? c).join(" & ")}
+                </span>
               </div>
               <Link
                 href="/contact/"
-                className="mt-[10px] border-t-2 border-border pt-[14px] text-11_5 font-bold tracking-[0.06em] text-body hover:text-link"
+                className="mt-auto flex min-h-[44px] items-center border-t border-border pt-[12px] text-13 font-extrabold text-ink hover:text-link md:mt-[10px] md:min-h-0 md:border-t-2 md:pt-[14px] md:text-11_5 md:font-bold md:tracking-[0.06em] md:text-body"
               >
-                INQUIRE ABOUT THIS TUTOR ↗
+                <span className="md:hidden">Inquire about this tutor</span>
+                <span className="hidden md:inline">INQUIRE ABOUT THIS TUTOR ↗</span>
               </Link>
             </div>
           </div>

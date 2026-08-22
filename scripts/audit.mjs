@@ -17,11 +17,12 @@ function walk(dir, files = []) {
 const pages = walk(OUT);
 const problems = [];
 
-// public/.htaccess carries the custom 404, cache lifetimes and every security
-// header. It is a dotfile, so it is exactly the sort of thing a copy or upload
-// step silently drops.
-if (!fs.existsSync(path.join(OUT, ".htaccess"))) {
-  problems.push("NO HTACCESS out/.htaccess missing — hosting config will not deploy");
+// vercel.json carries the cache lifetimes and every security header. A static
+// export cannot emit headers itself, so if this file goes missing the site
+// silently serves with no CSP and no long-lived asset caching — a regression
+// that is invisible in the build output.
+if (!fs.existsSync(path.join(OUT, "..", "vercel.json"))) {
+  problems.push("NO VERCEL CONFIG vercel.json missing — security headers will not deploy");
 }
 const titles = new Map();
 const descs = new Map();

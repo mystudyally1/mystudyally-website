@@ -4,18 +4,28 @@ import { FaqBrowser } from "@/components/marketing/FaqBrowser";
 import { DarkCtaSection } from "@/components/marketing/DarkCtaSection";
 import { FAQ_GROUPS } from "@/data/faqs";
 import { SITE_URL } from "@/lib/constants";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { abs, breadcrumbJsonLd, homeCrumb, webPageJsonLd } from "@/lib/seo";
+import { pageSocial } from "@/lib/metadata";
+
+const TITLE = "Frequently Asked Questions";
+const DESCRIPTION =
+  "Answers on matching, pricing and payments, scheduling, tutors, and account access — everything families ask before starting with MyStudyAlly.";
 
 export const metadata: Metadata = {
-  title: "FAQ",
-  description:
-    "Answers on matching, pricing and payments, scheduling, tutors, and account access — everything families ask before starting with MyStudyAlly.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: `${SITE_URL}/faq/` },
+  ...pageSocial({ title: TITLE, description: DESCRIPTION, path: "/faq/" }),
 };
+
+const CRUMBS = [homeCrumb, { name: "FAQ", path: "/faq/" }];
 
 export default function FaqPage() {
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    "@id": `${abs("/faq/")}#faq`,
     mainEntity: FAQ_GROUPS.flatMap((g) =>
       g.items.map((f) => ({
         "@type": "Question",
@@ -27,9 +37,17 @@ export default function FaqPage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      <JsonLd
+        nodes={[
+          webPageJsonLd({
+            title: TITLE,
+            description: DESCRIPTION,
+            path: "/faq/",
+            crumbs: CRUMBS,
+          }),
+          breadcrumbJsonLd(CRUMBS),
+          faqJsonLd,
+        ]}
       />
 
       {/* Hero */}
@@ -54,7 +72,9 @@ export default function FaqPage() {
       </section>
 
       {/* Search + rail + questions */}
-      <section className="px-[20px] pb-[30px] pt-0 md:px-[clamp(20px,5vw,32px)] md:pb-[40px]">
+      {/* No horizontal padding on mobile: the category chip row scrolls
+          edge-to-edge, and its children re-apply the 20px inset. */}
+      <section className="px-0 pb-[30px] pt-0 md:px-[clamp(20px,5vw,32px)] md:pb-[40px]">
         <div className="mx-auto max-w-container">
           <div className="max-w-[640px]">
             {/* search input lives inside FaqBrowser so it can drive filtering */}

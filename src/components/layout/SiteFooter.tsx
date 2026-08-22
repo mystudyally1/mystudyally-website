@@ -12,10 +12,16 @@ import {
 // Desktop layout mirrors "SiteFooter.dc.html"; below md it follows
 // "SiteFooter Mobile.dc.html" — stacked sections, two-column link grids and
 // 34px minimum row height so the links are actually tappable on a phone.
+// /subjects/ and /tutors/ were reachable only from the header. Both are
+// indexed pages that every other page should link to — a section the footer
+// omits gets fewer internal links than its siblings, and internal links are
+// how a crawler works out which pages a site considers important.
 const COMPANY_LINKS = [
   { label: "About Us", href: "/about/" },
-  { label: "Blog", href: "/blog/" },
+  { label: "Subjects", href: "/subjects/" },
+  { label: "Our Tutors", href: "/tutors/" },
   { label: "Pricing", href: "/pricing/" },
+  { label: "Blog", href: "/blog/" },
   { label: "FAQ", href: "/faq/" },
   { label: "Contact", href: "/contact/" },
 ];

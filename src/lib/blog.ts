@@ -8,6 +8,13 @@ export interface PostFrontmatter {
   title: string;
   description: string;
   date: string;
+  /**
+   * Optional `updated:` frontmatter, YYYY-MM-DD. Feeds `dateModified` in the
+   * article schema — an evergreen post that has been revised should say so,
+   * and without this field every post's modified date is frozen at publication.
+   * Falls back to `date` when absent.
+   */
+  updated: string;
   /** Uppercase chip shown on the card, e.g. "SAT", "FOR PARENTS". */
   tag: string;
   tags: string[];
@@ -52,10 +59,23 @@ function parseFrontmatter(slug: string, data: Record<string, unknown>): PostFron
   const destination = str("destination", false) || undefined;
   const destinationLabel = str("destinationLabel", false) || undefined;
 
+  const toIso = (value: unknown, key: string): string => {
+    const out =
+      value instanceof Date ? value.toISOString().slice(0, 10) : String(value).slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(out)) fail(`\`${key}\` must be YYYY-MM-DD`);
+    return out;
+  };
+
   const date = data.date;
   if (!(date instanceof Date) && typeof date !== "string") fail("`date` is required (YYYY-MM-DD)");
-  const iso = date instanceof Date ? date.toISOString().slice(0, 10) : String(date).slice(0, 10);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) fail("`date` must be YYYY-MM-DD");
+  const iso = toIso(date, "date");
+
+  const updatedRaw = data.updated;
+  const updated =
+    updatedRaw === undefined || updatedRaw === null || updatedRaw === ""
+      ? iso
+      : toIso(updatedRaw, "updated");
+  if (updated < iso) fail("`updated` cannot be earlier than `date`");
 
   const tags = data.tags ?? [];
   if (!Array.isArray(tags) || tags.some((t) => typeof t !== "string")) {
@@ -69,6 +89,7 @@ function parseFrontmatter(slug: string, data: Record<string, unknown>): PostFron
     title,
     description,
     date: iso,
+    updated,
     tag,
     tags: tags as string[],
     author,

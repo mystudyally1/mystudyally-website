@@ -1740,7 +1740,7 @@ export const CURRICULUM_PAGES: Record<string, CurriculumPageContent> = {
       "hero": {
         "eyebrow": "SAT PREPARATION",
         "h1": "SAT Preparation for the Digital Format",
-        "sub": "Focused Math and Reading &amp; Writing preparation for the adaptive, computer-based SAT."
+        "sub": "Focused Math and Reading & Writing preparation for the adaptive, computer-based SAT."
       },
       "headings": {
         "why": "Why SAT preparation is different here",

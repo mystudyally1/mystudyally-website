@@ -9,13 +9,21 @@ import {
   LEGAL_POLICY_LAST_UPDATED,
   SITE_URL,
 } from "@/lib/constants";
+import { pageSocial } from "@/lib/metadata";
 import { CLASS_DURATION_MINUTES } from "@/data/pricing";
 
+const TITLE = "Terms of Service";
+const DESCRIPTION =
+  "The terms under which MyStudyAlly provides tutoring services, including plans, scheduling, recordings, and conduct.";
+
+// Without an explicit `openGraph` these two pages inherited the root block —
+// including its `url`, so both told every scraper their canonical URL was the
+// homepage. `pageSocial` exists precisely so that cannot happen by omission.
 export const metadata: Metadata = {
-  title: "Terms of Service",
-  description:
-    "The terms under which MyStudyAlly provides tutoring services, including plans, scheduling, recordings, and conduct.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: `${SITE_URL}/terms/` },
+  ...pageSocial({ title: TITLE, description: DESCRIPTION, path: "/terms/" }),
 };
 
 export default function TermsPage() {

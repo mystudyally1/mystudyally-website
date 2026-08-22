@@ -1,15 +1,58 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { GetStartedPanel } from "@/components/marketing/GetStartedPanel";
 import { CURRICULA } from "@/data/curricula";
 import { SnapRail } from "@/components/marketing/SnapRail";
 import { FEATURED_TUTORS } from "@/data/tutors";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { PLANS } from "@/data/pricing";
+import {
+  ORGANIZATION_ID,
+  WEBSITE_ID,
+  abs,
+  homeCrumb,
+  breadcrumbJsonLd,
+} from "@/lib/seo";
+import {
+  KNOWS_ABOUT,
+  SERVICE_AREA_COUNTRIES,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_TAGLINE,
+  SITE_URL,
+} from "@/lib/constants";
+import { pageSocial } from "@/lib/metadata";
+
+/**
+ * The homepage shipped with no `metadata` export at all, so it inherited the
+ * root title and — more importantly — emitted no canonical. With `trailingSlash`
+ * on, the same page is reachable as `/` and `/index.html`; without a canonical
+ * nothing tells Google which one is the page.
+ *
+ * `title.absolute` bypasses the `%s — MyStudyAlly` template, which would
+ * otherwise render "MyStudyAlly — … — MyStudyAlly".
+ */
+export const metadata: Metadata = {
+  title: {
+    absolute: `${SITE_NAME} — Online Tutoring Matched to Your Exam Board`,
+  },
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: `${SITE_URL}/` },
+  ...pageSocial({
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    path: "/",
+  }),
+};
 
 // Every value here is taken from "website design/MyStudyAlly Homepage.dc.html".
-const HERO_TRUST = [
-  "Vetted, curriculum-matched tutors",
-  "Every session recorded",
-  "Free trial, no card required",
+// The last chip is shortened on mobile ("Homepage Mobile.dc.html") so it stays
+// on one line next to the recording chip.
+const HERO_TRUST: { full: string; short?: string }[] = [
+  { full: "Vetted, curriculum-matched tutors" },
+  { full: "Every session recorded" },
+  { full: "Free trial, no card required", short: "Free trial, no card" },
 ];
 
 const PROOF_STRIP = [
@@ -68,8 +111,74 @@ const PRICING_SNAPSHOT = [
 ];
 
 export default function Home() {
+  // The tutoring offering itself, priced from the real plan data so the
+  // markup can never drift from what /pricing/ renders. `lowPrice` is taken
+  // from the cheapest plan rather than hardcoded for the same reason.
+  const prices = PLANS.map((p) => Number(p.price.replace(/[^0-9.]/g, ""))).filter(
+    (n) => Number.isFinite(n),
+  );
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${SITE_URL}/#service`,
+    name: "Online 1-to-1 curriculum-matched tutoring",
+    serviceType: "Online tutoring",
+    description: SITE_DESCRIPTION,
+    provider: { "@id": ORGANIZATION_ID },
+    areaServed: SERVICE_AREA_COUNTRIES.map((name) => ({ "@type": "Country", name })),
+    audience: { "@type": "EducationalAudience", educationalRole: "student" },
+    offers: {
+      "@type": "AggregateOffer",
+      priceCurrency: "USD",
+      lowPrice: Math.min(...prices),
+      highPrice: Math.max(...prices),
+      offerCount: PLANS.length,
+      url: abs("/pricing/"),
+      availability: "https://schema.org/InStock",
+    },
+  };
+
+  const webPage = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${SITE_URL}/#webpage`,
+    url: `${SITE_URL}/`,
+    name: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    inLanguage: "en-GB",
+    isPartOf: { "@id": WEBSITE_ID },
+    about: { "@id": ORGANIZATION_ID },
+    keywords: [...KNOWS_ABOUT].join(", "),
+    breadcrumb: { "@id": `${SITE_URL}/#breadcrumb` },
+  };
+
+  // The ten curriculum pages, listed so the homepage tells a crawler what the
+  // site's main sections are on first fetch rather than leaving it to discover
+  // them through the mega menu.
+  const curriculaListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${SITE_URL}/#curricula`,
+    name: "Curricula covered",
+    itemListElement: CURRICULA.map((c, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: `${c.name} tutoring`,
+      url: abs(`/${c.slug}/`),
+    })),
+  };
+
   return (
     <>
+      <JsonLd
+        nodes={[
+          webPage,
+          breadcrumbJsonLd([homeCrumb]),
+          serviceJsonLd,
+          curriculaListJsonLd,
+        ]}
+      />
+
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="mx-auto grid max-w-container items-center gap-[28px] px-[20px] pb-[28px] pt-[32px] md:gap-[clamp(32px,4vw,56px)] md:px-[clamp(20px,5vw,32px)] md:pb-[72px] md:pt-[76px] md:[grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))]">
@@ -96,11 +205,18 @@ export default function Home() {
             <div className="mt-[14px] flex flex-wrap gap-[7px] md:mt-[28px] md:gap-[10px]">
               {HERO_TRUST.map((t) => (
                 <span
-                  key={t}
+                  key={t.full}
                   className="inline-flex items-center gap-[6px] whitespace-nowrap rounded-pill bg-primary-light px-[11px] py-[6px] text-11 font-bold text-primary-shadow md:gap-[8px] md:px-[14px] md:py-[8px] md:text-12"
                 >
                   <span className="font-extrabold">✓</span>
-                  {t}
+                  {t.short ? (
+                    <>
+                      <span className="md:hidden">{t.short}</span>
+                      <span className="hidden md:inline">{t.full}</span>
+                    </>
+                  ) : (
+                    t.full
+                  )}
                 </span>
               ))}
             </div>
@@ -202,7 +318,7 @@ export default function Home() {
                 <div className="relative h-[168px] bg-surface-alt md:h-[200px]">
                   <Image
                     src={`/images/tutors/${t.photoId}.webp`}
-                    alt={t.name}
+                    alt={`${t.name}, ${t.expertise} tutor`}
                     fill
                     sizes="(max-width: 640px) 100vw, 25vw"
                     className="object-cover"

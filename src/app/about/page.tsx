@@ -6,13 +6,22 @@ import { FaqList } from "@/components/ui/FaqList";
 import { ABOUT_FAQS, ABOUT_ROWS, VETTING_STEPS } from "@/data/about";
 import { TUTORS } from "@/data/tutors";
 import { SITE_URL } from "@/lib/constants";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { abs, breadcrumbJsonLd, homeCrumb, webPageJsonLd } from "@/lib/seo";
+import { pageSocial } from "@/lib/metadata";
+
+const TITLE = "About Us";
+const DESCRIPTION =
+  "MyStudyAlly matches students with tutors who specialise in their exact curriculum, manages every session through one platform, and keeps a record of everything.";
 
 export const metadata: Metadata = {
-  title: "About Us",
-  description:
-    "MyStudyAlly matches students with tutors who specialise in their exact curriculum, manages every session through one platform, and keeps a record of everything.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: `${SITE_URL}/about/` },
+  ...pageSocial({ title: TITLE, description: DESCRIPTION, path: "/about/" }),
 };
+
+const CRUMBS = [homeCrumb, { name: "About Us", path: "/about/" }];
 
 const numberWord = (n: number) => {
   const words: Record<number, string> = {
@@ -42,8 +51,52 @@ const rowBody =
   "max-w-[640px] text-13_5 leading-[1.7] text-muted md:col-start-auto md:text-15";
 
 export default function AboutPage() {
+  // The vetting steps are the page's distinctive claim and the thing a family
+  // reads it for; marking them as an ordered HowTo-style list makes that
+  // sequence machine-readable rather than a wall of prose.
+  const vettingJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${abs("/about/")}#vetting`,
+    name: "How MyStudyAlly vets tutors",
+    itemListOrder: "https://schema.org/ItemListOrderAscending",
+    numberOfItems: VETTING_STEPS.length,
+    itemListElement: VETTING_STEPS.map((step, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: step.title,
+      description: step.body,
+    })),
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": `${abs("/about/")}#faq`,
+    mainEntity: ABOUT_FAQS.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+
   return (
     <>
+      <JsonLd
+        nodes={[
+          webPageJsonLd({
+            type: "AboutPage",
+            title: TITLE,
+            description: DESCRIPTION,
+            path: "/about/",
+            crumbs: CRUMBS,
+          }),
+          breadcrumbJsonLd(CRUMBS),
+          vettingJsonLd,
+          faqJsonLd,
+        ]}
+      />
+
       {/* Hero */}
       <section className="px-[20px] pb-[26px] pt-[28px] md:px-[clamp(20px,5vw,32px)] md:pb-[8px] md:pt-[72px]">
         <div className="mx-auto max-w-container">

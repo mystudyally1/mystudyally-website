@@ -45,3 +45,6 @@ next-env.d.ts
 /website design/
 .mobile-audit/
 .design-src/
+
+# generated audit output
+.mobile-report.txt

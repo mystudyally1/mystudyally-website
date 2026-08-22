@@ -5,7 +5,9 @@ import { notFound } from "next/navigation";
 import { DarkCtaSection } from "@/components/marketing/DarkCtaSection";
 import { formatDate, getAllPosts, getAllTags } from "@/lib/blog";
 import { SITE_URL } from "@/lib/constants";
-import { pageOpenGraph } from "@/lib/metadata";
+import { pageSocial } from "@/lib/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { ORGANIZATION_ID, abs, breadcrumbJsonLd, homeCrumb, webPageJsonLd } from "@/lib/seo";
 
 export const dynamicParams = false;
 
@@ -19,16 +21,39 @@ function resolveTag(slug: string): string | undefined {
   return getAllTags().find((t) => toSlug(t) === slug);
 }
 
+/**
+ * "Articles tagged X from the MyStudyAlly blog." came in at 45-64 characters —
+ * short enough that Google discards it and writes its own snippet, and near
+ * identical across all nine tag pages, which is what makes an archive read as
+ * duplicate content. Naming the posts the tag actually holds makes each one
+ * describe something different.
+ */
+function tagDescription(label: string, titles: string[]): string {
+  const base = `Articles on ${label} from the MyStudyAlly blog — practical guidance for parents and students`;
+  const listed: string[] = [];
+  for (const t of titles) {
+    const next = [...listed, t].join(", ");
+    if (`${base}, including ${next}.`.length > 160) break;
+    listed.push(t);
+  }
+  return listed.length ? `${base}, including ${listed.join(", ")}.` : `${base}.`;
+}
+
 export async function generateMetadata(props: PageProps<"/blog/tag/[tag]">): Promise<Metadata> {
   const { tag } = await props.params;
   const label = resolveTag(tag);
   if (!label) return {};
-  const description = `Articles tagged ${label} from the MyStudyAlly blog.`;
+  const description = tagDescription(
+    label,
+    getAllPosts()
+      .filter((p) => p.tags.includes(label))
+      .map((p) => p.title),
+  );
   return {
     title: `${label} posts`,
     description,
     alternates: { canonical: `${SITE_URL}/blog/tag/${tag}/` },
-    openGraph: pageOpenGraph({
+    ...pageSocial({
       title: `${label} posts`,
       description,
       path: `/blog/tag/${tag}/`,
@@ -43,8 +68,48 @@ export default async function TagPage(props: PageProps<"/blog/tag/[tag]">) {
 
   const posts = getAllPosts().filter((p) => p.tags.includes(label));
 
+  const path = `/blog/tag/${tag}/`;
+  const title = `${label} posts`;
+  const description = tagDescription(label, posts.map((p) => p.title));
+  const crumbs = [homeCrumb, { name: "Blog", path: "/blog/" }, { name: label, path }];
+
+  // A tag page is a listing, and its value to search is the set of posts it
+  // gathers. Without the ItemList it looks like a near-duplicate of /blog/ with
+  // fewer cards — which is how thin tag archives end up filtered out.
+  const listJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${abs(path)}#posts`,
+    name: title,
+    numberOfItems: posts.length,
+    itemListElement: posts.map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: abs(`/blog/${p.slug}/`),
+      name: p.title,
+    })),
+  };
+
   return (
     <>
+      <JsonLd
+        nodes={[
+          {
+            ...webPageJsonLd({
+              type: "CollectionPage",
+              title,
+              description,
+              path,
+              crumbs,
+            }),
+            about: { "@type": "Thing", name: label },
+            publisher: { "@id": ORGANIZATION_ID },
+          },
+          breadcrumbJsonLd(crumbs),
+          listJsonLd,
+        ]}
+      />
+
       {/* Hero — same shape as /blog/, so a tag page reads as part of the blog
           rather than a differently-designed corner of the site. */}
       <section className="px-[clamp(20px,5vw,32px)] pb-[8px] pt-[72px]">
@@ -69,19 +134,25 @@ export default async function TagPage(props: PageProps<"/blog/tag/[tag]">) {
       <section className="px-[clamp(20px,5vw,32px)] pb-[64px] pt-[48px]">
         <h2 className="sr-only">Posts tagged {label}</h2>
         <div className="mx-auto grid max-w-container gap-[20px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))]">
-          {posts.map((p) => (
+          {posts.map((p, i) => (
             <Link
               key={p.slug}
               href={`/blog/${p.slug}/`}
               className="flex min-h-[300px] flex-col overflow-hidden rounded-[22px] border-2 border-border bg-white pb-[22px] text-body shadow-[0_2px_0_#E5E5E5] transition-[box-shadow,transform] duration-[250ms] hover:-translate-y-[3px] hover:text-body hover:shadow-[0_4px_0_#E5E5E5]"
             >
               <div className="relative h-[170px] shrink-0 border-b-2 border-border bg-surface-alt">
+                {/* The first card is above the fold and is the largest thing
+                    painted there, so it is the LCP element. next/image lazy-
+                    loads by default, which means the browser does not even
+                    discover it until layout — the one image on the page that
+                    must not wait. The rest stay lazy. */}
                 <Image
                   src={p.image}
                   alt=""
                   fill
                   sizes="(max-width: 640px) 100vw, 320px"
                   className="object-cover"
+                  priority={i === 0}
                 />
               </div>
               <div className="flex flex-1 flex-col px-[26px] pt-[22px]">

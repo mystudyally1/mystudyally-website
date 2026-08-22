@@ -1,0 +1,46 @@
+# Quality gate for the site. Deployment itself is Vercel's — it builds and
+# ships every push to main from its own Git integration, so nothing here
+# uploads anything. What this does is fail the build for the things a Next
+# build will happily produce: placeholder copy, stale pricing, broken links,
+# silently-dead Tailwind classes, a broken canonical or schema.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_FORM_ENDPOINT: ${{ vars.NEXT_PUBLIC_FORM_ENDPOINT }}
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+          NEXT_PUBLIC_GA4_ID: ${{ vars.NEXT_PUBLIC_GA4_ID }}
+          NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }}
+          NEXT_PUBLIC_BING_SITE_VERIFICATION: ${{ vars.NEXT_PUBLIC_BING_SITE_VERIFICATION }}
+
+      - run: npm run audit:content
+      - run: npm run audit:links
+      - run: npm run audit:css
+      - run: npm run audit:seo
