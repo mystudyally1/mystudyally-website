@@ -21,6 +21,9 @@ import { SITE_URL, SITE_NAME } from "@/lib/constants";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ORGANIZATION_ID, abs, breadcrumbJsonLd, homeCrumb, webPageJsonLd } from "@/lib/seo";
 import { pageSocial } from "@/lib/metadata";
+import { CurrencyNote, PerClass, Price } from "@/components/pricing/Price";
+import { CurrencySwitcher } from "@/components/pricing/CurrencySwitcher";
+import { priceToNumber } from "@/lib/currency";
 
 const TITLE = "Tutoring Prices — Plans from $45";
 const DESCRIPTION =
@@ -35,8 +38,6 @@ export const metadata: Metadata = {
 
 const CRUMBS = [homeCrumb, { name: "Pricing", path: "/pricing/" }];
 
-/** "$135" -> 135. The plan data stores prices as display strings. */
-const toNumber = (price: string) => Number(price.replace(/[^0-9.]/g, ""));
 
 export default function PricingPage() {
   const faqJsonLd = {
@@ -61,7 +62,7 @@ export default function PricingPage() {
     "@id": `${abs("/pricing/")}#plan-${plan.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
     name: `${plan.name} — ${plan.classes} classes`,
     description: `${plan.classes} one-to-one classes of ${CLASS_DURATION_MINUTES} minutes. ${plan.per}. ${plan.validity}.`,
-    price: toNumber(plan.price),
+    price: priceToNumber(plan.price),
     priceCurrency: "USD",
     availability: "https://schema.org/InStock",
     url: abs("/pricing/"),
@@ -75,7 +76,7 @@ export default function PricingPage() {
     },
   }));
 
-  const prices = PLANS.map((p) => toNumber(p.price));
+  const prices = PLANS.map((p) => priceToNumber(p.price));
 
   const serviceJsonLd = {
     "@context": "https://schema.org",
@@ -141,7 +142,7 @@ export default function PricingPage() {
           </h1>
           <p className="mx-auto mt-[12px] max-w-[620px] text-13_5 leading-[1.65] text-muted md:mt-[16px] md:text-15_5 md:leading-[1.7]">
             Affordable 1-to-1 tutoring with flexible scheduling, specialist tutors and personalised
-            academic support. Starting from just $45.
+            academic support. Starting from just <Price usd={45} />.
           </p>
           <div className="mt-[16px] flex flex-wrap justify-center gap-x-[16px] gap-y-[8px] md:mt-[22px] md:gap-[22px]">
             {PRICING_TRUST.map((t) => (
@@ -153,6 +154,10 @@ export default function PricingPage() {
                 {t}
               </span>
             ))}
+          </div>
+          <div className="mx-auto mt-[20px] flex max-w-[420px] flex-col items-center md:mt-[26px]">
+            <CurrencySwitcher className="w-full text-center" />
+            <CurrencyNote className="mt-[10px] text-11_5 leading-[1.6] text-muted-3 md:text-12" />
           </div>
         </div>
       </section>
@@ -262,7 +267,7 @@ export default function PricingPage() {
                       hi ? "text-white" : "text-body",
                     )}
                   >
-                    {plan.price}
+                    <Price usd={priceToNumber(plan.price)} />
                   </div>
                   <div
                     className={cn(
@@ -278,7 +283,7 @@ export default function PricingPage() {
                       hi ? "text-white/75" : "text-muted-3",
                     )}
                   >
-                    {plan.per}
+                    <PerClass usd={priceToNumber(plan.price)} classes={plan.classes} /> per class
                   </div>
                   <div
                     className={cn(
@@ -371,7 +376,7 @@ export default function PricingPage() {
                         {p.name}
                       </div>
                       <div className="text-10_5 font-semibold text-muted-3">
-                        {p.classes} cls · {p.price}
+                        {p.classes} cls · <Price usd={priceToNumber(p.price)} />
                       </div>
                     </th>
                   ))}

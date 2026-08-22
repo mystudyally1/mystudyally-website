@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { recommendPlan, type PlanOption } from "@/lib/plan-finder";
+import { PerClass, Price } from "@/components/pricing/Price";
 
 const MAX_PER_WEEK = 6;
 
@@ -138,7 +139,7 @@ export function PlanFinder() {
           </div>
           <div className="mt-[8px] flex flex-wrap items-baseline gap-x-[10px] gap-y-[4px] md:mt-[10px] md:gap-x-[12px]">
             <span className="text-28 font-black leading-none text-white md:text-d36">
-              ${option.upfrontCost}
+              <Price usd={option.upfrontCost} />
             </span>
             <span className="text-13 font-extrabold text-link-light md:text-15">
               {option.quantity > 1
@@ -147,15 +148,21 @@ export function PlanFinder() {
             </span>
           </div>
           <div className="mt-[6px] text-11 font-semibold text-white/85 md:mt-[8px] md:text-12">
-            {rec.plan.per} per class · Valid {rec.plan.days} days
-            {option.quantity > 1 ? ` · $${rec.plan.price} per plan` : ""}
+            <PerClass usd={rec.plan.price} classes={rec.plan.classes} /> per class · Valid{" "}
+            {rec.plan.days} days
+            {option.quantity > 1 && (
+              <>
+                {" · "}
+                <Price usd={rec.plan.price} /> per plan
+              </>
+            )}
           </div>
 
           {/* The headline price is one purchase; this is what it costs to keep
               going at the cadence they chose, which is the number that matters. */}
           <div className="mt-[12px] border-t border-white/25 pt-[10px] md:mt-[16px] md:pt-[14px]">
             <span className="text-19 font-black leading-none text-white md:text-d24">
-              ${rec.monthlyCost}
+              <Price usd={rec.monthlyCost} />
             </span>
             <span className="ml-[8px] text-11_5 font-bold text-link-light md:text-13">
               a month at this pace

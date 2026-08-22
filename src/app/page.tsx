@@ -23,6 +23,7 @@ import {
   SITE_URL,
 } from "@/lib/constants";
 import { pageSocial } from "@/lib/metadata";
+import { CurrencyCode, CurrencyNote, PerClass, Price } from "@/components/pricing/Price";
 
 /**
  * The homepage shipped with no `metadata` export at all, so it inherited the
@@ -99,15 +100,18 @@ const PILLARS = [
   },
 ];
 
+// USD, converted for display — the per-class figure is derived from the plan
+// total rather than stored, so it can never disagree with the headline price.
 const PRICING_SNAPSHOT = [
-  { label: "Starter — 4 classes", price: "$45", detail: "$11.25 per class · 1 subject" },
+  { label: "Starter — 4 classes", usd: 45, classes: 4, detail: "1 subject" },
   {
     label: "Academic+ — 16 classes",
-    price: "$135",
-    detail: "$8.44 per class · multiple subjects",
+    usd: 135,
+    classes: 16,
+    detail: "multiple subjects",
     recommended: true,
   },
-  { label: "Complete — 32 classes", price: "$239", detail: "$7.47 per class · sibling sharing" },
+  { label: "Complete — 32 classes", usd: 239, classes: 32, detail: "sibling sharing" },
 ];
 
 export default function Home() {
@@ -419,11 +423,14 @@ export default function Home() {
                     {p.label}
                   </div>
                   <div className="mt-[4px] text-11_5 font-bold text-muted md:order-3 md:mt-0 md:text-13 md:font-semibold">
-                    {p.detail}
+                    <PerClass usd={p.usd} classes={p.classes} /> per class · {p.detail}
                   </div>
                 </div>
                 <div className="shrink-0 whitespace-nowrap text-24 font-black tracking-[-0.02em] md:order-2 md:text-d34 md:font-extrabold md:tracking-[-0.01em]">
-                  {p.price} <span className="text-11 font-bold text-muted-3 md:text-14 md:font-semibold md:text-muted">USD</span>
+                  <Price usd={p.usd} />{" "}
+                  <span className="text-11 font-bold text-muted-3 md:text-14 md:font-semibold md:text-muted">
+                    <CurrencyCode />
+                  </span>
                 </div>
               </div>
             ))}
@@ -432,6 +439,7 @@ export default function Home() {
             Six plans from 4 to 32 classes. No registration or platform fees — the plan price is
             all you pay.
           </p>
+          <CurrencyNote className="mt-[8px] text-11_5 leading-[1.65] text-muted-3 md:text-12" />
           <div className="mt-[14px] md:mt-[18px]">
             <Link
               href="/pricing/"
