@@ -4,8 +4,6 @@ import { useSyncExternalStore } from "react";
 import { BASE_CURRENCY, CURRENCIES } from "@/data/currencies";
 import { currencyForCountry, getCurrency } from "@/lib/currency";
 
-const STORAGE_KEY = "msa_currency";
-
 /**
  * The site is a static export, so there is no request to read a country from
  * at render time. Detection is client-side against Cloudflare's own
@@ -34,20 +32,6 @@ function detect() {
   if (started) return;
   started = true;
 
-  // An explicit choice always wins over geo: someone who switched to GBP while
-  // travelling meant it.
-  let stored: string | null = null;
-  try {
-    stored = localStorage.getItem(STORAGE_KEY);
-  } catch {
-    // Storage blocked (Safari private mode, locked-down profiles). Detection
-    // still works, it just is not remembered.
-  }
-  if (stored && CURRENCIES[stored]) {
-    set(stored);
-    return;
-  }
-
   fetch("/cdn-cgi/trace", { cache: "no-store" })
     .then((r) => (r.ok ? r.text() : Promise.reject(new Error(String(r.status)))))
     .then((text) => {
@@ -65,15 +49,6 @@ function subscribe(listener: () => void) {
   return () => {
     listeners.delete(listener);
   };
-}
-
-export function setCurrency(code: string) {
-  set(code);
-  try {
-    localStorage.setItem(STORAGE_KEY, code);
-  } catch {
-    // Not remembered across pages; the switch still applies to this one.
-  }
 }
 
 export function useCurrency() {

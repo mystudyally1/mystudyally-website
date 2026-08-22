@@ -22,7 +22,6 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { ORGANIZATION_ID, abs, breadcrumbJsonLd, homeCrumb, webPageJsonLd } from "@/lib/seo";
 import { pageSocial } from "@/lib/metadata";
 import { CurrencyNote, PerClass, Price } from "@/components/pricing/Price";
-import { CurrencySwitcher } from "@/components/pricing/CurrencySwitcher";
 import { priceToNumber } from "@/lib/currency";
 
 const TITLE = "Tutoring Prices — Plans from $45";
@@ -155,10 +154,7 @@ export default function PricingPage() {
               </span>
             ))}
           </div>
-          <div className="mx-auto mt-[20px] flex max-w-[420px] flex-col items-center md:mt-[26px]">
-            <CurrencySwitcher className="w-full text-center" />
-            <CurrencyNote className="mt-[10px] text-11_5 leading-[1.6] text-muted-3 md:text-12" />
-          </div>
+          <CurrencyNote className="mx-auto mt-[16px] max-w-[520px] text-11_5 leading-[1.6] text-muted-3 md:mt-[20px] md:text-12" />
         </div>
       </section>
 

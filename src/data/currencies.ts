@@ -62,20 +62,3 @@ export const COUNTRY_CURRENCY: Record<string, string> = {
   OM: "OMR",
   BH: "BHD",
 };
-
-/** Offered in the switcher, in the order the markets were asked for. */
-export const SWITCHER_ORDER = [
-  "USD",
-  "GBP",
-  "CAD",
-  "AED",
-  "SAR",
-  "QAR",
-  "KWD",
-  "OMR",
-  "BHD",
-  "HKD",
-  "MYR",
-  "SGD",
-  "PKR",
-];
