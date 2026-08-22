@@ -57,6 +57,12 @@ export const FORM_ENDPOINT =
   "https://mystudyally-forms-worker.mystudyally1.workers.dev/";
 export const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
+// Region-based pricing reads the visitor's country from the same Worker. The
+// site is a static export on Vercel — it has no request context of its own at
+// render time — and the Worker is on Cloudflare, which hands it CF-IPCountry
+// for free. Derived from FORM_ENDPOINT so there is one Worker address to change.
+export const GEO_ENDPOINT = `${FORM_ENDPOINT.replace(/\/?$/, "/")}geo`;
+
 // ---------------------------------------------------------------- SEO -------
 
 // Homepage/meta description. Deliberately longer and more specific than
