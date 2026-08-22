@@ -69,6 +69,16 @@ const SOCIAL_ICONS = [
     ),
   },
   {
+    label: "Facebook",
+    href: SOCIAL_LINKS.facebook,
+    path: (
+      <>
+        <rect x="3" y="3" width="18" height="18" rx="4.5" />
+        <path d="M14.8 7.8h-1.3a2.2 2.2 0 0 0-2.2 2.2v10.2M9.7 12.6h4.8" />
+      </>
+    ),
+  },
+  {
     label: "Email",
     href: SOCIAL_LINKS.email,
     path: (

@@ -43,6 +43,7 @@ export const SOCIAL_LINKS = {
   whatsapp: CONTACT_WHATSAPP_LINK,
   instagram: "https://www.instagram.com/mystudyally",
   linkedin: "https://www.linkedin.com/company/my-study-ally/",
+  facebook: "https://www.facebook.com/profile.php?id=61593347652878",
   email: `mailto:${CONTACT_EMAIL}`,
   trustpilot: "https://www.trustpilot.com/review/mystudyally.com",
 };
