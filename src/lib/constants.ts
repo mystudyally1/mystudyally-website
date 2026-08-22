@@ -42,6 +42,7 @@ export const OG_IMAGE_PATH = "/og.png";
 export const SOCIAL_LINKS = {
   whatsapp: CONTACT_WHATSAPP_LINK,
   instagram: "https://www.instagram.com/mystudyally",
+  linkedin: "https://www.linkedin.com/company/my-study-ally/",
   email: `mailto:${CONTACT_EMAIL}`,
   trustpilot: "https://www.trustpilot.com/review/mystudyally.com",
 };

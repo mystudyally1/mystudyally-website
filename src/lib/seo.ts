@@ -83,7 +83,7 @@ export const organizationJsonLd = {
   ],
   // Verified profiles only — sameAs is how search engines reconcile this entity
   // with its social presence, and a wrong URL here merges the wrong brand.
-  sameAs: [SOCIAL_LINKS.instagram, SOCIAL_LINKS.trustpilot],
+  sameAs: [SOCIAL_LINKS.instagram, SOCIAL_LINKS.linkedin, SOCIAL_LINKS.trustpilot],
 };
 
 // The WebSite node is what lets Google attribute the whole domain to one site
